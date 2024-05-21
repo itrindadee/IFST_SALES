@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadastro de Cliente</title>
+  <!-- Inclua o JavaScript do Bootstrap e jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Inclua o CSS do Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Cadastrar Cliente</h1>
+
+    <!-- Formulário de Cadastro de Cliente -->
+    <form method="POST" action="/clientes/criar" class="mb-4">
+      <!-- Campo CSRF -->
+      <input type="hidden" name="_csrf" value="<%= _csrf %>">
+      <!-- Botão Cadastrar (alinhado à direita) -->
+      <div class="form-group col-md-12 text-right">
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+      </div>
+      <!-- Abas -->
+      <ul class="nav nav-tabs" id="clienteTabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="dados-cliente-tab" data-toggle="tab" href="#dados-cliente" role="tab" aria-controls="dados-cliente" aria-selected="true">Dados do Cliente</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="dados-endereco-tab" data-toggle="tab" href="#dados-endereco" role="tab" aria-controls="dados-endereco" aria-selected="false">Dados de Endereço</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="dados-faturamento-tab" data-toggle="tab" href="#dados-faturamento" role="tab" aria-controls="dados-faturamento" aria-selected="false">Dados de Faturamento</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="dados-comercial-tab" data-toggle="tab" href="#dados-comercial" role="tab" aria-controls="dados-comercial" aria-selected="false">Dados Comercial</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="clienteTabsContent">
+        <!-- Aba Dados do Cliente -->
+        <div class="tab-pane fade show active" id="dados-cliente" role="tabpanel" aria-labelledby="dados-cliente-tab">
+          <div class="form-row mt-3">
+            <!-- Campo para exibir o Código do Cliente (não editável) -->
+            <div class="form-group col-md-4">
+              <label for="codigoCliente">Código do Cliente:</label>
+              <input type="text" class="form-control" id="codigoCliente" name="codigoCliente" disabled>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="razaoSocial">Razão Social:</label>
+              <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cnpj">CNPJ:</label>
+              <input type="text" class="form-control" id="cnpj" name="cnpj">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cpf">CPF:</label>
+              <input type="text" class="form-control" id="cpf" name="cpf">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inscMunicipal">Insc. Municipal:</label>
+              <input type="text" class="form-control" id="inscMunicipal" name="inscMunicipal">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inscEstadual">Insc. Estadual:</label>
+              <input type="text" class="form-control" id="inscEstadual" name="inscEstadual">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="pais">País:</label>
+              <input type="text" class="form-control" id="pais" name="pais">
+            </div>
+          </div>
+        </div>
+        <!-- Aba Dados de Endereço -->
+        <div class="tab-pane fade" id="dados-endereco" role="tabpanel" aria-labelledby="dados-endereco-tab">
+          <div class="form-row mt-3">
+            <div class="form-group col-md-4">
+              <label for="rua">Rua:</label>
+              <input type="text" class="form-control" id="rua" name="rua">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rua2">Rua 2:</label>
+              <input type="text" class="form-control" id="rua2" name="rua2">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rua3">Rua 3:</label>
+              <input type="text" class="form-control" id="rua3" name="rua3">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="bairro">Bairro:</label>
+              <input type="text" class="form-control" id="bairro" name="bairro">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cep">CEP:</label>
+              <input type="text" class="form-control" id="cep" name="cep">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cidade">Cidade:</label>
+              <input type="text" class="form-control" id="cidade" name="cidade">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="numero">N°:</label>
+              <input type="text" class="form-control" id="numero" name="numero">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="complemento">Complemento:</label>
+              <input type="text" class="form-control" id="complemento" name="complemento">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="observacaoEndereco">Observação Endereço:</label>
+              <input type="text" class="form-control" id="observacaoEndereco" name="observacaoEndereco">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="uf">UF:</label>
+              <input type="text" class="form-control" id="uf" name="uf">
+            </div>
+          </div>
+        </div>
+        <!-- Aba Dados de Faturamento -->
+        <div class="tab-pane fade" id="dados-faturamento" role="tabpanel" aria-labelledby="dados-faturamento-tab">
+          <div class="form-row mt-3">
+            <div class="form-group col-md-4">
+              <label for="empresa">Empresa:</label>
+              <% if (empresas && empresas.length > 0) { %>
+                <select name="empresa" id="empresa" class="form-control">
+                  <option value="" selected disabled>Selecione uma empresa</option>
+                  <% empresas.forEach(function(empresa) { %>
+                    <option value="<%= empresa.codigo %>"><%= empresa.codigo %></option>
+                  <% }); %>
+                </select>
+              <% } else { %>
+                <select name="empresa" id="empresa" class="form-control">
+                  <option value="" selected disabled>Nenhuma empresa disponível</option>
+                </select>
+              <% } %>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="transportadora">Transportadora:</label>
+              <input type="text" class="form-control" id="transportadora" name="transportadora">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="diasParaExpedicao">Dias para Expedição:</label>
+              <input type="number" class="form-control" id="diasParaExpedicao" name="diasParaExpedicao">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="distrito">Distrito:</label>
+              <input type="text" class="form-control" id="distrito" name="distrito">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="despesasBancarias">Despesas Bancárias:</label>
+              <input type="number" class="form-control" id="despesasBancarias" name="despesasBancarias">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="prazoPagamento">Prazo de Pagamento:</label>
+              <input type="text" class="form-control" id="prazoPagamento" name="prazoPagamento">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="moeda">Moeda:</label>
+              <input type="text" class="form-control" id="moeda" name="moeda">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="meioTransporte">Meio de Transporte:</label>
+              <input type="text" class="form-control" id="meioTransporte" name="meioTransporte">
+            </div>
+          </div>
+        </div>
+        <!-- Aba Dados Comercial -->
+        <div class="tab-pane fade" id="dados-comercial" role="tabpanel" aria-labelledby="dados-comercial-tab">
+          <div class="form-row mt-3">
+            <div class="form-group col-md-4">
+              <label for="formaPagamento">Forma de Pagamento:</label>
+              <input type="text" class="form-control" id="formaPagamento" name="formaPagamento">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="responsavelComercial">Responsável Comercial:</label>
+              <input type="text" class="form-control" id="responsavelComercial" name="responsavelComercial">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="observacoesComercial">Observações Comercial:</label>
+              <input type="text" class="form-control" id="observacoesComercial" name="observacoesComercial">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="organizacaoVendas">Organização de Vendas:</label>
+              <% if (organizacoesVendas && organizacoesVendas.length > 0) { %>
+                <select name="organizacaoVendas" id="organizacaoVendas" class="form-control">
+                  <option value="" selected disabled>Selecione uma organização de vendas</option>
+                  <% organizacoesVendas.forEach(function(organizacao) { %>
+                    <option value="<%= organizacao.id %>"><%= organizacao.nome %></option>
+                  <% }); %>
+                </select>
+              <% } else { %>
+                <select name="organizacaoVendas" id="organizacaoVendas" class="form-control">
+                  <option value="" selected disabled>Nenhuma organização disponível</option>
+                </select>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

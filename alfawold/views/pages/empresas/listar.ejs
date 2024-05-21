@@ -1,0 +1,81 @@
+<div class="container mt-5">
+  <h1 class="text-center">Empresas</h1>
+
+  <!-- Formulário de Filtro -->
+  <form method="GET" action="/empresas/listar" class="mb-4">
+    <div class="form-row align-items-end">
+      <!-- Botão Cadastrar Empresa (alinhado à esquerda) -->
+      <div class="form-group col-md-6">
+        <a href="/empresas/criar" class="btn btn-success float-left">Cadastrar Empresa</a>
+      </div>
+      <!-- Botão Filtrar (alinhado à direita) -->
+      <div class="form-group col-md-6">
+        <button type="submit" class="btn btn-primary float-right">Filtrar</button>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="codigo">Código da Empresa:</label>
+        <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="razaoSocial">Razão Social:</label>
+        <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" value="<%= typeof razaoSocial !== 'undefined' ? razaoSocial : '' %>">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="cnpj">CNPJ:</label>
+        <input type="text" class="form-control" id="cnpj" name="cnpj" value="<%= typeof cnpj !== 'undefined' ? cnpj : '' %>">
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabela de Empresas -->
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Razão Social</th>
+          <th>CNPJ</th>
+          <th>Ações</th> <!-- Coluna para os botões de ação -->
+        </tr>
+      </thead>
+      <tbody>
+        <% empresas.forEach(empresa => { %>
+          <tr>
+            <td><%= empresa.codigo %></td>
+            <td><%= empresa.razaoSocial %></td>
+            <td><%= empresa.cnpj %></td>
+            <td>
+              <!-- Botões de Ação (envoltos em uma div centralizada à esquerda) -->
+              <div class="text-left">
+                <!-- Botão Visualizar -->
+                <a href="/empresas/<%= empresa.id %>" class="btn btn-info btn-sm">Visualizar</a>
+                <!-- Botão Editar -->
+                <a href="/empresas/editar/<%= empresa.id %>" class="btn btn-primary btn-sm">Editar</a>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <!-- Paginação -->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/empresas/listar?page=<%= currentPage - 1 %>&codigo=<%= codigo %>&razaoSocial=<%= razaoSocial %>&cnpj=<%= cnpj %>" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="/empresas/listar?page=<%= i %>&codigo=<%= codigo %>&razaoSocial=<%= razaoSocial %>&cnpj=<%= cnpj %>"><%= i %></a>
+          </li>
+        <% } %>
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/empresas/listar?page=<%= currentPage + 1 %>&codigo=<%= codigo %>&razaoSocial=<%= razaoSocial %>&cnpj=<%= cnpj %>" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

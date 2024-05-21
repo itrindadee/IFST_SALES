@@ -1,0 +1,49 @@
+<!-- views/tabelaPreco/listar.ejs -->
+
+<div class="container mt-5">
+  <h1 class="text-center">Tabelas de Preço</h1>
+
+  <!-- Formulário de Filtro -->
+  <form method="GET" action="/tabelaPreco/listar" class="mb-4">
+      <div class="form-row align-items-end">
+          <!-- Botão Criar Nova Tabela de Preço (alinhado à esquerda) -->
+          <div class="form-group col-md-6">
+              <a href="/tabelaPreco/criar" class="btn btn-success float-left">Criar Nova Tabela de Preço</a>
+          </div>
+          <!-- Botão Filtrar (alinhado à direita) -->
+          <div class="form-group col-md-6">
+              <button type="submit" class="btn btn-primary float-right">Filtrar</button>
+          </div>
+      </div>
+  </form>
+
+  <!-- Tabela de Tabelas de Preço -->
+  <div class="table-responsive">
+      <table class="table table-striped">
+          <thead>
+              <tr>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th>Ações</th> <!-- Coluna para os botões de ação -->
+              </tr>
+          </thead>
+          <tbody>
+              <% tabelas.forEach(tabela => { %>
+                  <tr>
+                      <td><%= tabela.nome %></td>
+                      <td><%= tabela.descricao %></td>
+                      <td>
+                          <!-- Botões de Ação (envoltos em uma div centralizada à esquerda) -->
+                          <div class="text-left">
+                              <!-- Botão Visualizar -->
+                              <a href="/tabelapreco/<%= tabela.id %>" class="btn btn-info btn-sm">Visualizar</a>
+                              <!-- Botão Editar -->
+                              <a href="/tabelapreco/editar/<%= tabela.id %>" class="btn btn-primary btn-sm">Editar</a>
+                          </div>
+                      </td>
+                  </tr>
+              <% }) %>
+          </tbody>
+      </table>
+  </div>
+</div>

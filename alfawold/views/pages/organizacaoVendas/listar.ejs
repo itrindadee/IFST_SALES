@@ -1,0 +1,46 @@
+<div class="container mt-5">
+  <h1 class="text-center">Organização de Vendas</h1>
+
+  <!-- Filter Form -->
+  <form method="GET" action="/organizacaoVendas/listar" class="mb-4">
+    <div class="form-row align-items-end">
+      <div class="form-group col-md-6">
+        <a href="/organizacaoVendas/criar" class="btn btn-success float-left">Cadastrar</a>
+      </div>
+      <div class="form-group col-md-6">
+        <button type="submit" class="btn btn-primary float-right">Filtro</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Sales Organization Table -->
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Codigo</th>
+          <th>Ativo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% organizacoes.forEach(organizacao => { %>
+          <tr>
+            <td><%= organizacao.nome %></td>
+            <td><%= organizacao.descricao %></td>
+            <td><%= organizacao.codigo %></td>
+            <td><%= organizacao.ativo ? 'Sim' : 'Não' %></td>
+            <td>
+              <div class="text-left">
+                <a href="/organizacaoVendas/editar/<%= organizacao.id %>" class="btn btn-primary btn-sm">Editar</a>
+                <a href="/organizacaoVendas/deletar/<%= organizacao.id %>" class="btn btn-danger btn-sm">Deletar</a>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>

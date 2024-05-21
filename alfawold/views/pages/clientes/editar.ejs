@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Editar Cliente</title>
+  <!-- Inclua o JavaScript do Bootstrap e jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Inclua o CSS do Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Editar Cliente</h1>
+
+    <!-- Formulário de Edição de Cliente -->
+    <form method="POST" action="/clientes/atualizarr" class="mb-4">
+      <!-- Campo CSRF -->
+      <input type="hidden" name="_csrf" value="<%= _csrf %>">
+      <!-- Campo para armazenar o ID do cliente -->
+      <input type="hidden" name="clienteId" value="<%= cliente.id %>">
+
+      <!-- Abas -->
+      <ul class="nav nav-tabs" id="clienteTabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="dados-cliente-tab" data-toggle="tab" href="#dados-cliente" role="tab" aria-controls="dados-cliente" aria-selected="true">Dados do Cliente</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="dados-endereco-tab" data-toggle="tab" href="#dados-endereco" role="tab" aria-controls="dados-endereco" aria-selected="false">Dados de Endereço</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="dados-faturamento-tab" data-toggle="tab" href="#dados-faturamento" role="tab" aria-controls="dados-faturamento" aria-selected="false">Dados de Faturamento</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="dados-comercial-tab" data-toggle="tab" href="#dados-comercial" role="tab" aria-controls="dados-comercial" aria-selected="false">Dados Comercial</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="clienteTabsContent">
+        <!-- Aba Dados do Cliente -->
+        <div class="tab-pane fade show active" id="dados-cliente" role="tabpanel" aria-labelledby="dados-cliente-tab">
+          <div class="form-row mt-3">
+            <!-- Campo para exibir o Código do Cliente (não editável) -->
+            <div class="form-group col-md-4">
+              <label for="codigoCliente">Código do Cliente:</label>
+              <input type="text" class="form-control" id="codigoCliente" name="codigoCliente" disabled value="<%= cliente.codigo %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="razaoSocial">Razão Social:</label>
+              <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required value="<%= cliente.razaoSocial %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cnpj">CNPJ:</label>
+              <input type="text" class="form-control" id="cnpj" name="cnpj" value="<%= cliente.cnpj %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cpf">CPF:</label>
+              <input type="text" class="form-control" id="cpf" name="cpf" value="<%= cliente.cpf %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inscMunicipal">Insc. Municipal:</label>
+              <input type="text" class="form-control" id="inscMunicipal" name="inscMunicipal" value="<%= cliente.inscMunicipal %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inscEstadual">Insc. Estadual:</label>
+              <input type="text" class="form-control" id="inscEstadual" name="inscEstadual" value="<%= cliente.inscEstadual %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="pais">País:</label>
+              <input type="text" class="form-control" id="pais" name="pais" value="<%= cliente.pais %>">
+            </div>
+          </div>
+        </div>
+        <!-- Aba Dados de Endereço -->
+        <div class="tab-pane fade" id="dados-endereco" role="tabpanel" aria-labelledby="dados-endereco-tab">
+          <div class="form-row mt-3">
+            <div class="form-group col-md-4">
+              <label for="rua">Rua:</label>
+              <input type="text" class="form-control" id="rua" name="rua" value="<%= cliente.rua %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rua2">Rua 2:</label>
+              <input type="text" class="form-control" id="rua2" name="rua2" value="<%= cliente.rua2 %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rua3">Rua 3:</label>
+              <input type="text" class="form-control" id="rua3" name="rua3" value="<%= cliente.rua3 %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="bairro">Bairro:</label>
+              <input type="text" class="form-control" id="bairro" name="bairro" value="<%= cliente.bairro %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cep">CEP:</label>
+              <input type="text" class="form-control" id="cep" name="cep" value="<%= cliente.cep %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cidade">Cidade:</label>
+              <input type="text" class="form-control" id="cidade" name="cidade" value="<%= cliente.cidade %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="numero">N°:</label>
+              <input type="text" class="form-control" id="numero" name="numero"
+              value="<%= cliente.numero %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="complemento">Complemento:</label>
+              <input type="text" class="form-control" id="complemento" name="complemento" value="<%= cliente.complemento %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="observacaoEndereco">Observação Endereço:</label>
+              <input type="text" class="form-control" id="observacaoEndereco" name="observacaoEndereco" value="<%= cliente.observacaoEndereco %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="uf">UF:</label>
+              <input type="text" class="form-control" id="uf" name="uf" value="<%= cliente.uf %>">
+            </div>
+          </div>
+        </div>
+        <!-- Aba Dados de Faturamento -->
+        <div class="tab-pane fade" id="dados-faturamento" role="tabpanel" aria-labelledby="dados-faturamento-tab">
+          <div class="form-row mt-3">
+            <div class="form-group col-md-4">
+              <label for="empresa">Empresa:</label>
+              <input type="text" class="form-control" id="empresa" name="empresa" required value="<%= cliente.empresa %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="transportadora">Transportadora:</label>
+              <input type="text" class="form-control" id="transportadora" name="transportadora" value="<%= cliente.transportadora %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="diasParaExpedicao">Dias para Expedição:</label>
+              <input type="number" class="form-control" id="diasParaExpedicao" name="diasParaExpedicao" value="<%= cliente.diasParaExpedicao %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="distrito">Distrito:</label>
+              <input type="text" class="form-control" id="distrito" name="distrito" value="<%= cliente.distrito %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="despesasBancarias">Despesas Bancárias:</label>
+              <input type="number" class="form-control" id="despesasBancarias" name="despesasBancarias" value="<%= cliente.despesasBancarias %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="prazoPagamento">Prazo de Pagamento:</label>
+              <input type="text" class="form-control" id="prazoPagamento" name="prazoPagamento" value="<%= cliente.prazoPagamento %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="moeda">Moeda:</label>
+              <input type="text" class="form-control" id="moeda" name="moeda" value="<%= cliente.moeda %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="meioTransporte">Meio de Transporte:</label>
+              <input type="text" class="form-control" id="meioTransporte" name="meioTransporte" value="<%= cliente.meioTransporte %>">
+            </div>
+          </div>
+        </div>
+        <!-- Aba Dados Comerciais -->
+        <div class="tab-pane fade" id="dados-comercial" role="tabpanel" aria-labelledby="dados-comercial-tab">
+          <div class="form-row mt-3">
+            <div class="form-group col-md-4">
+              <label for="organizacaoVendas">Organização de Vendas:</label>
+              <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" value="<%= cliente.organizacaoVendas %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="representante">Representante:</label>
+              <input type="text" class="form-control" id="representante" name="representante" value="<%= cliente.representante %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="tipoCliente">Tipo de Cliente:</label>
+              <input type="text" class="form-control" id="tipoCliente" name="tipoCliente" value="<%= cliente.tipoCliente %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="comissao">Comissão:</label>
+              <input type="text" class="form-control" id="comissao" name="comissao" value="<%= cliente.comissao %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="desconto">Desconto:</label>
+              <input type="text" class="form-control" id="desconto" name="desconto" value="<%= cliente.desconto %>">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="observacao">Observação:</label>
+              <input type="text" class="form-control" id="observacao" name="observacao" value="<%= cliente.observacao %>">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="mt-3">
+        <button id="btnSalvar" type="submit" class="btn btn-primary">Salvar</button>
+        <a href="/clientes" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+
+
+
+<!-- Script Salvar-->
+<script>
+function atualizarCliente() {
+  // Obtenha os valores dos campos de entrada
+  var clienteId = document.getElementById('clienteId').value;
+  var codigo = document.getElementById('codigo').value;
+  var empresa = document.getElementById('empresa').value;
+  var organizacaoVendas = document.getElementById('organizacaoVendas').value;
+  var razaoSocial = document.getElementById('razaoSocial').value;
+  var tipoCliente = document.getElementById('tipoCliente').value;
+  var cnpj = document.getElementById('cnpj').value;
+  var cpf = document.getElementById('cpf').value;
+  var inscMunicipal = document.getElementById('inscMunicipal').value;
+  var inscEstadual = document.getElementById('inscEstadual').value;
+  var transportadora = document.getElementById('transportadora').value;
+  var diasParaExpedicao = document.getElementById('diasParaExpedicao').value;
+  var distrito = document.getElementById('distrito').value;
+  var comissao = document.getElementById('comissao').value;
+  var despesasBancarias = document.getElementById('despesasBancarias').value;
+  var prazoPagamento = document.getElementById('prazoPagamento').value;
+  var meioTransporte = document.getElementById('meioTransporte').value;
+  var moeda = document.getElementById('moeda').value;
+  var pais = document.getElementById('pais').value;
+  var representante = document.getElementById('representante').value;
+  var desconto = document.getElementById('desconto').value;
+  var rua = document.getElementById('rua').value;
+  var rua2 = document.getElementById('rua2').value;
+  var rua3 = document.getElementById('rua3').value;
+  var bairro = document.getElementById('bairro').value;
+  var cep = document.getElementById('cep').value;
+  var cidade = document.getElementById('cidade').value;
+  var numero = document.getElementById('numero').value;
+  var complemento = document.getElementById('complemento').value;
+  var observacaoEndereco = document.getElementById('observacaoEndereco').value;
+  var uf = document.getElementById('uf').value;
+
+  // Objeto com os dados do cliente
+  var clienteData = {
+    clienteId: clienteId,
+    codigo: codigo,
+    empresa: empresa,
+    organizacaoVendas: organizacaoVendas,
+    razaoSocial: razaoSocial,
+    tipoCliente: tipoCliente,
+    cnpj: cnpj,
+    cpf: cpf,
+    inscMunicipal: inscMunicipal,
+    inscEstadual: inscEstadual,
+    transportadora: transportadora,
+    diasParaExpedicao: diasParaExpedicao,
+    distrito: distrito,
+    comissao: comissao,
+    despesasBancarias: despesasBancarias,
+    prazoPagamento: prazoPagamento,
+    meioTransporte: meioTransporte,
+    moeda: moeda,
+    pais: pais,
+    representante: representante,
+    desconto: desconto,
+    rua: rua,
+    rua2: rua2,
+    rua3: rua3,
+    bairro: bairro,
+    cep: cep,
+    cidade: cidade,
+    numero: numero,
+    complemento: complemento,
+    observacaoEndereco: observacaoEndereco,
+    uf: uf
+  };
+
+  // Envie uma solicitação AJAX para salvar/atualizar o cliente
+$.ajax({
+  type: 'POST',
+  url: '/clientes/salvar', // Rota para salvar/atualizar o cliente
+  data: clienteData,
+  success: function(response) {
+    // Se a operação for bem-sucedida, redirecione para a página de listagem de clientes
+    window.location.href = '/clientes';
+  },
+  error: function(err) {
+    // Se houver um erro, exiba uma mensagem de erro
+    console.error('Erro ao salvar/atualizar o cliente:', err);
+    alert('Erro ao salvar/atualizar o cliente. Por favor, tente novamente.');
+  }
+}),
+
+// Adicione um ouvinte de evento ao botão de salvar
+document.getElementById('btnSalvar').addEventListener('click', function(event) {
+  event.preventDefault(); // Evita o comportamento padrão do botão de enviar formulário
+  atualizarCliente(); // Chama a função para atualizar o cliente
+})};

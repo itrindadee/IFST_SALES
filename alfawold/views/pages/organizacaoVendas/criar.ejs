@@ -1,0 +1,29 @@
+<!-- views/organizacaoVendas/create.ejs -->
+<form method="POST" action="/organizacaoVendas/criar" class="mb-4">
+  <!-- CSRF Token -->
+  <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
+  <div class="mb-3">
+    <label for="nome" class="form-label">Nome</label>
+    <input type="text" class="form-control" id="nome" name="nome" required>
+  </div>
+  <div class="mb-3">
+    <label for="descricao" class="form-label">Descrição</label>
+    <input type="text" class="form-control" id="descricao" name="descricao" required>
+  </div>
+  <div class="mb-3">
+    <label for="codigo" class="form-label">Código</label>
+    <input type="text" class="form-control" id="codigo" name="codigo">
+  </div>
+  <div class="mb-3">
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="ativo" name="ativo">
+      <label class="form-check-label" for="ativo">Ativo</label>
+    </div>
+  </div>
+
+  <!-- Botão Cadastrar (alinhado à direita) -->
+  <div class="form-group col-md-12 text-right">
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+  </div>
+</form>

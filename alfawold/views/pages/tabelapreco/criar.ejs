@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadastro de Tabela de Preço</title>
+  <!-- Inclua o JavaScript do Bootstrap e jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Inclua o CSS do Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Cadastrar Tabela de Preço</h1>
+
+    <!-- Formulário de Cadastro de Tabela de Preço -->
+    <form method="POST" action="/tabelapreco/criar" class="mb-4">
+      <!-- Campo CSRF -->
+      <input type="hidden" name="_csrf" value="<%= _csrf %>">
+      <!-- Botão Cadastrar (alinhado à direita) -->
+      <div class="form-group col-md-12 text-right">
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+      </div>
+      <!-- Campo Nome -->
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+      </div>
+      <!-- Campo Descrição -->
+      <div class="mb-3">
+        <label for="descricao" class="form-label">Descrição</label>
+        <input type="text" class="form-control" id="descricao" name="descricao" required>
+      </div>
+      <!-- Checkbox Ativo -->
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+        <label class="form-check-label" for="ativo">Ativo</label>
+      </div>
+
+      <!-- Container para os Itens -->
+      <div id="itensContainer">
+        <!-- Botão para adicionar um novo item -->
+        <button type="button" class="btn btn-success mb-3" onclick="adicionarItem()">Adicionar Item</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Script para adicionar novos itens -->
+  <script>
+    let nextItemId = 1;
+
+    function adicionarItem() {
+      const container = document.getElementById('itensContainer');
+      const newItem = document.createElement('div');
+      newItem.classList.add('item');
+      newItem.innerHTML = `
+        <label for="descricao">Descrição do Item:</label>
+        <input type="text" name="itens[${nextItemId}][descricao]" required><br>
+
+        <label for="preco">Preço do Item:</label>
+        <input type="number" name="itens[${nextItemId}][preco]" required><br>
+      `;
+      container.appendChild(newItem);
+      nextItemId++;
+    }
+  </script>
+</body>
+</html>

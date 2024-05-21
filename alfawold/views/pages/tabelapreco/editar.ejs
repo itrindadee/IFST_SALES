@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Tabela de Preço</title>
+    <!-- Adicione os links para os estilos do Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Editar Tabela de Preço</h1>
+
+        <!-- Formulário de Edição -->
+        <form method="POST" action="/tabelapreco/editar/<%= tabelaPreco.id %>" class="mt-4">
+            <!-- Campo CSRF -->
+            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+            <!-- Campo para o ID da tabela de preço (não editável) -->
+            <div class="form-group">
+                <label for="id">ID:</label>
+                <input type="text" class="form-control" id="id" name="id" value="<%= tabelaPreco.id %>" disabled>
+            </div>
+            <!-- Campo para o nome da tabela de preço -->
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" value="<%= tabelaPreco.nome %>" required>
+            </div>
+            <!-- Campo para a descrição da tabela de preço -->
+            <div class="form-group">
+                <label for="descricao">Descrição:</label>
+                <textarea class="form-control" id="descricao" name="descricao" rows="3" required><%= tabelaPreco.descricao %></textarea>
+            </div>
+            <!-- Campo para o status da tabela de preço (ativo ou inativo) -->
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" <%= tabelaPreco.ativo ? 'checked' : '' %>>
+                <label class="form-check-label" for="ativo">Ativo</label>
+            </div>
+            <!-- Botão para enviar o formulário de edição -->
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </form>
+    </div>
+
+    <!-- Adicione os scripts do Bootstrap e jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
