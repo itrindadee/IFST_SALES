@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo</title>
+  <style>
+    .config-option {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      height: 100%;
+    }
+    .config-section {
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #007bff; /* Azul padrão do Bootstrap */
+      color: #fff; /* Cor do texto branco */
+    }
+    .row > [class*='col-'] {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-md-4">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/home">Home</a></li>
+          <li class="breadcrumb-item"><a href="/painel">Painel Administrativo</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Configurações do Sistema</li>
+        </ol>
+      </nav>
+      <!-- Seção de Configurações -->
+      <div class="config-section">
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Empresa</h4>
+              <p>Configurações referente a empresas</p>
+              <button class="btn btn-secondary" onclick="location.href='/empresa/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Politica de Cadastro</h4>
+              <p>Configuração referente a política de cadastro</p>
+              <button class="btn btn-secondary" onclick="location.href='/politicacadastro/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Organização de Vendas</h4>
+              <p>Configurações referente a organização de vendas</p>
+              <button class="btn btn-secondary" onclick="location.href='/organizacaovendas/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Permissão</h4>
+              <p>Configuração referente a permissão</p>
+              <button class="btn btn-secondary" onclick="location.href='/permissoes/listar'">Ver Configurações</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Grupo Empresa</h4>
+              <p>Configuração grupo empresa</p>
+              <button class="btn btn-secondary" onclick="location.href='/grupoempresa/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Perfil</h4>
+              <p>Configuração referente a perfil</p>
+              <button class="btn btn-secondary" onclick="location.href='/perfil/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Grupo Conta</h4>
+              <p>Configuração Grupo Conta</p>
+              <button class="btn btn-secondary" onclick="location.href='/grupoconta/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Canal</h4>
+              <p>Configuração Canal</p>
+              <button class="btn btn-secondary" onclick="location.href='/canal/listar'">Ver Configurações</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Subcanal</h4>
+              <p>Configuração Subcanal</p>
+              <button class="btn btn-secondary" onclick="location.href='/subcanal/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Região</h4>
+              <p>Região</p>
+              <button class="btn btn-secondary" onclick="location.href='/regiao/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Escritorio de Vendas</h4>
+              <p>Configuração Escritório de vendas</p>
+              <button class="btn btn-secondary" onclick="location.href='/escritoriovendas/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Equipe Vendas</h4>
+              <p>Configuração Equipe Vendas</p>
+              <button class="btn btn-secondary" onclick="location.href='/equipevendas/listar'">Ver Configurações</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Categoria</h4>
+              <p>Configuração Categoria</p>
+              <button class="btn btn-secondary" onclick="location.href='/categoria/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Subcategoria</h4>
+              <p>Configuração Subcategoria</p>
+              <button class="btn btn-secondary" onclick="location.href='/subcategoria/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Marca</h4>
+              <p>Configuração Marca</p>
+              <button class="btn btn-secondary" onclick="location.href='/marca/listar'">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Grupo de Produto</h4>
+              <p>Configuração Grupo de Produto</p>
+              <button class="btn btn-secondary" onclick="location.href='/grupoproduto/listar'">Ver Configurações</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Fluxo Aprovação</h4>
+              <p>Configuração Fluxo Aprovação</p>
+              <button class="btn btn-secondary" onclick="location.href='/fluxoaprovacao/listar'">Ver Configurações</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

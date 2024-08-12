@@ -6,7 +6,6 @@
  */
 
 module.exports = {
-
   attributes: {
     codigo: {
       type: 'string',
@@ -24,6 +23,11 @@ module.exports = {
     },
     endereco: {
       type: 'string'
+    },
+    // Associação com Clientes
+    clientes: {
+      collection: 'cliente',
+      via: 'empresa'
     }
-  },
+  }
 };

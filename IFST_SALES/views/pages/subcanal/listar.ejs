@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listagem de Subcanais</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Listagem de Subcanais</h1>
+
+    <!-- Botão para abrir o modal de criação de subcanal -->
+    <div class="text-end mb-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSubcanalModal" onclick="resetAddSubcanalForm()">
+        Adicionar Subcanal
+      </button>
+    </div>
+
+    <!-- Tabela de subcanais existentes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Grupo Conta</th>
+          <th>Canal</th>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Ativo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% subcanais.forEach(subcanal => { %>
+        <tr>
+          <td><%= subcanal.grupoConta %></td>
+          <td><%= subcanal.canal %></td>
+          <td><%= subcanal.codigo %></td>
+          <td><%= subcanal.descricao %></td>
+          <td><%= subcanal.ativo ? 'Sim' : 'Não' %></td>
+          <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSubcanalModal<%= subcanal.id %>">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSubcanal(<%= subcanal.id %>)">Deletar</button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar subcanal -->
+  <div class="modal fade" id="addSubcanalModal" tabindex="-1" aria-labelledby="addSubcanalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSubcanalModalLabel">Adicionar Subcanal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addSubcanalForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="grupoConta" class="form-label">Grupo Conta:</label>
+                <input type="text" class="form-control" id="grupoConta" name="grupoConta" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="canal" class="form-label">Canal:</label>
+                <input type="text" class="form-control" id="canal" name="canal" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Subcanal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar subcanal -->
+  <% subcanais.forEach(subcanal => { %>
+  <div class="modal fade" id="editSubcanalModal<%= subcanal.id %>" tabindex="-1" aria-labelledby="editSubcanalModalLabel<%= subcanal.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editSubcanalModalLabel<%= subcanal.id %>">Editar Subcanal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editSubcanalForm<%= subcanal.id %>">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="grupoConta<%= subcanal.id %>" class="form-label">Grupo Conta:</label>
+                <input type="text" class="form-control" id="grupoConta<%= subcanal.id %>" name="grupoConta" value="<%= subcanal.grupoConta %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="canal<%= subcanal.id %>" class="form-label">Canal:</label>
+                <input type="text" class="form-control" id="canal<%= subcanal.id %>" name="canal" value="<%= subcanal.canal %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo<%= subcanal.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= subcanal.id %>" name="codigo" value="<%= subcanal.codigo %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao<%= subcanal.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= subcanal.id %>" name="descricao" value="<%= subcanal.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="ativo<%= subcanal.id %>" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo<%= subcanal.id %>" name="ativo" <%= subcanal.ativo ? 'checked' : '' %>>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddSubcanalForm() {
+      document.getElementById('addSubcanalForm').reset();
+    }
+
+    document.getElementById('addSubcanalForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        grupoConta: document.getElementById('grupoConta').value,
+        canal: document.getElementById('canal').value,
+        codigo: document.getElementById('codigo').value,
+        descricao: document.getElementById('descricao').value,
+        ativo: document.getElementById('ativo').checked
+      };
+
+      const response = await fetch('/subcanal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar subcanal');
+      }
+    });
+
+    <% subcanais.forEach(subcanal => { %>
+    document.getElementById('editSubcanalForm<%= subcanal.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        grupoConta: document.getElementById(`grupoConta<%= subcanal.id %>`).value,
+        canal: document.getElementById(`canal<%= subcanal.id %>`).value,
+        codigo: document.getElementById(`codigo<%= subcanal.id %>`).value,
+        descricao: document.getElementById(`descricao<%= subcanal.id %>`).value,
+        ativo: document.getElementById(`ativo<%= subcanal.id %>`).checked
+      };
+
+      const response = await fetch(`/subcanal/<%= subcanal.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar subcanal');
+      }
+    });
+    <% }) %>
+
+    async function deleteSubcanal(id) {
+      if (confirm('Tem certeza que deseja deletar este subcanal?')) {
+        const response = await fetch(`/subcanal/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar subcanal');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

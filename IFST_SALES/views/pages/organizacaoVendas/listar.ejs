@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organização de Vendas</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Organização de Vendas</h1>
+
+    <!-- Filtros -->
+    <form method="GET" action="/organizacaovendas/listar" class="mb-4">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="codigo" class="form-label">Código da Organização:</label>
+          <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+        </div>
+        <div class="col-md-4">
+          <label for="empresa" class="form-label">Empresa:</label>
+          <input type="text" class="form-control" id="empresa" name="empresa" value="<%= typeof empresa !== 'undefined' ? empresa : '' %>">
+        </div>
+        <div class="col-md-4 d-flex align-items-end justify-content-end">
+          <!-- Botão Filtrar (alinhado à direita) -->
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 d-flex justify-content-end">
+          <!-- Botão Adicionar (alinhado à direita) -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSalesOrgModal">Adicionar Org de Vendas</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Tabela de organizações de vendas -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Código</th>
+            <th>Ativo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% organizacoes.forEach(organizacao => { %>
+            <tr>
+              <td><%= organizacao.nome %></td>
+              <td><%= organizacao.descricao %></td>
+              <td><%= organizacao.codigo %></td>
+              <td><%= organizacao.ativo ? 'Sim' : 'Não' %></td>
+              <td>
+                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSalesOrgModal<%= organizacao.id %>">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteSalesOrg(<%= organizacao.id %>)">Deletar</button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal para adicionar organização de vendas -->
+    <div class="modal fade" id="addSalesOrgModal" tabindex="-1" aria-labelledby="addSalesOrgModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addSalesOrgModalLabel">Adicionar Organização de Vendas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addSalesOrgForm">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+              <div class="mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+              <div class="mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo">
+                <label class="form-check-label" for="ativo">Ativo</label>
+              </div>
+              <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals de edição de organização de vendas (um para cada organização) -->
+    <% organizacoes.forEach(organizacao => { %>
+      <div class="modal fade" id="editSalesOrgModal<%= organizacao.id %>" tabindex="-1" aria-labelledby="editSalesOrgModalLabel<%= organizacao.id %>" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editSalesOrgModalLabel<%= organizacao.id %>">Editar Organização de Vendas</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editSalesOrgForm<%= organizacao.id %>">
+                <input type="hidden" name="id" value="<%= organizacao.id %>">
+                <div class="mb-3">
+                  <label for="nome<%= organizacao.id %>" class="form-label">Nome:</label>
+                  <input type="text" class="form-control" id="nome<%= organizacao.id %>" name="nome" value="<%= organizacao.nome %>" required>
+                </div>
+                <div class="mb-3">
+                  <label for="descricao<%= organizacao.id %>" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao<%= organizacao.id %>" name="descricao" value="<%= organizacao.descricao %>" required>
+                </div>
+                <div class="mb-3">
+                  <label for="codigo<%= organizacao.id %>" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo<%= organizacao.id %>" name="codigo" value="<%= organizacao.codigo %>" required>
+                </div>
+                <div class="form-check mb-3">
+                  <input type="checkbox" class="form-check-input" id="ativo<%= organizacao.id %>" name="ativo" <% if (organizacao.ativo) { %> checked <% } %>>
+                  <label class="form-check-label" for="ativo<%= organizacao.id %>">Ativo</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+
+  </div>
+
+  <script>
+    document.getElementById('addSalesOrgForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+      data.ativo = data.ativo === 'on';
+
+      const response = await fetch('/organizacaovendas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        alert('Erro ao adicionar organização de vendas');
+      }
+    });
+
+    <% organizacoes.forEach(organizacao => { %>
+      document.getElementById('editSalesOrgForm<%= organizacao.id %>').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+        data.ativo = data.ativo === 'on';
+
+        const response = await fetch('/organizacaovendas/<%= organizacao.id %>', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          alert('Erro ao editar organização de vendas');
+        }
+      });
+    <% }) %>
+
+    async function deleteSalesOrg(id) {
+      if (confirm('Tem certeza que deseja deletar esta organização de vendas?')) {
+        const response = await fetch('/organizacaovendas/' + id, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          alert('Erro ao deletar organização de vendas');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

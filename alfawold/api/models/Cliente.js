@@ -1,24 +1,10 @@
-/**
- * Clientes.js
- *
- * @description :: A model definition represents a database table/collection.
- * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
- */
-
+// api/models/Cliente.js
 module.exports = {
   attributes: {
     codigo: {
       type: 'string',
       required: true,
       unique: true
-    },
-    empresa: {
-      model: 'Empresa',
-      required: true
-    },
-    organizacaoVendas: {
-      model: 'organizacaoVendas',
-      required: true
     },
     razaoSocial: {
       type: 'string',
@@ -28,6 +14,46 @@ module.exports = {
       type: 'string',
       required: true
     },
+    grupoContas: {
+      type: 'string',
+      allowNull: true
+    },
+    termoPesquisa: {
+      type: 'string',
+      allowNull: true
+    },
+    rua: {
+      type: 'string',
+      allowNull: true
+    },
+    cep: {
+      type: 'string',
+      allowNull: true
+    },
+    pais: {
+      type: 'string',
+      allowNull: true
+    },
+    regiao: {
+      type: 'string',
+      allowNull: true
+    },
+    domicilioFiscal: {
+      type: 'string',
+      allowNull: true
+    },
+    telefone: {
+      type: 'string',
+      allowNull: true
+    },
+    telefone2: {
+      type: 'string',
+      allowNull: true
+    },
+    email: {
+      type: 'string',
+      allowNull: true
+    },
     cnpj: {
       type: 'string',
       allowNull: true
@@ -36,11 +62,15 @@ module.exports = {
       type: 'string',
       allowNull: true
     },
-    inscMunicipal: {
+    grupoEmpresa: {
       type: 'string',
       allowNull: true
     },
     inscEstadual: {
+      type: 'string',
+      allowNull: true
+    },
+    inscMunicipal: {
       type: 'string',
       allowNull: true
     },
@@ -76,20 +106,12 @@ module.exports = {
       type: 'string',
       allowNull: true
     },
-    pais: {
-      type: 'string',
-      allowNull: true
-    },
     representante: {
       type: 'string',
       allowNull: true
     },
     desconto: {
       type: 'number',
-      allowNull: true
-    },
-    rua: {
-      type: 'string',
       allowNull: true
     },
     rua2: {
@@ -101,10 +123,6 @@ module.exports = {
       allowNull: true
     },
     bairro: {
-      type: 'string',
-      allowNull: true
-    },
-    cep: {
       type: 'string',
       allowNull: true
     },
@@ -127,6 +145,16 @@ module.exports = {
     uf: {
       type: 'string',
       allowNull: true
+    },
+
+    // Associação com Empresa
+    empresa: {
+      model: 'empresa'
+    },
+
+    // Associação com OrganizacaoVendas
+    organizacaoVendas: {
+      model: 'organizacaovendas'
     }
   }
 };

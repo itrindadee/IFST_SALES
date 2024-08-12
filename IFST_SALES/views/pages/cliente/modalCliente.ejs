@@ -1,0 +1,47 @@
+ <!-- Modal para adicionar cliente -->
+ <div class="modal fade" id="addClienteModal" tabindex="-1" aria-labelledby="addClienteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addClienteModalLabel">Adicionar Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addClienteForm">
+          <div class="mb-3">
+            <label for="ClienteModalcpf" class="form-label">CPF:</label>
+            <input type="text" class="form-control" id="ClienteModalcpf" name="cpf" oninput="mascararCPF(this)" onblur="verificarCPF(this)">
+            <div id="cpfErro" class="invalid-feedback">CPF deve ter 11 dígitos.</div>
+        </div>
+        <div class="mb-3">
+          <label for="ClienteModalcnpj" class="form-label">CNPJ:</label>
+          <input type="text" class="form-control" id="ClienteModalcnpj" name="cnpj" oninput="mascararCNPJ(this)" onblur="verificarCNPJ(this)">
+          <div id="cnpjErro" class="invalid-feedback">CNPJ deve ter 14 dígitos.</div>
+      </div>
+          <div class="mb-3">
+            <label for="modal.grupoConta" class="form-label">Grupo Conta:</label>
+            <select class="form-control" id="modal.grupoConta" name="grupoConta" required>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="modal.empresa" class="form-label">Empresa:</label>
+            <select class="form-control" id="modal.empresa" name="empresa" required>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="modal.organizacaoVendas" class="form-label">Organização de Vendas:</label>
+            <select class="form-control" id="modal.organizacaoVendas" name="organizacaoVendas" required>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-primary" id="verificarCadastroSubmit">Prosseguir</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

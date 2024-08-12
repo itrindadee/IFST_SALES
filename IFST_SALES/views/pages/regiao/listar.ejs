@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listagem de Regiões</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Listagem de Regiões</h1>
+
+    <!-- Botão para abrir o modal de criação de região -->
+    <div class="text-end mb-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRegiaoModal" onclick="resetAddRegiaoForm()">
+        Adicionar Região
+      </button>
+    </div>
+
+    <!-- Tabela de regiões existentes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Organização Vendas</th>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% regioes.forEach(regiao => { %>
+        <tr>
+          <td><%= regiao.organizacaoVendas %></td>
+          <td><%= regiao.codigo %></td>
+          <td><%= regiao.descricao %></td>
+          <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editRegiaoModal<%= regiao.id %>">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteRegiao(<%= regiao.id %>)">Deletar</button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar região -->
+  <div class="modal fade" id="addRegiaoModal" tabindex="-1" aria-labelledby="addRegiaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addRegiaoModalLabel">Adicionar Região</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addRegiaoForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="organizacaoVendas" class="form-label">Organização Vendas:</label>
+                <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Região</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar região -->
+  <% regioes.forEach(regiao => { %>
+  <div class="modal fade" id="editRegiaoModal<%= regiao.id %>" tabindex="-1" aria-labelledby="editRegiaoModalLabel<%= regiao.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editRegiaoModalLabel<%= regiao.id %>">Editar Região</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editRegiaoForm<%= regiao.id %>">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="organizacaoVendas<%= regiao.id %>" class="form-label">Organização Vendas:</label>
+                <input type="text" class="form-control" id="organizacaoVendas<%= regiao.id %>" name="organizacaoVendas" value="<%= regiao.organizacaoVendas %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo<%= regiao.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= regiao.id %>" name="codigo" value="<%= regiao.codigo %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao<%= regiao.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= regiao.id %>" name="descricao" value="<%= regiao.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddRegiaoForm() {
+      document.getElementById('addRegiaoForm').reset();
+    }
+
+    document.getElementById('addRegiaoForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        organizacaoVendas: document.getElementById('organizacaoVendas').value,
+        codigo: document.getElementById('codigo').value,
+        descricao: document.getElementById('descricao').value
+      };
+
+      const response = await fetch('/regiao', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar região');
+      }
+    });
+
+    <% regioes.forEach(regiao => { %>
+    document.getElementById('editRegiaoForm<%= regiao.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        organizacaoVendas: document.getElementById(`organizacaoVendas<%= regiao.id %>`).value,
+        codigo: document.getElementById(`codigo<%= regiao.id %>`).value,
+        descricao: document.getElementById(`descricao<%= regiao.id %>`).value
+      };
+
+      const response = await fetch(`/regiao/<%= regiao.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar região');
+      }
+    });
+    <% }) %>
+
+    async function deleteRegiao(id) {
+      if (confirm('Tem certeza que deseja deletar esta região?')) {
+        const response = await fetch(`/regiao/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar região');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

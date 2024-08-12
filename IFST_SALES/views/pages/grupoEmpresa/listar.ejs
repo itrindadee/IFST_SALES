@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupo Empresa</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Grupo Empresa</h1>
+
+    <!-- Filtros -->
+    <form method="GET" action="/grupoempresa/listar" class="mb-4">
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label for="codigo" class="form-label">Código do Grupo:</label>
+          <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="nome" class="form-label">Nome do Grupo:</label>
+          <input type="text" class="form-control" id="nome" name="nome" value="<%= typeof nome !== 'undefined' ? nome : '' %>">
+        </div>
+        <div class="col-md-3 mb-3 d-flex align-items-end justify-content-end">
+          <!-- Botão Filtrar (alinhado à direita) -->
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Botão Adicionar Grupo Empresa (alinhado à direita) -->
+    <div class="row">
+      <div class="col-md-12 d-flex justify-content-end mb-3">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGrupoEmpresaModal">Adicionar Grupo Empresa</button>
+      </div>
+    </div>
+
+    <!-- Tabela de Grupo Empresa -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% gruposEmpresas.forEach(grupoEmpresa => { %>
+            <tr>
+              <td><%= grupoEmpresa.codigo %></td>
+              <td><%= grupoEmpresa.nome %></td>
+              <td>
+                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editGrupoEmpresaModal<%= grupoEmpresa.id %>">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteGrupoEmpresa(<%= grupoEmpresa.id %>)">Deletar</button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal para adicionar grupo empresa -->
+    <div class="modal fade" id="addGrupoEmpresaModal" tabindex="-1" aria-labelledby="addGrupoEmpresaModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addGrupoEmpresaModalLabel">Adicionar Grupo Empresa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addGrupoEmpresaForm">
+              <div class="mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulário de Edição no Modal -->
+    <% gruposEmpresas.forEach(grupoEmpresa => { %>
+      <div class="modal fade" id="editGrupoEmpresaModal<%= grupoEmpresa.id %>" tabindex="-1" aria-labelledby="editGrupoEmpresaModalLabel<%= grupoEmpresa.id %>" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editGrupoEmpresaModalLabel<%= grupoEmpresa.id %>">Editar Grupo Empresa</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editGrupoEmpresaForm<%= grupoEmpresa.id %>">
+                <input type="hidden" name="id" value="<%= grupoEmpresa.id %>">
+                <div class="mb-3">
+                  <label for="codigo<%= grupoEmpresa.id %>" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo<%= grupoEmpresa.id %>" name="codigo" value="<%= grupoEmpresa.codigo %>" required>
+                </div>
+                <div class="mb-3">
+                  <label for="nome<%= grupoEmpresa.id %>" class="form-label">Nome:</label>
+                  <input type="text" class="form-control" id="nome<%= grupoEmpresa.id %>" name="nome" value="<%= grupoEmpresa.nome %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+
+  </div>
+
+  <!-- Scripts para manipulação do formulário -->
+  <script>
+      document.getElementById('addGrupoEmpresaForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      const response = await fetch('/grupoempresa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao adicionar grupo empresa');
+      }
+    });
+
+    <% gruposEmpresas.forEach(grupoEmpresa => { %>
+      document.getElementById('editGrupoEmpresaForm<%= grupoEmpresa.id %>').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch(`/grupoempresa/${<%= grupoEmpresa.id %>}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao atualizar grupo empresa');
+        }
+      });
+    <% }) %>
+
+    async function deleteGrupoEmpresa(id) {
+      if (confirm('Tem certeza que deseja deletar este grupo empresa?')) {
+        const response = await fetch(`/grupoempresa/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar grupo empresa');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

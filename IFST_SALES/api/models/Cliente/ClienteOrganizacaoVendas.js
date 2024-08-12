@@ -1,0 +1,65 @@
+//const OrganizacaoVendas = require("../OrganizacaoVendas/OrganizacaoVendas");
+
+// api/models/AdmVendas.js
+module.exports = {
+  attributes: {
+    cliente: {  // Este é o nome da chave estrangeira que liga de volta ao modelo Cliente.
+        model: 'cliente'
+      },
+    organizacaoVendas: {
+      model: 'OrganizacaoVendas',
+      required: true
+    },
+    regVendas: { type: 'string' },
+    probabilOrdem: { type: 'string' },
+    escritVendas: { type: 'string' },
+    /*
+    grpAutorizs: { type: 'string' },
+    equipeVendas: { type: 'string' },
+    itemProposto: { type: 'string' },
+    grupoClientes: { type: 'string' },
+    ctaNoCliente: { type: 'string' },
+    classeABC: { type: 'string' },
+    grupoUM: { type: 'string' },
+    moeda: { type: 'string' },
+    ctgTaxaCambio: { type: 'string' },
+    desativarArredond: { type: 'boolean' },
+    esqClienPP: { type: 'string' },
+    priceGroup: { type: 'string' },
+    clientScheme: { type: 'string' },
+    priceList: { type: 'string' },
+    grupoEstatClien: { type: 'string' },
+    prioridadeRemessa: { type: 'number' },
+    agrupamentoOrdens: { type: 'boolean' },
+    condicaoExpedicao: { type: 'string' },
+    centroFornecedor: { type: 'string' },
+    fornecimentoCompletoPrescrito: { type: 'boolean' },
+    fornecimentoParcialPorItem: { type: 'number' },
+    fornecimentosParciaisMax: { type: 'number' },
+    toleranciaIlimitada: { type: 'boolean' },
+    tolFormIncomplete: { type: 'string' },
+    tolFornecExcessivo: { type: 'string' },
+    zonaTransporte: { type: 'string' },
+    estacaoFerroviaria: { type: 'string' },
+    processFatura: { type: 'boolean' },
+    bonus: { type: 'boolean' },
+    determPreco: { type: 'boolean' },
+    dataFaturamento: { type: 'string' },
+    listasFaturamento: { type: 'string' },
+    incoterms: { type: 'string' },
+    condicaoPgto: { type: 'string' },
+    grpClassifCont: { type: 'string' },
+    lojaNacional: { type: 'string' },
+    pais: { type: 'string' },
+    ctgDeImposto: { type: 'string' },
+    denominacao: { type: 'string' },
+    classeImposto: { type: 'string' },
+    comImposto: { type: 'string' },
+    fnc: { type: 'string' },
+    funcaoParceiro: { type: 'string' },
+    nome: { type: 'string' },
+    denominacaoParceiro: { type: 'string' },
+    detalhes: { type: 'string' },
+    */
+  },
+};

@@ -19,11 +19,10 @@ module.exports = {
       type: 'boolean',
       defaultsTo: true
     },
-    // Associações
-    clientes: {
+     // Associação com Clientes
+     clientes: {
       collection: 'cliente',
       via: 'organizacaoVendas'
     }
-  },
-
+  }
 };

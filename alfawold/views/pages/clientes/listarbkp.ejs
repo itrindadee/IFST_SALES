@@ -1,0 +1,81 @@
+<div class="container mt-5">
+  <h1 class="text-center">Clientes</h1>
+
+  <!-- Formulário de Filtro -->
+  <form method="GET" action="/clientes/listar" class="mb-4">
+    <div class="form-row align-items-end">
+      <!-- Botão Cadastrar Cliente (alinhado à esquerda) -->
+      <div class="form-group col-md-6">
+        <a href="/clientes/criar" class="btn btn-success float-left">Cadastrar Cliente</a>
+      </div>
+      <!-- Botão Filtrar (alinhado à direita) -->
+      <div class="form-group col-md-6">
+        <button type="submit" class="btn btn-primary float-right">Filtrar</button>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="codigo">Código do Cliente:</label>
+        <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="empresa">Empresa:</label>
+        <input type="text" class="form-control" id="empresa" name="empresa" value="<%= typeof empresa !== 'undefined' ? empresa : '' %>">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="organizacaoVendas">Organização de Vendas:</label>
+        <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" value="<%= typeof organizacaoVendas !== 'undefined' ? organizacaoVendas : '' %>">
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabela de Clientes -->
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Empresa</th>
+          <th>Organização de Vendas</th>
+          <th>Ações</th> <!-- Coluna para os botões de ação -->
+        </tr>
+      </thead>
+      <tbody>
+        <% clientes.forEach(cliente => { %>
+          <tr>
+            <td><%= cliente.codigo %></td>
+            <td><%= cliente.empresa %></td>
+            <td><%= cliente.organizacaoVendas %></td>
+            <td>
+              <!-- Botões de Ação (envoltos em uma div centralizada à esquerda) -->
+              <div class="text-left">
+                <!-- Botão Visualizar -->
+                <a href="/clientes/<%= cliente.id %>" class="btn btn-info btn-sm">Visualizar</a>
+                <!-- Botão Editar -->
+                <a href="/clientes/editar/<%= cliente.id %>" class="btn btn-primary btn-sm">Editar</a>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <!-- Paginação -->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/clientes/listar?page=<%= currentPage - 1 %>&codigo=<%= codigo %>&empresa=<%= empresa %>&organizacaoVendas=<%= organizacaoVendas %>" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="/clientes/listar?page=<%= i %>&codigo=<%= codigo %>&empresa=<%= empresa %>&organizacaoVendas=<%= organizacaoVendas %>"><%= i %></a>
+          </li>
+        <% } %>
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/clientes/listar?page=<%= currentPage + 1 %>&codigo=<%= codigo %>&empresa=<%= empresa %>&organizacaoVendas=<%= organizacaoVendas %>" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

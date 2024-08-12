@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canal</title>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4>Canal</h4> <!-- Título com tamanho menor -->
+      <div class="d-flex">
+        <input type="text" class="form-control me-2" placeholder="Pesquisar por produto..." style="width: 300px;">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCanalModal" onclick="resetAddCanalForm()">
+          Adicionar Canal
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabela de canais existentes -->
+    <table class="table table-bordered mt-4">
+      <thead>
+        <tr>
+          <th>Grupo Conta</th>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Ativo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% canais.forEach(canal => { %>
+        <tr>
+          <td><%= canal.grupoConta %></td>
+          <td><%= canal.codigo %></td>
+          <td><%= canal.descricao %></td>
+          <td><%= canal.ativo ? 'Sim' : 'Não' %></td>
+          <td>
+            <div class="btn-group" role="group">
+              <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewCanalModal<%= canal.id %>">Visualizar</button>
+              <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCanalModal<%= canal.id %>">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteCanal(<%= canal.id %>)">Deletar</button>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar canal -->
+  <div class="modal fade" id="addCanalModal" tabindex="-1" aria-labelledby="addCanalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCanalModalLabel">Adicionar Canal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addCanalForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="grupoConta" class="form-label">Grupo Conta:</label>
+                <input type="text" class="form-control" id="grupoConta" name="grupoConta" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Canal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar canal -->
+  <% canais.forEach(canal => { %>
+  <div class="modal fade" id="editCanalModal<%= canal.id %>" tabindex="-1" aria-labelledby="editCanalModalLabel<%= canal.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editCanalModalLabel<%= canal.id %>">Editar Canal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editCanalForm<%= canal.id %>">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="grupoConta<%= canal.id %>" class="form-label">Grupo Conta:</label>
+                <input type="text" class="form-control" id="grupoConta<%= canal.id %>" name="grupoConta" value="<%= canal.grupoConta %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo<%= canal.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= canal.id %>" name="codigo" value="<%= canal.codigo %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao<%= canal.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= canal.id %>" name="descricao" value="<%= canal.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="ativo<%= canal.id %>" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo<%= canal.id %>" name="ativo" <%= canal.ativo ? 'checked' : '' %>>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Modais para visualizar canal -->
+  <% canais.forEach(canal => { %>
+  <div class="modal fade" id="viewCanalModal<%= canal.id %>" tabindex="-1" aria-labelledby="viewCanalModalLabel<%= canal.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewCanalModalLabel<%= canal.id %>">Visualizar Canal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="grupoContaView<%= canal.id %>" class="form-label">Grupo Conta:</label>
+              <input type="text" class="form-control" id="grupoContaView<%= canal.id %>" name="grupoContaView" value="<%= canal.grupoConta %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="codigoView<%= canal.id %>" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigoView<%= canal.id %>" name="codigoView" value="<%= canal.codigo %>" readonly>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="descricaoView<%= canal.id %>" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricaoView<%= canal.id %>" name="descricaoView" value="<%= canal.descricao %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="ativoView<%= canal.id %>" class="form-label">Ativo:</label>
+              <input type="checkbox" class="form-check-input" id="ativoView<%= canal.id %>" name="ativoView" <%= canal.ativo ? 'checked' : '' %> disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddCanalForm() {
+      document.getElementById('addCanalForm').reset();
+    }
+
+    document.getElementById('addCanalForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        grupoConta: document.getElementById('grupoConta').value,
+        codigo: document.getElementById('codigo').value,
+        descricao: document.getElementById('descricao').value,
+        ativo: document.getElementById('ativo').checked
+      };
+
+      const response = await fetch('/canal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar canal');
+      }
+    });
+
+    <% canais.forEach(canal => { %>
+    document.getElementById('editCanalForm<%= canal.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        grupoConta: document.getElementById(`grupoConta<%= canal.id %>`).value,
+        codigo: document.getElementById(`codigo<%= canal.id %>`).value,
+        descricao: document.getElementById(`descricao<%= canal.id %>`).value,
+        ativo: document.getElementById(`ativo<%= canal.id %>`).checked
+      };
+
+      const response = await fetch(`/canal/<%= canal.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar canal');
+      }
+    });
+    <% }) %>
+
+    async function deleteCanal(id) {
+      if (confirm('Tem certeza que deseja deletar este canal?')) {
+        const response = await fetch(`/canal/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar canal');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

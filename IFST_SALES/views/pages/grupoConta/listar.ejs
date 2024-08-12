@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupos Conta</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Grupos Conta</h1>
+
+    <!-- Botão para abrir o modal de criação de grupo -->
+    <div class="text-end mb-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGrupoModal" onclick="resetAddGrupoForm()">
+        Adicionar Grupo Conta
+      </button>
+    </div>
+
+    <!-- Tabela de grupos existentes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% grupos.forEach(grupo => { %>
+        <tr>
+          <td><%= grupo.codigo %></td>
+          <td><%= grupo.descricao %></td>
+          <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editGrupoModal<%= grupo.id %>">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteGrupo(<%= grupo.id %>)">Deletar</button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar grupo -->
+  <div class="modal fade" id="addGrupoModal" tabindex="-1" aria-labelledby="addGrupoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addGrupoModalLabel">Adicionar Grupo Conta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addGrupoForm">
+            <div class="mb-3">
+              <label for="codigo" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigo" name="codigo" required>
+            </div>
+            <div class="mb-3">
+              <label for="descricao" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricao" name="descricao" required>
+            </div>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary">Criar Grupo</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar grupo -->
+  <% grupos.forEach(grupo => { %>
+  <div class="modal fade" id="editGrupoModal<%= grupo.id %>" tabindex="-1" aria-labelledby="editGrupoModalLabel<%= grupo.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editGrupoModalLabel<%= grupo.id %>">Editar Grupo Conta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editGrupoForm<%= grupo.id %>">
+            <div class="mb-3">
+              <label for="codigo<%= grupo.id %>" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigo<%= grupo.id %>" name="codigo" value="<%= grupo.codigo %>" required>
+            </div>
+            <div class="mb-3">
+              <label for="descricao<%= grupo.id %>" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricao<%= grupo.id %>" name="descricao" value="<%= grupo.descricao %>" required>
+            </div>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddGrupoForm() {
+      document.getElementById('addGrupoForm').reset();
+    }
+
+    document.getElementById('addGrupoForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        codigo: document.getElementById('codigo').value,
+        descricao: document.getElementById('descricao').value
+      };
+
+      const response = await fetch('/grupoConta', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar grupo conta');
+      }
+    });
+
+    <% grupos.forEach(grupo => { %>
+    document.getElementById('editGrupoForm<%= grupo.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        codigo: document.getElementById('codigo<%= grupo.id %>').value,
+        descricao: document.getElementById('descricao<%= grupo.id %>').value
+      };
+
+      const response = await fetch(`/grupoConta/<%= grupo.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar grupo conta');
+      }
+    });
+    <% }) %>
+
+    async function deleteGrupo(id) {
+      if (confirm('Tem certeza que deseja deletar este grupo?')) {
+        const response = await fetch(`/grupoConta/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar grupo conta');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

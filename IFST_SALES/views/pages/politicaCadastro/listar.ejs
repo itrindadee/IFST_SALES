@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Cadastro</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Política de Cadastro</h1>
+
+    <!-- Botão para abrir o modal de criação de política -->
+    <div class="text-end mb-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPoliticaModal" onclick="resetAddPoliticaForm()">
+        Adicionar Política
+      </button>
+    </div>
+
+    <!-- Tabela de políticas existentes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Condições</th>
+          <th>Campo Resultado</th>
+          <th>Valor Resultado</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% politicas.forEach(politica => { %>
+        <tr>
+          <td><%= politica.nome %></td>
+          <td>
+            <ul>
+              <% politica.condicoes.forEach(condicao => { %>
+                <li><%= condicao.campo %> <%= condicao.operador %> <%= condicao.valor %></li>
+              <% }) %>
+            </ul>
+          </td>
+          <td><%= politica.campoResultado %></td>
+          <td><%= politica.valorResultado %></td>
+          <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPoliticaModal<%= politica.id %>">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deletePolitica(<%= politica.id %>)">Deletar</button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar política -->
+  <div class="modal fade" id="addPoliticaModal" tabindex="-1" aria-labelledby="addPoliticaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPoliticaModalLabel">Adicionar Política de Cadastro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addPoliticaForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome" class="form-label">Nome da Política:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+              <div class="col-md-12 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo">
+              </div>
+            </div>
+            <div id="maisCondicoes" class="mb-3"></div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="campoResultado" class="form-label">Campo Resultado:</label>
+                <input type="text" class="form-control" id="campoResultado" name="campoResultado" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="valorResultado" class="form-label">Valor Resultado:</label>
+                <input type="text" class="form-control" id="valorResultado" name="valorResultado" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary me-2" onclick="adicionarCondicao()">Adicionar Condição</button>
+                <button type="submit" class="btn btn-primary">Criar Política</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar política -->
+  <% politicas.forEach(politica => { %>
+    <div class="modal fade" id="editPoliticaModal<%= politica.id %>" tabindex="-1" aria-labelledby="editPoliticaModalLabel<%= politica.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPoliticaModalLabel<%= politica.id %>">Editar Política de Cadastro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editPoliticaForm<%= politica.id %>">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="nome<%= politica.id %>" class="form-label">Nome da Política:</label>
+                  <input type="text" class="form-control" id="nome<%= politica.id %>" name="nome" value="<%= politica.nome %>" required>
+                </div>
+                <div class="col-md-12 mb-3">
+                  <label for="ativo<%= politica.id %>" class="form-label">Ativo:</label>
+                  <input type="checkbox" class="form-check-input" id="ativo<%= politica.id %>" name="ativo" <%= politica.ativo ? 'checked' : '' %>>
+                </div>
+              </div>
+              <div class="row">
+                <% politica.condicoes.forEach((condicao, index) => { %>
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                    <label for="campoCondicional<%= politica.id %><%= index %>" class="form-label">Campo Condicional:</label>
+                    <input type="text" class="form-control" id="campoCondicional<%= politica.id %><%= index %>" name="campoCondicional" value="<%= condicao.campo %>" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="operadorCondicional<%= politica.id %><%= index %>" class="form-label">Operador:</label>
+                    <select class="form-control" id="operadorCondicional<%= politica.id %><%= index %>" name="operadorCondicional" required>
+                      <option value="=" <%= condicao.operador === '=' ? 'selected' : '' %>>=</option>
+                      <option value="!=" <%= condicao.operador === '!=' ? 'selected' : '' %>>!=</option>
+                      <option value=">" <%= condicao.operador === '>' ? 'selected' : '' %>>&gt;</option>
+                      <option value="<" <%= condicao.operador === '<' ? 'selected' : '' %>>&lt;</option>
+                      <option value=">=" <%= condicao.operador === '>=' ? 'selected' : '' %>>&gt;=</option>
+                      <option value="<=" <%= condicao.operador === '<=' ? 'selected' : '' %>>&lt;=</option>
+                      <option value="&&" <%= condicao.operador === '&&' ? 'selected' : '' %>>E</option>
+                      <option value="||" <%= condicao.operador === '||' ? 'selected' : '' %>>Ou</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="valorCondicional<%= politica.id %><%= index %>" class="form-label">Valor Condicional:</label>
+                    <input type="text" class="form-control" id="valorCondicional<%= politica.id %><%= index %>" name="valorCondicional" value="<%= condicao.valor %>" required>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="campoResultado<%= politica.id %>" class="form-label">Campo Resultado:</label>
+                  <input type="text" class="form-control" id="campoResultado<%= politica.id %>" name="campoResultado" value="<%= politica.campoResultado %>" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="valorResultado<%= politica.id %>" class="form-label">Valor Resultado:</label>
+                  <input type="text" class="form-control" id="valorResultado<%= politica.id %>" name="valorResultado" value="<%= politica.valorResultado %>" required>
+                </div>
+              </div>
+              <div class="row">
+                <div id="maisCondicoesEdit<%= politica.id %>" class="mb-3"></div>
+                <div class="d-flex justify-content-between">
+                  <button type="button" class="btn btn-secondary me-2" onclick="adicionarCondicaoEdit(<%= politica.id %>)">Adicionar Condição</button>
+                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddPoliticaForm() {
+      document.getElementById('addPoliticaForm').reset();
+      document.getElementById('maisCondicoes').innerHTML = '';
+    }
+
+    function adicionarCondicao() {
+      const maisCondicoesDiv = document.getElementById('maisCondicoes');
+      const condicaoIndex = maisCondicoesDiv.children.length / 3;
+
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'row mb-3';
+
+      const campoCondicionalDiv = document.createElement('div');
+      campoCondicionalDiv.className = 'col-md-4';
+      campoCondicionalDiv.innerHTML = `<label for="campoCondicional${condicaoIndex}" class="form-label">Campo Condicional:</label>
+                                       <input type="text" class="form-control" id="campoCondicional${condicaoIndex}" name="campoCondicional" required>`;
+
+      const operadorCondicionalDiv = document.createElement('div');
+      operadorCondicionalDiv.className = 'col-md-4';
+      operadorCondicionalDiv.innerHTML = `<label for="operadorCondicional${condicaoIndex}" class="form-label">Operador:</label>
+                                          <select class="form-control" id="operadorCondicional${condicaoIndex}" name="operadorCondicional" required>
+                                            <option value="=">=</option>
+                                            <option value="!=">!=</option>
+                                            <option value=">">&gt;</option>
+                                            <option value="<">&lt;</option>
+                                            <option value=">=">&gt;=</option>
+                                            <option value="<=">&lt;=</option>
+                                            <option value="&&">E</option>
+                                            <option value="||">Ou</option>
+                                          </select>`;
+
+      const valorCondicionalDiv = document.createElement('div');
+      valorCondicionalDiv.className = 'col-md-4';
+      valorCondicionalDiv.innerHTML = `<label for="valorCondicional${condicaoIndex}" class="form-label">Valor Condicional:</label>
+                                       <input type="text" class="form-control" id="valorCondicional${condicaoIndex}" name="valorCondicional" required>`;
+
+      rowDiv.appendChild(campoCondicionalDiv);
+      rowDiv.appendChild(operadorCondicionalDiv);
+      rowDiv.appendChild(valorCondicionalDiv);
+
+      maisCondicoesDiv.appendChild(rowDiv);
+    }
+
+    function adicionarCondicaoEdit(politicaId) {
+      const maisCondicoesDiv = document.getElementById(`maisCondicoesEdit${politicaId}`);
+      const condicaoIndex = maisCondicoesDiv.children.length / 3;
+
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'row mb-3';
+
+      const campoCondicionalDiv = document.createElement('div');
+      campoCondicionalDiv.className = 'col-md-4';
+      campoCondicionalDiv.innerHTML = `<label for="campoCondicional${politicaId}${condicaoIndex}" class="form-label">Campo Condicional:</label>
+                                       <input type="text" class="form-control" id="campoCondicional${politicaId}${condicaoIndex}" name="campoCondicional" required>`;
+
+      const operadorCondicionalDiv = document.createElement('div');
+      operadorCondicionalDiv.className = 'col-md-4';
+      operadorCondicionalDiv.innerHTML = `<label for="operadorCondicional${politicaId}${condicaoIndex}" class="form-label">Operador:</label>
+                                          <select class="form-control" id="operadorCondicional${politicaId}${condicaoIndex}" name="operadorCondicional" required>
+                                            <option value="=">=</option>
+                                            <option value="!=">!=</option>
+                                            <option value=">">&gt;</option>
+                                            <option value="<">&lt;</option>
+                                            <option value=">=">&gt;=</option>
+                                            <option value="<=">&lt;=</option>
+                                            <option value="&&">E</option>
+                                            <option value="||">Ou</option>
+                                          </select>`;
+
+      const valorCondicionalDiv = document.createElement('div');
+      valorCondicionalDiv.className = 'col-md-4';
+      valorCondicionalDiv.innerHTML = `<label for="valorCondicional${politicaId}${condicaoIndex}" class="form-label">Valor Condicional:</label>
+                                       <input type="text" class="form-control" id="valorCondicional${politicaId}${condicaoIndex}" name="valorCondicional" required>`;
+
+      rowDiv.appendChild(campoCondicionalDiv);
+      rowDiv.appendChild(operadorCondicionalDiv);
+      rowDiv.appendChild(valorCondicionalDiv);
+
+      maisCondicoesDiv.appendChild(rowDiv);
+    }
+
+    document.getElementById('addPoliticaForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const condicoes = [];
+      const campoCondicionais = document.querySelectorAll('#maisCondicoes [id^="campoCondicional"]');
+      const operadorCondicionais = document.querySelectorAll('#maisCondicoes [id^="operadorCondicional"]');
+      const valorCondicionais = document.querySelectorAll('#maisCondicoes [id^="valorCondicional"]');
+
+      for (let i = 0; i < campoCondicionais.length; i++) {
+        condicoes.push({
+          campo: campoCondicionais[i].value,
+          operador: operadorCondicionais[i].value,
+          valor: valorCondicionais[i].value
+        });
+      }
+
+      const data = {
+        nome: document.getElementById('nome').value,
+        condicoes,
+        campoResultado: document.getElementById('campoResultado').value,
+        valorResultado: document.getElementById('valorResultado').value,
+        ativo: document.getElementById('ativo').checked
+      };
+
+      const response = await fetch('/politicacadastro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar política de cadastro');
+      }
+    });
+
+    <% politicas.forEach(politica => { %>
+    document.getElementById('editPoliticaForm<%= politica.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const condicoes = [];
+      const campoCondicionais = document.querySelectorAll(`#maisCondicoesEdit<%= politica.id %> [id^="campoCondicional<%= politica.id %>"]`);
+      const operadorCondicionais = document.querySelectorAll(`#maisCondicoesEdit<%= politica.id %> [id^="operadorCondicional<%= politica.id %>"]`);
+      const valorCondicionais = document.querySelectorAll(`#maisCondicoesEdit<%= politica.id %> [id^="valorCondicional<%= politica.id %>"]`);
+
+      for (let i = 0; i < campoCondicionais.length; i++) {
+        condicoes.push({
+          campo: campoCondicionais[i].value,
+          operador: operadorCondicionais[i].value,
+          valor: valorCondicionais[i].value
+        });
+      }
+
+      const data = {
+        nome: document.getElementById(`nome<%= politica.id %>`).value,
+        condicoes,
+        campoResultado: document.getElementById(`campoResultado<%= politica.id %>`).value,
+        valorResultado: document.getElementById(`valorResultado<%= politica.id %>`).value,
+        ativo: document.getElementById(`ativo<%= politica.id %>`).checked
+      };
+
+      const response = await fetch(`/politicacadastro/<%= politica.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar política de cadastro');
+      }
+    });
+    <% }) %>
+
+    async function deletePolitica(id) {
+      if (confirm('Tem certeza que deseja deletar esta política?')) {
+        const response = await fetch(`/politicacadastro/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar política de cadastro');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

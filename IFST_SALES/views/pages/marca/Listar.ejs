@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listagem de Marcas</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Listagem de Marcas</h1>
+
+    <!-- Botão para abrir o modal de criação de marca -->
+    <div class="text-end mb-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMarcaModal" onclick="resetAddMarcaForm()">
+        Adicionar Marca
+      </button>
+    </div>
+
+    <!-- Tabela de marcas existentes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Ativo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% marcas.forEach(marca => { %>
+        <tr>
+          <td><%= marca.codigo %></td>
+          <td><%= marca.descricao %></td>
+          <td><%= marca.ativo ? 'Sim' : 'Não' %></td>
+          <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editMarcaModal<%= marca.id %>">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteMarca(<%= marca.id %>)">Deletar</button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar marca -->
+  <div class="modal fade" id="addMarcaModal" tabindex="-1" aria-labelledby="addMarcaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addMarcaModalLabel">Adicionar Marca</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addMarcaForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Marca</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar marca -->
+  <% marcas.forEach(marca => { %>
+  <div class="modal fade" id="editMarcaModal<%= marca.id %>" tabindex="-1" aria-labelledby="editMarcaModalLabel<%= marca.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editMarcaModalLabel<%= marca.id %>">Editar Marca</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editMarcaForm<%= marca.id %>">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="codigo<%= marca.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= marca.id %>" name="codigo" value="<%= marca.codigo %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao<%= marca.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= marca.id %>" name="descricao" value="<%= marca.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="ativo<%= marca.id %>" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo<%= marca.id %>" name="ativo" <%= marca.ativo ? 'checked' : '' %>>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddMarcaForm() {
+      document.getElementById('addMarcaForm').reset();
+    }
+
+    document.getElementById('addMarcaForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        codigo: document.getElementById('codigo').value,
+        descricao: document.getElementById('descricao').value,
+        ativo: document.getElementById('ativo').checked
+      };
+
+      const response = await fetch('/marca', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar marca');
+      }
+    });
+
+    <% marcas.forEach(marca => { %>
+    document.getElementById('editMarcaForm<%= marca.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        codigo: document.getElementById(`codigo<%= marca.id %>`).value,
+        descricao: document.getElementById(`descricao<%= marca.id %>`).value,
+        ativo: document.getElementById(`ativo<%= marca.id %>`).checked
+      };
+
+      const response = await fetch(`/marca/<%= marca.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar marca');
+      }
+    });
+    <% }) %>
+
+    async function deleteMarca(id) {
+      if (confirm('Tem certeza que deseja deletar esta marca?')) {
+        const response = await fetch(`/marca/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar marca');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

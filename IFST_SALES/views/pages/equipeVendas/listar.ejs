@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listagem de Equipes de Vendas</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Listagem de Equipes de Vendas</h1>
+
+    <!-- Botão para abrir o modal de criação de equipe de vendas -->
+    <div class="text-end mb-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipeVendasModal" onclick="resetAddEquipeVendasForm()">
+        Adicionar Equipe de Vendas
+      </button>
+    </div>
+
+    <!-- Tabela de equipes de vendas existentes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Organização Vendas</th>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% equipes.forEach(equipe => { %>
+        <tr>
+          <td><%= equipe.organizacaoVendas %></td>
+          <td><%= equipe.codigo %></td>
+          <td><%= equipe.descricao %></td>
+          <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editEquipeVendasModal<%= equipe.id %>">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteEquipeVendas(<%= equipe.id %>)">Deletar</button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar equipe de vendas -->
+  <div class="modal fade" id="addEquipeVendasModal" tabindex="-1" aria-labelledby="addEquipeVendasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addEquipeVendasModalLabel">Adicionar Equipe de Vendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addEquipeVendasForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="organizacaoVendas" class="form-label">Organização Vendas:</label>
+                <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Equipe de Vendas</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar equipe de vendas -->
+  <% equipes.forEach(equipe => { %>
+  <div class="modal fade" id="editEquipeVendasModal<%= equipe.id %>" tabindex="-1" aria-labelledby="editEquipeVendasModalLabel<%= equipe.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editEquipeVendasModalLabel<%= equipe.id %>">Editar Equipe de Vendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editEquipeVendasForm<%= equipe.id %>">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="organizacaoVendas<%= equipe.id %>" class="form-label">Organização Vendas:</label>
+                <input type="text" class="form-control" id="organizacaoVendas<%= equipe.id %>" name="organizacaoVendas" value="<%= equipe.organizacaoVendas %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo<%= equipe.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= equipe.id %>" name="codigo" value="<%= equipe.codigo %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao<%= equipe.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= equipe.id %>" name="descricao" value="<%= equipe.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Scripts -->
+  <script>
+    function resetAddEquipeVendasForm() {
+      document.getElementById('addEquipeVendasForm').reset();
+    }
+
+    document.getElementById('addEquipeVendasForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        organizacaoVendas: document.getElementById('organizacaoVendas').value,
+        codigo: document.getElementById('codigo').value,
+        descricao: document.getElementById('descricao').value
+      };
+
+      const response = await fetch('/equipevendas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar equipe de vendas');
+      }
+    });
+
+    <% equipes.forEach(equipe => { %>
+    document.getElementById('editEquipeVendasForm<%= equipe.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        organizacaoVendas: document.getElementById(`organizacaoVendas<%= equipe.id %>`).value,
+        codigo: document.getElementById(`codigo<%= equipe.id %>`).value,
+        descricao: document.getElementById(`descricao<%= equipe.id %>`).value
+      };
+
+      const response = await fetch(`/equipevendas/<%= equipe.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar equipe de vendas');
+      }
+    });
+    <% }) %>
+
+    async function deleteEquipeVendas(id) {
+      if (confirm('Tem certeza que deseja deletar esta equipe de vendas?')) {
+        const response = await fetch(`/equipevendas/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar equipe de vendas');
+        }
+      }
+    }
+  </script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

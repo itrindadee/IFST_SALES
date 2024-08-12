@@ -1,0 +1,933 @@
+    <!-- Modal para cadastrar cliente -->
+    <div class="modal fade bd-example-modal-xl" id="cadastroClienteModal" tabindex="-1" aria-labelledby="cadastroClienteModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cadastroClienteModalLabel">Cadastro de Cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Menu de navegação principal -->
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="main-geral-tab" data-bs-toggle="tab" href="#main-geral" role="tab" aria-controls="main-geral" aria-selected="true">Geral</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="main-empresa-tab" data-bs-toggle="tab" href="#main-empresa" role="tab" aria-controls="main-empresa" aria-selected="false">Empresa</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="main-organizacao-vendas-tab" data-bs-toggle="tab" href="#main-organizacao-vendas" role="tab" aria-controls="main-organizacao-vendas" aria-selected="false">Organização de Vendas</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="mainTabContent">
+              <!-- Conteúdo da aba Geral -->
+              <div class="tab-pane fade show active" id="main-geral" role="tabpanel" aria-labelledby="main-geral-tab">
+                <ul class="nav nav-tabs mt-3" id="subTabsGeral" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="geral-tab" data-bs-toggle="tab" href="#geral" role="tab" aria-controls="geral" aria-selected="true">Geral</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="dados-controle-tab" data-bs-toggle="tab" href="#dados-controle" role="tab" aria-controls="dados-controle" aria-selected="false">Dados de Controle</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="pagamento-tab" data-bs-toggle="tab" href="#pagamento" role="tab" aria-controls="pagamento" aria-selected="false">Pagamento</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="marketing-tab" data-bs-toggle="tab" href="#marketing" role="tab" aria-controls="marketing" aria-selected="false">Marketing</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="dados-exportacao-tab" data-bs-toggle="tab" href="#dados-exportacao" role="tab" aria-controls="dados-exportacao" aria-selected="false">Exportação</a>
+                  </li>
+                </ul>
+                <div class="tab-content" id="subTabContentGeral">
+                  <div class="tab-pane fade show active" id="geral" role="tabpanel" aria-labelledby="geral-tab">
+                    <form id="formCadastroCliente">
+                      <!-- Seção Geral -->
+                      <div class="mb-3">
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="razaoSocial" class="form-label">Razão Social</label>
+                            <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" placeholder="Digite Razão">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="termoPesquisa" class="form-label">Termo de Pesquisa</label>
+                            <input type="text" class="form-control" id="termoPesquisa" name="termoPesquisa">
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Seção Endereço -->
+                      <div class="mb-3">
+                        <div class="row">
+                          <div class="col-md-2 mb-3">
+                            <label for="cep" class="form-label">CEP:</label>
+                            <input type="text" class="form-control" id="cep" name="cep" oninput="mascararCEP(this)" onblur="verificarCEP(this)">
+                            <div id="cepErro" class="invalid-feedback">CEP deve ter 8 dígitos.</div>
+                          </div>
+                          <div class="col-md-2">
+                            <label for="domicilio" class="form-label">Domicílio</label>
+                            <input type="text" class="form-control" id="domicilio" name="domicilio">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-8">
+                            <label for="rua" class="form-label">Rua</label>
+                            <input type="text" class="form-control" id="rua" name="rua">
+                          </div>
+                          <div class="col-md-1">
+                            <label for="numero" class="form-label">Número</label>
+                            <input type="text" class="form-control" id="numero" name="numero">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-5">
+                            <label for="complemento" class="form-label">Complemento</label>
+                            <input type="text" class="form-control" id="complemento" name="complemento">
+                          </div>
+                          <div class="col-md-5">
+                            <label for="bairro" class="form-label">Bairro</label>
+                            <input type="text" class="form-control" id="bairro" name="bairro">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-5">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input type="text" class="form-control" id="cidade" name="cidade">
+                          </div>
+                          <div class="col-md-1">
+                            <label for="estado" class="form-label">Estado</label>
+                            <input type="text" class="form-control" id="regiao" name="regiao">
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="dados-controle" role="tabpanel" aria-labelledby="dados-controle-tab">
+                    <!-- Aba Dados de Controle -->
+                    <form id="formDadosControle">
+                      <div class="row mb-3">
+                        <div class="col">
+                          <label for="fornecedor" class="form-label">Fornecedor:</label>
+                          <input type="text" class="form-control" id="fornecedor" name="fornecedor">
+                        </div>
+                        <div class="col">
+                          <label for="grupoEmpresa" class="form-label">Grupo Empresa:</label>
+                          <select class="form-control" id="grupoEmpresa" name="grupoEmpresa">
+                            <option value="">Selecione um grupo</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col">
+                          <label for="cnpj" class="form-label">CNPJ:</label>
+                          <input type="text" class="form-control" id="cnpj" name="cnpj">
+                        </div>
+                        <div class="col">
+                          <label for="cpf" class="form-label">CPF:</label>
+                          <input type="text" class="form-control" id="cpf" name="cpf">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col">
+                          <label for="inscEstadual" class="form-label">Inscrição Estadual:</label>
+                          <input type="text" class="form-control" id="inscEstadual" name="inscEstadual">
+                        </div>
+                        <div class="col">
+                          <label for="inscMunicipal" class="form-label">Inscrição Municipal:</label>
+                          <input type="text" class="form-control" id="inscMunicipal" name="inscMunicipal">
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="ctgCFOP" class="form-label">CTG CFOP:</label>
+                        <input type="text" class="form-control" id="ctgCFOP" name="ctgCFOP" style="width: 25%;">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="pagamento" role="tabpanel" aria-labelledby="pagamento-tab">
+                    <!-- Aba Pagamento -->
+                    <form id="formPagamento">
+                      <!-- Campos da aba Pagamento -->
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="marketing" role="tabpanel" aria-labelledby="marketing-tab">
+                    <!-- Aba Marketing -->
+                    <form id="formMarketing">
+                      <!-- Campos da aba Marketing -->
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="dados-exportacao" role="tabpanel" aria-labelledby="dados-exportacao-tab">
+                    <!-- Aba Dados de Exportação -->
+                    <form id="formDadosExportacao">
+                      <!-- Campos da aba Dados de Exportação -->
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Conteúdo da aba Empresa -->
+              <div class="tab-pane fade" id="main-empresa" role="tabpanel" aria-labelledby="main-empresa-tab">
+                <ul class="nav nav-tabs mt-3" id="subTabsEmpresa" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="adm-conta-tab" data-bs-toggle="tab" href="#adm-conta" role="tab" aria-controls="adm-conta" aria-selected="true">Administração de Contas</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="pagamento-empresa-tab" data-bs-toggle="tab" href="#pagamento-empresa" role="tab" aria-controls="pagamento-empresa" aria-selected="false">Pagamento</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="correspondencia-tab" data-bs-toggle="tab" href="#correspondencia" role="tab" aria-controls="correspondencia" aria-selected="false">Correspondência</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="seguros-tab" data-bs-toggle="tab" href="#seguros" role="tab" aria-controls="seguros" aria-selected="false">Seguros</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="imposto-retido-tab" data-bs-toggle="tab" href="#imposto-retido" role="tab" aria-controls="imposto-retido" aria-selected="false">Imposto Retido na Fonte</a>
+                  </li>
+                </ul>
+                <div class="tab-content" id="subTabContentEmpresa">
+                  <div class="tab-pane fade show active" id="adm-conta" role="tabpanel" aria-labelledby="adm-conta-tab">
+                    <form id="formAdmConta">
+                      <!-- Campos da aba Administração de Contas -->
+                      <h5>Administração de conta</h5>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="ctaConcil" class="form-label">Cta. concil.</label>
+                          <input type="text" class="form-control" id="ctaConcil" name="ctaConcil">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="chaveOrdenacao" class="form-label">Chave de ordenação</label>
+                          <input type="text" class="form-control" id="chaveOrdenacao" name="chaveOrdenacao">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="fisYearDocNo" class="form-label">Fis. year/Doc. no</label>
+                          <input type="text" class="form-control" id="fisYearDocNo" name="fisYearDocNo">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="sede" class="form-label">Sede</label>
+                          <input type="text" class="form-control" id="sede" name="sede">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="autorizacao" class="form-label">Autorização</label>
+                          <input type="text" class="form-control" id="autorizacao" name="autorizacao">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="grpAdminTesour" class="form-label">Grp. admin. tesour.</label>
+                          <input type="text" class="form-control" id="grpAdminTesour" name="grpAdminTesour">
+                        </div>
+                      </div>
+                      <h5>Cálculo de juros</h5>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="codigoJuros" class="form-label">Código de juros</label>
+                          <input type="text" class="form-control" id="codigoJuros" name="codigoJuros">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="ultimaDataFixada" class="form-label">Última data fixada</label>
+                          <input type="text" class="form-control" id="ultimaDataFixada" name="ultimaDataFixada">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="periodJuros" class="form-label">Period. juros</label>
+                          <input type="text" class="form-control" id="periodJuros" name="periodJuros">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="ultCalcJuros" class="form-label">ÚltCálcJuros</label>
+                          <input type="text" class="form-control" id="ultCalcJuros" name="ultCalcJuros">
+                        </div>
+                      </div>
+                      <h5>Dados de referência</h5>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="numAntigoConta" class="form-label">Nº antigo conta</label>
+                          <input type="text" class="form-control" id="numAntigoConta" name="numAntigoConta">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="assocCompras" class="form-label">Assoc. compras</label>
+                          <input type="text" class="form-control" id="assocCompras" name="assocCompras">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="pagamento-empresa" role="tabpanel" aria-labelledby="pagamento-empresa-tab">
+                    <form id="formPagamentoEmpresa">
+                        <!-- Campos da aba Pagamento -->
+                        <h5>Dados de pagamento</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="condicaoPagamento" class="form-label">Condição de pagamento</label>
+                                <input type="text" class="form-control" id="condicaoPagamento" name="condicaoPagamento">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="grpTolerancia" class="form-label">Grp. tolerância</label>
+                                <input type="text" class="form-control" id="grpTolerancia" name="grpTolerancia">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="notaCreditoCondPgto" class="form-label">Nota crédito cond. pgto.</label>
+                                <input type="text" class="form-control" id="notaCreditoCondPgto" name="notaCreditoCondPgto">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="convenioFerias" class="form-label">Convenç. férias</label>
+                                <input type="text" class="form-control" id="convenioFerias" name="convenioFerias">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="despLetraCambioCondPgto" class="form-label">Desp. Letra Câmbio Cond. Pgto</label>
+                                <input type="text" class="form-control" id="despLetraCambioCondPgto" name="despLetraCambioCondPgto">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="codigoCessao" class="form-label">Código de cessão</label>
+                                <input type="text" class="form-control" id="codigoCessao" name="codigoCessao">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                  <input class="form-check-input" type="checkbox" id="historicoPagamento" name="historicoPagamento">
+                                  <label class="form-check-label" for="historicoPagamento">Registrar histórico pagamento</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5>Pagamentos automáticos</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="formasPgto" class="form-label">Formas de Pgto.</label>
+                                <input type="text" class="form-control" id="formasPgto" name="formasPgto">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="bloqPagamento" class="form-label">Bloq. pagamento</label>
+                                <input type="text" class="form-control" id="bloqPagamento" name="bloqPagamento">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="pagadorDivergente" class="form-label">Pagador divergente</label>
+                                <input type="text" class="form-control" id="pagadorDivergente" name="pagadorDivergente">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="bancoEmpresa" class="form-label">Banco empresa</label>
+                                <input type="text" class="form-control" id="bancoEmpresa" name="bancoEmpresa">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="limiteLC" class="form-label">Limite L/C</label>
+                                <input type="text" class="form-control" id="limiteLC" name="limiteLC">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="chvAgrupamento" class="form-label">Chave de agrupamento</label>
+                                <input type="text" class="form-control" id="chvAgrupamento" name="chvAgrupamento">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                  <input class="form-check-input" type="checkbox" id="pagamentoIndividual" name="pagamentoIndividual">
+                                  <label class="form-check-label" for="pagamentoIndividual">Pagamento individual</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                  <input class="form-check-input" type="checkbox" id="avisoPgtoViaEDI" name="avisoPgtoViaEDI">
+                                  <label class="form-check-label" for="avisoPgtoViaEDI">Aviso pgto. via EDI</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" id="clienteSIC" name="clienteSIC">
+                                  <label class="form-check-label" for="clienteSIC">Cliente (s/IC)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-warning mt-2">Pagadores admitidos...</button>
+                            </div>
+                        </div>
+
+                        <h5>Avisos de pagamento</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="convMotivoDif" class="form-label">Conv. motivo dif</label>
+                                <input type="text" class="form-control" id="convMotivoDif" name="convMotivoDif">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="regraSelecao" class="form-label">Regra de seleção</label>
+                                <input type="text" class="form-control" id="regraSelecao" name="regraSelecao">
+                            </div>
+                        </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="correspondencia" role="tabpanel" aria-labelledby="correspondencia-tab">
+                    <form id="formCorrespondencia">
+                      <!-- Campos da aba Correspondência -->
+                      <h5>Dados de aviso</h5>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="procedAdver" class="form-label">Proced. adver.</label>
+                          <input type="text" class="form-control" id="procedAdver" name="procedAdver">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="destinAdver" class="form-label">Destin. adver.</label>
+                          <input type="text" class="form-control" id="destinAdver" name="destinAdver">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="ultimaAdver" class="form-label">Última adver.</label>
+                          <input type="text" class="form-control" id="ultimaAdver" name="ultimaAdver">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="responsAdverts" class="form-label">ResponsAdverts.</label>
+                          <input type="text" class="form-control" id="responsAdverts" name="responsAdverts">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="bloqAdver" class="form-label">Bloq. advert.</label>
+                          <input type="text" class="form-control" id="bloqAdver" name="bloqAdver">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="procJudCobr" class="form-label">Proc. jud. cobr.</label>
+                          <input type="text" class="form-control" id="procJudCobr" name="procJudCobr">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="nivCobranca" class="form-label">Nív. Cobran.</label>
+                          <input type="text" class="form-control" id="nivCobranca" name="nivCobranca">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="chvAgrupamento" class="form-label">Chv. agrupamento</label>
+                          <input type="text" class="form-control" id="chvAgrupamento" name="chvAgrupamento">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <button type="button" class="btn btn-warning mt-4">Áreas advert...</button>
+                        </div>
+                      </div>
+
+                      <h5>Correspondência</h5>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="responsContab" class="form-label">Respons. contab</label>
+                          <input type="text" class="form-control" id="responsContab" name="responsContab">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="ctaNoCliente" class="form-label">Cta. no cliente</label>
+                          <input type="text" class="form-control" id="ctaNoCliente" name="ctaNoCliente">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="encarregClient" class="form-label">Encarreg. client</label>
+                          <input type="text" class="form-control" id="encarregClient" name="encarregClient">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="telefRespons" class="form-label">Telef. respons.</label>
+                          <input type="text" class="form-control" id="telefRespons" name="telefRespons">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="telefaxRespons" class="form-label">Telefax respons</label>
+                          <input type="text" class="form-control" id="telefaxRespons" name="telefaxRespons">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="internetResp" class="form-label">Internet resp.</label>
+                          <input type="text" class="form-control" id="internetResp" name="internetResp">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="observNaConta" class="form-label">Observ. na conta</label>
+                          <input type="text" class="form-control" id="observNaConta" name="observNaConta">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <label for="extratoDaConta" class="form-label">Extrato da conta</label>
+                          <input type="text" class="form-control" id="extratoDaConta" name="extratoDaConta">
+                        </div>
+                        <div class="col-md-3">
+                          <label for="varianteDeFaturaColet" class="form-label">Variante de fatura colet.</label>
+                          <input type="text" class="form-control" id="varianteDeFaturaColet" name="varianteDeFaturaColet">
+                        </div>
+                      </div>
+
+                      <h5>Aviso de pagamento para...</h5>
+                      <div class="row mb-3">
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="clienteCIC" name="clienteCIC">
+                            <label class="form-check-label" for="clienteCIC">
+                              Cliente (c/IC)
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="clienteSIC" name="clienteSIC">
+                            <label class="form-check-label" for="clienteSIC">
+                              Cliente (s/IC)
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sd" name="sd">
+                            <label class="form-check-label" for="sd">
+                              SD
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="contabilidade" name="contabilidade">
+                            <label class="form-check-label" for="contabilidade">
+                              Contabilidade
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="dptoJuridico" name="dptoJuridico">
+                            <label class="form-check-label" for="dptoJuridico">
+                              Dpto. jurídico
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="seguros" role="tabpanel" aria-labelledby="seguros-tab">
+                    <form id="formSeguros">
+                        <h5>Seguro de crédito à exportação</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="numContrato" class="form-label">Nº contrato</label>
+                                <input type="text" class="form-control" id="numContrato" name="numContrato">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="numAseguradora" class="form-label">Nº Aseguradora</label>
+                                <input type="text" class="form-control" id="numAseguradora" name="numAseguradora">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="montanteSegurado" class="form-label">Montante segurado</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="montanteSegurado" name="montanteSegurado">
+                                    <span class="input-group-text">BRL</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="validoAte" class="form-label">Válido até</label>
+                                <input type="date" class="form-control" id="validoAte" name="validoAte">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="mesesPrazo" class="form-label">Meses do prazo</label>
+                                <input type="number" class="form-control" id="mesesPrazo" name="mesesPrazo">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="franquia" class="form-label">Franquia</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="franquia" name="franquia">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="imposto-retido" role="tabpanel" aria-labelledby="imposto-retido-tab">
+                    <form id="formImpostoRetido">
+                        <h5>Informações IRF</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Ctg. IRF</th>
+                                        <th>Código</th>
+                                        <th>Ret. IRF</th>
+                                        <th>Aut. ded. de</th>
+                                        <th>Aut. ded. até</th>
+                                        <th>Nº IRF</th>
+                                        <th>Nº cert. isenção</th>
+                                        <th>Taxa</th>
+                                        <th>Moeda</th>
+                                        <th>Isento de</th>
+                                        <th>Isento até</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="irfTableBody">
+                                    <tr>
+                                        <td><input type="text" class="form-control" name="ctgIRF"></td>
+                                        <td><input type="text" class="form-control" name="codigo"></td>
+                                        <td><input type="checkbox" class="form-check-input" name="retIRF"></td>
+                                        <td><input type="date" class="form-control" name="autDedDe"></td>
+                                        <td><input type="date" class="form-control" name="autDedAte"></td>
+                                        <td><input type="text" class="form-control" name="numIRF"></td>
+                                        <td><input type="text" class="form-control" name="numCertIsencao"></td>
+                                        <td><input type="text" class="form-control" name="taxa"></td>
+                                        <td><input type="text" class="form-control" name="moeda"></td>
+                                        <td><input type="date" class="form-control" name="isentoDe"></td>
+                                        <td><input type="date" class="form-control" name="isentoAte"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="adicionarLinhaImposto()">Adicionar Imposto Retido</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Conteúdo da aba Organização de Vendas -->
+              <div class="tab-pane fade" id="main-organizacao-vendas" role="tabpanel" aria-labelledby="main-organizacao-vendas">
+                <ul class="nav nav-tabs mt-3" id="subTabContentorganizacaoVendas" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="venda-tab" data-bs-toggle="tab" href="#venda" role="tab" aria-controls="venda" aria-selected="true">Venda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="expedicao-tab" data-bs-toggle="tab" href="#expedicao" role="tab" aria-controls="expedicao" aria-selected="false">Expedição</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="doc-faturamento-tab" data-bs-toggle="tab" href="#doc-faturamento" role="tab" aria-controls="doc-faturamento" aria-selected="false">Doc. Faturamento</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="funcao-parceiro-tab" data-bs-toggle="tab" href="#funcao-parceiro" role="tab" aria-controls="funcao-parceiro" aria-selected="false">Função do Parceiro</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="subTabContentorganizacaoVendas">
+                  <div class="tab-pane fade show active" id="venda" role="tabpanel" aria-labelledby="venda-tab">
+                    <form id="formVenda" class="mt-3">
+                      <h5>Ordem</h5>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4 position-relative">
+                          <label for="regVendas">Reg. Vendas</label>
+                          <input type="text" class="form-control" id="regVendas" name="regVendas" oninput="debouncedMostrarSugestoesRegVendas()">
+                          <div id="dropdownSugestoes" class="dropdown-menu w-100"></div>
+                      </div>
+                        <div class="form-group col-md-4">
+                          <label for="probabilOrdem">Probabil. ordem</label>
+                          <input type="text" class="form-control" id="probabilOrdem" name="probabilOrdem" value="100%">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4 position-relative">
+                          <label for="escritVendas">Escrit. Vendas</label>
+                          <input type="text" class="form-control" id="escritVendas" name="escritVendas" oninput="debouncedMostrarSugestoesEscritVendas()">
+                          <div id="dropdownSugestoesEscritVendas" class="dropdown-menu w-100"></div>
+                      </div>
+                        <div class="form-group col-md-4">
+                          <label for="grpAutorizs">Grp. autorizs.</label>
+                          <input type="text" class="form-control" id="grpAutorizs" name="grpAutorizs">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4 position-relative">
+                          <label for="equipeVendas">Equipe Vendas</label>
+                          <input type="text" class="form-control" id="equipeVendas" name="equipeVendas" oninput="debouncedMostrarSugestoesEquipeVendas()">
+                          <div id="dropdownSugestoesEquipeVendas" class="dropdown-menu w-100"></div>
+                      </div>
+                        <div class="form-group col-md-4">
+                          <label for="itemProposto">Item proposto</label>
+                          <input type="text" class="form-control" id="itemProposto" name="itemProposto">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="grupoClientes">Grupo Clientes</label>
+                          <input type="text" class="form-control" id="grupoClientes" name="grupoClientes" value="B7">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="ctaNoCliente">Cta. no cliente</label>
+                          <input type="text" class="form-control" id="ctaNoCliente" name="ctaNoCliente">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="classeABC">Classe ABC</label>
+                          <input type="text" class="form-control" id="classeABC" name="classeABC" value="ABC">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="grupoUM">Grupo UM</label>
+                          <input type="text" class="form-control" id="grupoUM" name="grupoUM">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="moeda">Moeda</label>
+                          <input type="text" class="form-control" id="moeda" name="moeda">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="ctgTaxaCambio">Ctg. taxa câmbio</label>
+                          <input type="text" class="form-control" id="ctgTaxaCambio" name="ctgTaxaCambio">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="desativarArredond" name="desativarArredond" checked>
+                            <label class="form-check-label" for="desativarArredond">Desativar arredond.</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="esqClienPP">Esq. clien. PP</label>
+                          <input type="text" class="form-control" id="esqClienPP" name="esqClienPP">
+                        </div>
+                      </div>
+
+                      <h5>Determinação preço/estastística</h5>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="priceGroup">Grupo de preço</label>
+                          <input type="text" class="form-control" id="priceGroup" name="priceGroup">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="clientScheme">Esquema cliente</label>
+                          <input type="text" class="form-control" id="clientScheme" name="clientScheme">
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="priceList">Lista de preços</label>
+                          <input type="text" class="form-control" id="priceList" name="priceList">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="grupoEstatClien">Grupo Estat Clien</label>
+                          <input type="text" class="form-control" id="grupoEstatClien" name="grupoEstatClien">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="expedicao" role="tabpanel" aria-labelledby="expedicao-tab">
+                    <form id="formExpedicao" class="mt-3">
+                      <h5>Expedição</h5>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="prioridadeRemessa">Prioridade remessa</label>
+                          <input type="text" class="form-control" id="prioridadeRemessa" name="prioridadeRemessa">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <input type="checkbox" class="form-check-input" id="agrupamentoOrdens" name="agrupamentoOrdens">
+                          <label class="form-check-label" for="agrupamentoOrdens">Agrupamento ordens</label>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-4">
+                          <label for="condicaoExpedicao">Condição expedição</label>
+                          <input type="text" class="form-control" id="condicaoExpedicao" name="condicaoExpedicao">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-4">
+                          <label for="centroFornecedor">Centro fornecedor</label>
+                          <input type="text" class="form-control" id="centroFornecedor" name="centroFornecedor">
+                        </div>
+                      </div>
+                      <h5>Fornecimento Parciais</h5>
+                      <div class="form-group col-md-6">
+                        <label for="fornecimentoCompletoPrescrito">Fornecimento completo prescrito</label>
+                        <input type="checkbox" class="form-check-input" id="fornecimentoCompletoPrescrito" name="fornecimentoCompletoPrescrito">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="fornecimentoParcialPorItem">Fornecimento parcial por item</label>
+                        <input type="number" class="form-control" id="fornecimentoParcialPorItem" name="fornecimentoParcialPorItem">
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="fornecimentosParciaisMax">Fornecimentos parciais máx.</label>
+                          <input type="number" class="form-control" id="fornecimentosParciaisMax" name="fornecimentosParciaisMax">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="toleranciaIlimitada">Tolerância ilimitada</label>
+                          <input type="checkbox" class="form-check-input" id="toleranciaIlimitada" name="toleranciaIlimitada">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="tolFormIncomplete">Tol. formto. incompl.</label>
+                          <input type="text" class="form-control" id="tolFormIncomplete" name="tolFormIncomplete">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="tolFornecExcessivo">Tol. fornec. excessivo</label>
+                          <input type="text" class="form-control" id="tolFornecExcessivo" name="tolFornecExcessivo">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="zonaTransporte">Zona de transporte</label>
+                          <input type="text" class="form-control" id="zonaTransporte" name="zonaTransporte">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="estacaoFerroviaria">Estação ferroviária</label>
+                          <input type="text" class="form-control" id="estacaoFerroviaria" name="estacaoFerroviaria">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="expedicao" role="tabpanel" aria-labelledby="expedicao-tab">
+                    <form id="formExpedicao" class="mt-3">
+                      <h5>Expedição</h5>
+                      <div class="row mb-2">
+                        <div class="form-group col-md-4">
+                          <label for="prioridadeRemessa">Prioridade remessa</label>
+                          <input type="number" class="form-control" id="prioridadeRemessa" name="prioridadeRemessa">
+                        </div>
+                        <div class="form-group col-md-4">
+                          <input type="checkbox" class="form-check-input" id="agrupamentoOrdens" name="agrupamentoOrdens">
+                          <label class="form-check-label" for="agrupamentoOrdens">Agrupamento ordens</label>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-4">
+                          <label for="condicaoExpedicao">Condição expedição</label>
+                          <input type="text" class="form-control" id="condicaoExpedicao" name="condicaoExpedicao">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-4">
+                          <label for="centroFornecedor">Centro fornecedor</label>
+                          <input type="text" class="form-control" id="centroFornecedor" name="centroFornecedor">
+                        </div>
+                      </div>
+                      <h5>Fornecimento Parciais</h5>
+                      <div class="form-group col-md-6">
+                        <label for="fornecimentoCompletoPrescrito">Fornecimento completo prescrito</label>
+                        <input type="checkbox" class="form-check-input" id="fornecimentoCompletoPrescrito" name="fornecimentoCompletoPrescrito">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="fornecimentoParcialPorItem">Fornecimento parcial por item</label>
+                        <input type="number" class="form-control" id="fornecimentoParcialPorItem" name="fornecimentoParcialPorItem">
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="fornecimentosParciaisMax">Fornecimentos parciais máx.</label>
+                          <input type="number" class="form-control" id="fornecimentosParciaisMax" name="fornecimentosParciaisMax">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="toleranciaIlimitada">Tolerância ilimitada</label>
+                          <input type="checkbox" class="form-check-input" id="toleranciaIlimitada" name="toleranciaIlimitada">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="tolFormIncomplete">Tol. formto. incompl.</label>
+                          <input type="text" class="form-control" id="tolFormIncomplete" name="tolFormIncomplete">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="tolFornecExcessivo">Tol. fornec. excessivo</label>
+                          <input type="text" class="form-control" id="tolFornecExcessivo" name="tolFornecExcessivo">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="zonaTransporte">Zona de transporte</label>
+                          <input type="text" class="form-control" id="zonaTransporte" name="zonaTransporte">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="estacaoFerroviaria">Estação ferroviária</label>
+                          <input type="text" class="form-control" id="estacaoFerroviaria" name="estacaoFerroviaria">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="doc-faturamento" role="tabpanel" aria-labelledby="doc-faturamento-tab">
+                    <form id="formDocFaturamento">
+                      <h5>Documento de Faturamento</h5>
+                      <div class="form-row">
+                        <div class="form-group col-md-4">
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="processFatura" name="processFatura">
+                            <label class="form-check-label" for="processFatura">Pós-process. fatura</label>
+                          </div>
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="bonus" name="bonus">
+                            <label class="form-check-label" for="bonus">Bônus</label>
+                          </div>
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="determPreco" name="determPreco">
+                            <label class="form-check-label" for="determPreco">Determin. preço</label>
+                          </div>
+                        </div>
+                        <div class="form-group col-md-8">
+                          <label for="dataFaturamento">Datas faturamento</label>
+                          <input type="text" class="form-control" id="dataFaturamento" name="dataFaturamento">
+                          <label for="listasFaturamento">Datas listas faturas</label>
+                          <input type="text" class="form-control" id="listasFaturamento" name="listasFaturamento">
+                        </div>
+                      </div>
+                      <h5>Condições de remessa e de pagamento</h5>
+                      <div class="form-row">
+                        <div class="form-group col-md-4">
+                          <label for="incoterms">Incoterms</label>
+                          <input type="text" class="form-control" id="incoterms" name="incoterms" placeholder="CIF">
+                        </div>
+                        <div class="form-group col-md-8">
+                          <label for="condicaoPgto">Condição pgto.</label>
+                          <input type="text" class="form-control" id="condicaoPgto" name="condicaoPgto" placeholder="2026 BR 30+60+90">
+                        </div>
+                      </div>
+                      <h5>Contabilidade</h5>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="grpClassifCont">Grp. classif. cont.</label>
+                          <input type="text" class="form-control" id="grpClassifCont" name="grpClassifCont" placeholder="DG">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="lojaNacional">Loja Nacional</label>
+                          <input type="text" class="form-control" id="lojaNacional" name="lojaNacional">
+                        </div>
+                      </div>
+                      <h5>Impostos</h5>
+                      <div class="table-responsive">
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>País</th>
+                              <th>Categoria de Imposto</th>
+                              <th>Denominação</th>
+                              <th>Classe de Imposto</th>
+                              <th>Denominação Complementar</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><input type="text" class="form-control" id="pais" name="pais" placeholder="Brasil"></td>
+                              <td><input type="text" class="form-control" id="ctgDeImposto" name="ctgDeImposto" placeholder="IBRX"></td>
+                              <td><input type="text" class="form-control" id="denominacao" name="denominacao" placeholder="Brasil: cál. imposto"></td>
+                              <td><input type="text" class="form-control" id="classeImposto" name="classeImposto" placeholder="1"></td>
+                              <td><input type="text" class="form-control" id="comImposto" name="comImposto" placeholder="Com Imposto"></td>
+                            </tr>
+                            <!-- Adicionar mais linhas conforme necessário -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane fade" id="funcao-parceiro" role="tabpanel" aria-labelledby="funcao-parceiro-tab">
+                    <h5>Funções do Parceiro</h5>
+                    <form id="formFuncaoParceiro">
+                      <div class="table-responsive">
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>Fnc.</th>
+                              <th>Função Parceiro</th>
+                              <th>ID</th>
+                              <th>Nome</th>
+                              <th>Denominação Parceiro</th>
+                              <th>Detalhes</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!-- Adicionar linhas conforme necessário -->
+                            <tr>
+                              <td><input type="text" class="form-control" id="fnc" name="fnc"></td>
+                              <td><input type="text" class="form-control" id="funcaoParceiro" name="funcaoParceiro"></td>
+                              <td><input type="text" class="form-control" id="id" name="id"></td>
+                              <td><input type="text" class="form-control" id="nome" name="nome"></td>
+                              <td><input type="text" class="form-control" id="denominacaoParceiro" name="denominacaoParceiro"></td>
+                              <td><input type="text" class="form-control" id="detalhes" name="detalhes"></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+              <button type="button" class="btn btn-primary" id="cadastrarClienteSubmit">Cadastrar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </div>
+          </div>
+          </div>
+          </div>

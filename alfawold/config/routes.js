@@ -17,26 +17,25 @@ module.exports.routes = {
   'GET /':                   { action: 'view-homepage-or-redirect' },
 
   //Crud Clientes
-  'GET /clientes/criar':        { action: 'clientes/renderizarCadastro'},
-  'GET /clientes/listar':       { action: 'clientes/listar' },
-  'GET /clientes/editar/:id':   { action: 'clientes/editar'},
-  'POST  /clientes/cadastrar':  { action: 'clientes/criar'},
-  'POST  /clientes/salvar':     { action: 'clientes/atualizar'},
+  'GET /clientes/validar':                   { action: 'clientes/validarcliente' },
+  'GET /clientes/renderizarcadastro':        { action: 'clientes/renderizarCadastro'},
+  'GET /clientes/listar':                    { action: 'clientes/listar' },
+  'GET /clientes/editar/:id':                { action: 'clientes/editar'},
+  'POST  /clientes/cadastrar':               { action: 'clientes/criar'},
+  'POST  /clientes/salvar':                  { action: 'clientes/atualizar'},
 
   //Crud Empresas
-  'GET /empresas/listar':       { action: 'empresas/listar'},
-  'GET /empresas/criar':        { view: 'pages/empresas/criar'},
-  'GET /empresas/editar/:id':   { action: 'empresas/editar'},
-  'POST  /empresas/cadastrar':  { action: 'empresas/criar'},
-  'POST  /empresas/salvar':     { action: 'empresas/atualizar'},
+  'GET /empresas/listar':         {action:'Empresas/listar' },
+  'POST /empresas/':              { action:'Empresas/criar' },
+  'PUT /empresas/:id':            { action:'Empresas/atualizar' },
+  'DELETE /empresas/:id':         { action:'Empresas/deletar' },
 
-  //Crud Organização de Vendas
-  'GET /organizacaoVendas/listar':    { action:'OrganizacaoVendas/listar'},
-  'GET /organizacaoVendas/criar':     { view:'pages/organizacaoVendas/criar'},
-  'GET /organizacaoVendas/:id/edit':  { action:'OrganizacaoVendas/editar'},
-  'POST /organizacaoVendas/criar':    { action:'OrganizacaoVendas/criar'},
-  'POST /organizacaoVendas/:id':      { action:'OrganizacaoVendas/atualizar'},
-  'DELETE /organizacaoVendas/:id':    { action:'OrganizacaoVendas/deletar'},
+  //Crud organização de vendas
+  'GET /organizacaovendas/listar':   { action: 'OrganizacaoVendas/listar' },
+  'PUT /organizacaovendas/:id':      { action: 'OrganizacaoVendas/atualizar' },
+  'POST /organizacaovendas':         { action: 'OrganizacaoVendas/criar' },
+  'DELETE /organizacaovendas/:id':   { action: 'OrganizacaoVendas/deletar' },
+
   //Crud Organização de Vendas
   'GET /tabelapreco/listar':          { action:'TabelaPreco/listar'},
   'GET /tabelapreco/criar':           { view:'pages/tabelapreco/criar'},
@@ -44,6 +43,11 @@ module.exports.routes = {
   'POST /tabelapreco/criar':          { action:'TabelaPreco/criar'},
   'POST /tabelapreco/:id':            { action:'TabelaPreco/atualizar'},
   'DELETE /tabelapreco/:id':          { action:'TabelaPreco/deletar'},
+  //Integration Config
+  'GET /integrationconfig/listar':    { action:'IntegrationConfig/listar'},
+  'POST /integrationconfig':          { action:'IntegrationConfig/criar'},
+  'PUT /integrationconfig/:id':       { action:'IntegrationConfig/update'},
+  'DELETE /integrationconfig/:id':    { action:'IntegrationConfig/deletar'},
 
   'GET /welcome/:unused?':   { action: 'dashboard/view-welcome' },
   'GET /faq':                { action:   'view-faq' },

@@ -1,0 +1,686 @@
+<%- include('header', { title: 'Home Page' }) %>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Cadastro de Cliente</h1>
+    <form method="GET" action="/clientes/listar" class="mb-4">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="codigo" class="form-label">Código do Cliente:</label>
+          <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="empresa" class="form-label">Empresa:</label>
+          <input type="text" class="form-control" id="empresa" name="empresa" value="<%= typeof empresa !== 'undefined' ? empresa : '' %>">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="organizacaoVendas" class="form-label">Organização de Vendas:</label>
+          <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" value="<%= typeof organizacaoVendas !== 'undefined' ? organizacaoVendas : '' %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 d-flex justify-content-between align-items-end">
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+          <button type="button" class="btn btn-primary" onclick="openAddClienteModal()">
+            Adicionar Cliente
+          </button>
+        </div>
+      </div>
+    </form>
+    <!-- Tabela cliente tela inicial -->
+    <%- include('tabela') %>
+    <!-- Modal inicial cadastro cliente -->
+    <%- include('modalCliente') %>
+    <!-- Modal cLiente -->
+    <%- include('modalCadastroCliente') %>
+    <!-- Modal mensagem -->
+    <%- include('modalMesagem') %>
+
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Preencher grupo empresa
+          preencherGrupoConta();
+          preencherGrupoEmpresa();
+
+        // Inicializa os modais aqui para garantir que eles estão disponíveis globalmente
+        window.addClienteModal = new bootstrap.Modal(document.getElementById('addClienteModal'));
+        window.cadastroClienteModal = new bootstrap.Modal(document.getElementById('cadastroClienteModal'));
+
+        // Adiciona event listeners apenas se os elementos existirem
+        const cepInput = document.getElementById('cep');
+        if (cepInput) {
+          cepInput.addEventListener('blur', setupFormListeners);
+        }
+
+        const cpfInput = document.getElementById('ClienteModalcpf');
+        if (cpfInput) {
+          cpfInput.addEventListener('input', function() {
+            const cpfValue = cpfInput.value;
+            const cpfField = document.getElementById('cpf');
+            if (cpfField) {
+              cpfField.value = cpfValue;
+            }
+          });
+        }
+
+        const cnpjInput = document.getElementById('ClienteModalcnpj');
+        if (cnpjInput) {
+          cnpjInput.addEventListener('input', function() {
+            const cnpjValue = cnpjInput.value;
+            const cnpjField = document.getElementById('cnpj');
+            if (cnpjField) {
+              cnpjField.value = cnpjValue;
+            }
+          });
+        }
+
+        const verificarCadastroSubmit = document.getElementById('verificarCadastroSubmit');
+        if (verificarCadastroSubmit) {
+          verificarCadastroSubmit.addEventListener('click', verificarCadastroModal);
+        }
+
+        const cadastrarClienteSubmit = document.getElementById('cadastrarClienteSubmit');
+        if (cadastrarClienteSubmit) {
+          cadastrarClienteSubmit.addEventListener('click', salvarCliente);
+        }
+
+        const openAddClienteButton = document.getElementById('openAddClienteButton');
+        if (openAddClienteButton) {
+          openAddClienteButton.addEventListener('click', openAddClienteModal);
+        }
+          });
+
+      async function buscarSugestoesEscritVendas(termo) {
+            try {
+                const response = await fetch(`/escritoriovendas/buscarEscritoriosPorDescricao?termo=${termo}`);
+                if (!response.ok) {
+                    throw new Error('Erro na rede ao buscar escritórios de vendas');
+                }
+                const escritoriosVendas = await response.json();
+                return escritoriosVendas;
+            } catch (err) {
+                console.error('Erro ao buscar escritórios de vendas:', err);
+                return [];
+            }
+        }
+      async function buscarSugestoesEquipeVendas(termo) {
+            try {
+                const response = await fetch(`/equipevendas/buscarEquipesPorDescricao?termo=${termo}`);
+                if (!response.ok) {
+                    throw new Error('Erro na rede ao buscar equipes de vendas');
+                }
+                const equipesVendas = await response.json();
+                return equipesVendas;
+            } catch (err) {
+                console.error('Erro ao buscar equipes de vendas:', err);
+                return [];
+            }
+        }
+
+      async function mostrarSugestoesEquipeVendas() {
+          const input = document.getElementById('equipeVendas');
+          const filtro = input.value.toLowerCase();
+          const dropdownSugestoes = document.getElementById('dropdownSugestoesEquipeVendas');
+
+          dropdownSugestoes.innerHTML = '';
+
+          if (!filtro) {
+              dropdownSugestoes.style.display = 'none';
+              return;
+          }
+
+          const sugestoes = await buscarSugestoesEquipeVendas(filtro);
+
+          if (sugestoes.length > 0) {
+              sugestoes.forEach(sugestao => {
+                  const item = document.createElement('a');
+                  item.classList.add('dropdown-item');
+                  item.innerHTML = `${sugestao.codigo} - ${sugestao.descricao}`;
+                  item.addEventListener('click', (e) => {
+                      e.preventDefault();
+                      input.value = sugestao.descricao;
+                      dropdownSugestoes.innerHTML = '';
+                      dropdownSugestoes.style.display = 'none';
+                  });
+                  dropdownSugestoes.appendChild(item);
+              });
+              dropdownSugestoes.style.display = 'block';
+          } else {
+              dropdownSugestoes.style.display = 'none';
+          }
+      }
+
+      const debouncedMostrarSugestoesEquipeVendas = debounce(mostrarSugestoesEquipeVendas, 300);
+
+      document.addEventListener('click', function (e) {
+          const dropdownSugestoesEquipeVendas = document.getElementById('dropdownSugestoesEquipeVendas');
+          if (e.target !== document.getElementById('equipeVendas')) {
+              dropdownSugestoesEquipeVendas.innerHTML = '';
+              dropdownSugestoesEquipeVendas.style.display = 'none';
+          }
+      });
+      async function mostrarSugestoesEscritVendas() {
+          const input = document.getElementById('escritVendas');
+          const filtro = input.value.toLowerCase();
+          const dropdownSugestoes = document.getElementById('dropdownSugestoesEscritVendas');
+
+          dropdownSugestoes.innerHTML = '';
+
+          if (!filtro) {
+              dropdownSugestoes.style.display = 'none';
+              return;
+          }
+
+          const sugestoes = await buscarSugestoesEscritVendas(filtro);
+
+          if (sugestoes.length > 0) {
+              sugestoes.forEach(sugestao => {
+                  const item = document.createElement('a');
+                  item.classList.add('dropdown-item');
+                  item.innerHTML = `${sugestao.codigo} - ${sugestao.descricao}`;
+                  item.addEventListener('click', (e) => {
+                      e.preventDefault();
+                      input.value = sugestao.descricao;
+                      dropdownSugestoes.innerHTML = '';
+                      dropdownSugestoes.style.display = 'none';
+                  });
+                  dropdownSugestoes.appendChild(item);
+              });
+              dropdownSugestoes.style.display = 'block';
+          } else {
+              dropdownSugestoes.style.display = 'none';
+          }
+      }
+
+      const debouncedMostrarSugestoesEscritVendas = debounce(mostrarSugestoesEscritVendas, 300);
+
+      document.addEventListener('click', function (e) {
+          const dropdownSugestoesEscritVendas = document.getElementById('dropdownSugestoesEscritVendas');
+          if (e.target !== document.getElementById('escritVendas')) {
+              dropdownSugestoesEscritVendas.innerHTML = '';
+              dropdownSugestoesEscritVendas.style.display = 'none';
+          }
+      });
+
+      async function buscarSugestoesRegVendas(termo) {
+        try {
+            const response = await fetch(`/regiao/buscarPorDescricao?termo=${termo}`);
+            if (!response.ok) {
+                throw new Error('Erro na rede ao buscar regiões de vendas');
+            }
+            const regioesVendas = await response.json();
+            return regioesVendas;
+        } catch (err) {
+            console.error('Erro ao buscar regiões de vendas:', err);
+            return [];
+        }
+    }
+
+      function debounce(func, wait) {
+          let timeout;
+          return function(...args) {
+              const later = () => {
+                  clearTimeout(timeout);
+                  func(...args);
+              };
+              clearTimeout(timeout);
+              timeout = setTimeout(later, wait);
+          };
+      }
+
+      async function mostrarSugestoesRegVendas() {
+          const input = document.getElementById('regVendas');
+          const filtro = input.value.toLowerCase();
+          const dropdownSugestoes = document.getElementById('dropdownSugestoes');
+
+          dropdownSugestoes.innerHTML = '';
+
+          if (!filtro) {
+              dropdownSugestoes.style.display = 'none';
+              return;
+          }
+
+          const sugestoes = await buscarSugestoesRegVendas(filtro);
+
+          if (sugestoes.length > 0) {
+              sugestoes.forEach(sugestao => {
+                  const item = document.createElement('a');
+                  item.classList.add('dropdown-item');
+                  item.innerHTML = `${sugestao.codigo} - ${sugestao.descricao}`;
+                  item.addEventListener('click', (e) => {
+                      e.preventDefault();
+                      input.value = sugestao.descricao;
+                      dropdownSugestoes.innerHTML = '';
+                      dropdownSugestoes.style.display = 'none';
+                  });
+                  dropdownSugestoes.appendChild(item);
+              });
+              dropdownSugestoes.style.display = 'block';
+          } else {
+              dropdownSugestoes.style.display = 'none';
+          }
+      }
+
+      const debouncedMostrarSugestoesRegVendas = debounce(mostrarSugestoesRegVendas, 300);
+
+      document.addEventListener('click', function (e) {
+          const dropdownSugestoes = document.getElementById('dropdownSugestoes');
+          if (e.target !== document.getElementById('regVendas')) {
+              dropdownSugestoes.innerHTML = '';
+              dropdownSugestoes.style.display = 'none';
+          }
+      });
+
+      async function preencherGrupoConta() {
+        try {
+          const response = await fetch('/grupoconta/todos');
+          const gruposConta = await response.json();
+
+          const grupoContaSelect = document.getElementById('modal.grupoConta');
+          gruposConta.forEach(grupo => {
+            const option = document.createElement('option');
+            option.value = grupo.id;
+            option.text = `${grupo.codigo} - ${grupo.descricao}`;
+            grupoContaSelect.appendChild(option);
+          });
+        } catch (err) {
+          console.error('Erro ao buscar grupos de conta:', err);
+        }
+    }
+
+      async function preencherGrupoEmpresa() {
+        try {
+            const response = await fetch('/grupoempresa/todos');
+            const gruposEmpresas = await response.json();
+
+            const grupoEmpresaSelect = document.getElementById('grupoEmpresa');
+            gruposEmpresas.forEach(grupo => {
+                const option = document.createElement('option');
+                option.value = grupo.id;
+                option.text = `${grupo.codigo} - ${grupo.nome}`;
+                grupoEmpresaSelect.appendChild(option);
+            });
+        } catch (err) {
+            console.error('Erro ao buscar grupos de empresas:', err);
+        }
+    }
+
+      async function setupFormListeners(event) {
+        const cepInput = event.target;
+        if (cepInput.value.trim() !== '') {
+          const cepFormatted = cepInput.value.replace(/\D/g, '').replace(/^(\d{5})(\d{3})/, '$1-$2');
+          cepInput.value = cepFormatted;
+          await buscarCEP(cepFormatted);
+        }
+      }
+
+      async function fetchCadastroData() {
+        try {
+          const response = await fetch('/clientes/renderizarcadastro', {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': '<%= _csrf %>'
+            }
+          });
+          if (!response.ok) {
+            throw new Error('Erro na resposta da rede');
+          }
+          return await response.json();
+        } catch (error) {
+          console.error('Houve um problema com a operação fetch:', error);
+        }
+      }
+
+      async function openAddClienteModal() {
+      try {
+          const data = await fetchCadastroData();
+          console.log('Dados de cadastro:', data); // Verifique os dados aqui
+          if (data) {
+              populateSelect('modal.empresa', data.empresas.map(empresa => ({ id: empresa.id, code: empresa.codigo, name: empresa.razaoSocial })));
+              populateSelect('modal.organizacaoVendas', data.organizacoesVendas.map(org => ({ id: org.id, code: org.codigo, name: org.nome })));
+              window.addClienteModal.show(); // Uso da instância correta
+          } else {
+              console.error('Erro ao buscar os dados de cadastro.');
+          }
+      } catch (error) {
+          console.error('Falha ao abrir e preencher o modal de adicionar cliente:', error);
+      }
+}
+
+      function populateSelect(elementId, options) {
+        const select = document.getElementById(elementId);
+        if (select) {
+            select.innerHTML = ''; // Limpa as opções existentes
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.id;
+                optionElement.textContent = `${option.code} - ${option.name}`; // Concatena código e nome
+                select.appendChild(optionElement);
+            });
+        }
+    }
+
+      async function salvarCliente() {
+        let clienteData = {}, empresaData = {}, organizacaoVendasData = {};
+        const formMapping = {
+          'formCadastroCliente': clienteData,
+          'formDadosControle': clienteData,
+          'formPagamento': clienteData,
+          'formMarketing': clienteData,
+          'formDadosExportacao': clienteData,
+          'formAdmConta': empresaData,
+          'formPagamentoEmpresa': empresaData,
+          'formCorrespondencia': empresaData,
+          'formSeguros': empresaData,
+          'formImpostoRetido': empresaData,
+          'formVenda': organizacaoVendasData,
+          'formExpedicao': organizacaoVendasData,
+          'formDocFaturamento': organizacaoVendasData,
+          'formFuncaoParceiro': organizacaoVendasData
+        };
+        // Trata campos específicos do modal
+        clienteData['grupoConta'] = document.getElementById('modal.grupoConta').value;
+        empresaData['empresa'] = document.getElementById('modal.empresa').value;
+        organizacaoVendasData['organizacaoVendas'] = document.getElementById('modal.organizacaoVendas').value;
+
+        Object.entries(formMapping).forEach(([formId, targetData]) => {
+          const form = document.getElementById(formId);
+          if (form) {
+            const formData = new FormData(form);
+            formData.forEach((value, key) => {
+              if (key === 'id' && value === '') return;
+              targetData[key] = form[key].type === 'checkbox' ? form[key].checked : value;
+            });
+          } else {
+            console.warn(`Formulário não encontrado: ${formId}`);
+          }
+        });
+
+        Object.values(formMapping).forEach(data => {
+          Object.keys(data).forEach(key => {
+            if (key === 'id' && data[key] === '') {
+              delete data[key];
+            }
+          });
+        });
+
+        const combinedData = { cliente: clienteData, empresa: empresaData, organizacaoVendas: organizacaoVendasData };
+        try {
+          const response = await fetch('/clientes', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': '<%= _csrf %>'
+            },
+            body: JSON.stringify(combinedData)
+          });
+          const data = await response.json();
+          document.getElementById("mensagemTexto").innerText = data.message;
+          new bootstrap.Modal(document.getElementById('mensagemModal')).show();
+        } catch (error) {
+          console.error('Erro na requisição:', error);
+          document.getElementById("mensagemTexto").innerText = 'Erro na requisição';
+          new bootstrap.Modal(document.getElementById('mensagemModal')).show();
+        }
+      }
+
+      async function verificarCadastroModal() {
+      const cpfInput = document.getElementById('ClienteModalcpf').value.trim();
+      const cnpjInput = document.getElementById('ClienteModalcnpj').value.trim();
+      const empresaId = document.getElementById('modal.empresa').value.trim();
+      const organizacaoVendasId = document.getElementById('modal.organizacaoVendas').value.trim();
+
+      // Validação inicial
+      if (!cpfInput && !cnpjInput) {
+          alert('Preencha pelo menos um dos campos: CPF ou CNPJ.');
+          return;
+      } else if (cpfInput && cnpjInput) {
+          alert('Preencha apenas um dos campos: CPF ou CNPJ.');
+          return;
+      }
+
+      // Limpar os valores de CPF e CNPJ
+      const cpf = cpfInput ? cpfInput.replace(/\D/g, '') : null;
+      const cnpj = cnpjInput ? cnpjInput.replace(/\D/g, '') : null;
+
+      // Montar a URL de verificação
+    let url = '/clientes/validar/';
+    if (cpf !== null) {
+        url += `${cpf}/null/${empresaId}/${organizacaoVendasId}`;
+    } else {
+        url += `null/${cnpj}/${empresaId}/${organizacaoVendasId}`;
+    }
+
+      console.log('URL:', url); // Log da URL para depuração
+
+      try {
+          const response = await fetch(url);
+          if (response.ok) {
+              const clienteExistente = await response.json();
+              console.log('Cliente existente:', clienteExistente); // Log da resposta
+
+              if (clienteExistente) {
+                  if (clienteExistente.empresa && clienteExistente.organizacaoVendas) {
+                      alert('Cliente já cadastrado para esta empresa e organização de vendas.');
+                      // Oculta as abas "Geral" e "Empresa"
+                      document.getElementById('main-geral-tab').style.display = 'none';
+                      document.getElementById('main-empresa-tab').style.display = 'none';
+                      // Exibe a aba "Organização de Vendas"
+                      document.getElementById('main-organizacao-vendas-tab').click();
+
+                      // Preenche os campos do cliente e da empresa existente no formulário
+                      preencherCamposCliente(clienteExistente.cliente);
+                      preencherCamposEmpresa(clienteExistente.empresa);
+                  } else {
+                      document.getElementById('main-geral-tab').style.display = 'true';
+                      document.getElementById('main-empresa-tab').style.display = 'true';
+
+                      // Preenche os campos do cliente existente no modal de cadastro
+                      const cpfCliente = document.getElementById('cpfCliente');
+                      const cnpjCliente = document.getElementById('cnpjCliente');
+                      const empresaCliente = document.getElementById('empresaCliente');
+                      const organizacaoVendasCliente = document.getElementById('organizacaoVendasCliente');
+
+                      if (cpfCliente) cpfCliente.value = clienteExistente.cliente.cpf || '';
+                      if (cnpjCliente) cnpjCliente.value = clienteExistente.cliente.cnpj || '';
+                      if (empresaCliente) empresaCliente.value = empresaId;
+                      if (organizacaoVendasCliente) organizacaoVendasCliente.value = organizacaoVendasId;
+
+                      window.addClienteModal.hide();
+                      window.cadastroClienteModal.show();
+                  }
+              } else {
+                  // Cliente não encontrado, permitir adicionar novo cliente
+                  window.addClienteModal.hide();
+                  window.cadastroClienteModal.show();
+              }
+          } else {
+              alert('Erro na verificação do cliente.');
+          }
+      } catch (err) {
+          console.error('Erro ao verificar cliente:', err);
+          alert('Erro ao verificar cliente.');
+      }
+  }
+
+      function preencherCamposCliente(cliente) {
+        // Preenche os campos do formulário com os dados do cliente
+        document.getElementById('razaoSocial').value = cliente.razaoSocial || '';
+        document.getElementById('termoPesquisa').value = cliente.termoPesquisa || '';
+        document.getElementById('cep').value = cliente.cep || '';
+        document.getElementById('domicilio').value = cliente.domicilio || '';
+        document.getElementById('rua').value = cliente.rua || '';
+        document.getElementById('numero').value = cliente.numero || '';
+        document.getElementById('complemento').value = cliente.complemento || '';
+        document.getElementById('bairro').value = cliente.bairro || '';
+        document.getElementById('cidade').value = cliente.cidade || '';
+        document.getElementById('regiao').value = cliente.regiao || '';
+        document.getElementById('fornecedor').value = cliente.fornecedor || '';
+        document.getElementById('grupoEmpresa').value = cliente.grupoEmpresa || '';
+        document.getElementById('cnpj').value = cliente.cnpj || '';
+        document.getElementById('cpf').value = cliente.cpf || '';
+        document.getElementById('inscEstadual').value = cliente.inscEstadual || '';
+        document.getElementById('inscMunicipal').value = cliente.inscMunicipal || '';
+        document.getElementById('ctgCFOP').value = cliente.ctgCFOP || '';
+        // Preenche os outros campos conforme necessário...
+      }
+
+      function preencherCamposEmpresa(empresa) {
+        // Preenche os campos do formulário com os dados da empresa
+        document.getElementById('ctaConcil').value = empresa.ctaConcil || '';
+        document.getElementById('chaveOrdenacao').value = empresa.chaveOrdenacao || '';
+        document.getElementById('fisYearDocNo').value = empresa.fisYearDocNo || '';
+        document.getElementById('sede').value = empresa.sede || '';
+        document.getElementById('autorizacao').value = empresa.autorizacao || '';
+        document.getElementById('grpAdminTesour').value = empresa.grpAdminTesour || '';
+        document.getElementById('codigoJuros').value = empresa.codigoJuros || '';
+        document.getElementById('ultimaDataFixada').value = empresa.ultimaDataFixada || '';
+        document.getElementById('periodJuros').value = empresa.periodJuros || '';
+        document.getElementById('ultCalcJuros').value = empresa.ultCalcJuros || '';
+        document.getElementById('numAntigoConta').value = empresa.numAntigoConta || '';
+        document.getElementById('assocCompras').value = empresa.assocCompras || '';
+        // Preenche os outros campos conforme necessário...
+      }
+
+      function fecharModalMensagem() {
+        const mensagemModalInstance = new bootstrap.Modal(document.getElementById('mensagemModal'));
+        mensagemModalInstance.hide();
+      }
+
+      function fecharModalCadastro() {
+        const cadastroClienteModalInstance = new bootstrap.Modal(document.getElementById('cadastroClienteModal'));
+        cadastroClienteModalInstance.hide();
+      }
+
+      function adicionarLinhaImposto() {
+        var tableBody = document.getElementById('irfTableBody');
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td><input type="text" class="form-control" name="ctgIRF"></td>
+            <td><input type="text" class="form-control" name="codigo"></td>
+            <td><input type="checkbox" class="form-check-input" name="retIRF"></td>
+            <td><input type="date" class="form-control" name="autDedDe"></td>
+            <td><input type="date" class="form-control" name="autDedAte"></td>
+            <td><input type="text" class="form-control" name="numIRF"></td>
+            <td><input type="text" class="form-control" name="numCertIsencao"></td>
+            <td><input type="text" class="form-control" name="taxa"></td>
+            <td><input type="text" class="form-control" name="moeda"></td>
+            <td><input type="date" class="form-control" name="isentoDe"></td>
+            <td><input type="date" class="form-control" name="isentoAte"></td>
+        `;
+
+        tableBody.appendChild(newRow);
+      }
+
+      async function buscarCEP(cep) {
+        const endpoint = `https://viacep.com.br/ws/${cep}/json/`;
+        try {
+          const response = await fetch(endpoint);
+          if (!response.ok) {
+            throw new Error('Erro ao buscar o CEP');
+          }
+          const data = await response.json();
+          const domicilioValue = `${data.uf || ''} ${data.ibge}`;
+          document.getElementById('rua').value = data.logradouro;
+          document.getElementById('bairro').value = data.bairro;
+          document.getElementById('cidade').value = data.localidade;
+          document.getElementById('regiao').value = data.uf;
+          document.getElementById('domicilio').value = domicilioValue;
+        } catch (error) {
+          console.error('Erro ao buscar o CEP:', error);
+        }
+      }
+      function mascararCPF(cpf) {
+    let valor = cpf.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+
+    // Limita o valor a 11 dígitos
+    if (valor.length > 11) {
+        valor = valor.substring(0, 11);
+    }
+
+    valor = valor
+        .replace(/(\d{3})(\d)/, '$1.$2') // Coloca um ponto entre o terceiro e o quarto dígitos
+        .replace(/(\d{3})(\d)/, '$1.$2') // Coloca um ponto entre o sexto e o sétimo dígitos
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Coloca um hífen entre o nono e o décimo dígitos
+
+    cpf.value = valor;
+}
+
+      function verificarCPF(cpf) {
+          const cpfErro = document.getElementById('cpfErro');
+          if (cpf.value === '') {
+              cpf.classList.remove('is-invalid');
+              cpfErro.style.display = 'none';
+          } else if (cpf.value.replace(/\D/g, '').length !== 11) {
+              cpf.classList.add('is-invalid');
+              cpfErro.style.display = 'block';
+          } else {
+              cpf.classList.remove('is-invalid');
+              cpfErro.style.display = 'none';
+          }
+      }
+
+      function mascararCNPJ(cnpj) {
+          let valor = cnpj.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+
+          // Limita o valor a 14 dígitos
+          if (valor.length > 14) {
+              valor = valor.substring(0, 14);
+          }
+
+          valor = valor
+              .replace(/(\d{2})(\d)/, '$1.$2') // Coloca um ponto entre o segundo e o terceiro dígitos
+              .replace(/(\d{3})(\d)/, '$1.$2') // Coloca um ponto entre o quinto e o sexto dígitos
+              .replace(/(\d{3})(\d)/, '$1/$2') // Coloca uma barra entre o oitavo e o nono dígitos
+              .replace(/(\d{4})(\d)/, '$1-$2'); // Coloca um hífen entre o décimo terceiro e o décimo quarto dígitos
+
+          cnpj.value = valor;
+      }
+
+      function verificarCNPJ(cnpj) {
+          const cnpjErro = document.getElementById('cnpjErro');
+          if (cnpj.value === '') {
+              cnpj.classList.remove('is-invalid');
+              cnpjErro.style.display = 'none';
+          } else if (cnpj.value.replace(/\D/g, '').length !== 14) {
+              cnpj.classList.add('is-invalid');
+              cnpjErro.style.display = 'block';
+          } else {
+              cnpj.classList.remove('is-invalid');
+              cnpjErro.style.display = 'none';
+          }
+      }
+
+      function mascararCEP(cep) {
+          let valor = cep.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+
+          // Limita o valor a 8 dígitos
+          if (valor.length > 8) {
+              valor = valor.substring(0, 8);
+          }
+
+          valor = valor.replace(/(\d{5})(\d)/, '$1-$2'); // Coloca um hífen entre o quinto e o sexto dígitos
+
+          cep.value = valor;
+      }
+
+      function verificarCEP(cep) {
+          const cepErro = document.getElementById('cepErro');
+          if (cep.value === '') {
+              cep.classList.remove('is-invalid');
+              cepErro.style.display = 'none';
+          } else if (cep.value.replace(/\D/g, '').length !== 8) {
+              cep.classList.add('is-invalid');
+              cepErro.style.display = 'block';
+          } else {
+              cep.classList.remove('is-invalid');
+              cepErro.style.display = 'none';
+          }
+      }
+
+    </script>
+
+</body>
+</html>
