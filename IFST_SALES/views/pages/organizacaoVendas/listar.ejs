@@ -1,146 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Organização de Vendas</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Organização de Vendas</h1>
-
-    <!-- Filtros -->
-    <form method="GET" action="/organizacaovendas/listar" class="mb-4">
-      <div class="row mb-3">
-        <div class="col-md-4">
-          <label for="codigo" class="form-label">Código da Organização:</label>
-          <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+  <main class="table" id="tabela_organizacao_vendas">
+    <section class="table__header">
+      <div class="titulo-organizacoes">
+        <h3>Organização de Vendas</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por organização de vendas...">
+          <i class="fas fa-search"></i>
         </div>
-        <div class="col-md-4">
-          <label for="empresa" class="form-label">Empresa:</label>
-          <input type="text" class="form-control" id="empresa" name="empresa" value="<%= typeof empresa !== 'undefined' ? empresa : '' %>">
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSalesOrgModal">
+            Adicionar Organização de Vendas
+          </button>
         </div>
-        <div class="col-md-4 d-flex align-items-end justify-content-end">
-          <!-- Botão Filtrar (alinhado à direita) -->
-          <button type="submit" class="btn btn-primary">Filtrar</button>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12 d-flex justify-content-end">
-          <!-- Botão Adicionar (alinhado à direita) -->
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSalesOrgModal">Adicionar Org de Vendas</button>
-        </div>
-      </div>
-    </form>
+    </section>
 
-    <!-- Tabela de organizações de vendas -->
-    <div class="table-responsive">
-      <table class="table table-bordered">
+    <section class="table__body">
+      <table>
         <thead>
           <tr>
-            <th>Nome</th>
-            <th>Descrição</th>
-            <th>Código</th>
-            <th>Ativo</th>
-            <th>Ações</th>
+            <th draggable="true">Nome</th>
+            <th draggable="true">Descrição</th>
+            <th draggable="true">Código</th>
+            <th draggable="true">Ativo</th>
+            <th draggable="true">Ações</th>
           </tr>
         </thead>
         <tbody>
           <% organizacoes.forEach(organizacao => { %>
-            <tr>
-              <td><%= organizacao.nome %></td>
-              <td><%= organizacao.descricao %></td>
-              <td><%= organizacao.codigo %></td>
-              <td><%= organizacao.ativo ? 'Sim' : 'Não' %></td>
-              <td>
-                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editSalesOrgModal<%= organizacao.id %>">Editar</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteSalesOrg(<%= organizacao.id %>)">Deletar</button>
-              </td>
-            </tr>
+          <tr>
+            <td><%= organizacao.nome %></td>
+            <td><%= organizacao.descricao %></td>
+            <td><%= organizacao.codigo %></td>
+            <td><%= organizacao.ativo ? 'Sim' : 'Não' %></td>
+            <td>
+              <a href="#" onclick="editSalesOrg(<%= organizacao.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewSalesOrg(<%= organizacao.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deleteSalesOrg(<%= organizacao.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
           <% }) %>
         </tbody>
       </table>
-    </div>
+    </section>
+  </main>
 
-    <!-- Modal para adicionar organização de vendas -->
-    <div class="modal fade" id="addSalesOrgModal" tabindex="-1" aria-labelledby="addSalesOrgModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addSalesOrgModalLabel">Adicionar Organização de Vendas</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="addSalesOrgForm">
-              <div class="mb-3">
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-nome" name="columns" value="nome" checked>
+                  <label class="form-check-label" for="col-nome">Nome</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descricao" checked>
+                  <label class="form-check-label" for="col-descricao">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="codigo" checked>
+                  <label class="form-check-label" for="col-codigo">Código</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
+                  <label class="form-check-label" for="col-ativo">Ativo</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-acoes" name="columns" value="acoes" checked>
+                  <label class="form-check-label" for="col-acoes">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para adicionar organização de vendas -->
+  <div class="modal fade" id="addSalesOrgModal" tabindex="-1" aria-labelledby="addSalesOrgModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSalesOrgModalLabel">Adicionar Organização de Vendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addSalesOrgForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="nome" class="form-label">Nome:</label>
                 <input type="text" class="form-control" id="nome" name="nome" required>
               </div>
-              <div class="mb-3">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="descricao" class="form-label">Descrição:</label>
                 <input type="text" class="form-control" id="descricao" name="descricao" required>
               </div>
-              <div class="mb-3">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="codigo" class="form-label">Código:</label>
                 <input type="text" class="form-control" id="codigo" name="codigo" required>
               </div>
-              <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="ativo" name="ativo">
-                <label class="form-check-label" for="ativo">Ativo</label>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
               </div>
-              <button type="submit" class="btn btn-primary">Salvar</button>
-            </form>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Organização de Vendas</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar organização de vendas -->
+  <% organizacoes.forEach(organizacao => { %>
+  <div class="modal fade" id="editSalesOrgModal<%= organizacao.id %>" tabindex="-1" aria-labelledby="editSalesOrgModalLabel<%= organizacao.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editSalesOrgModalLabel<%= organizacao.id %>">Editar Organização de Vendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editSalesOrgForm<%= organizacao.id %>" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome<%= organizacao.id %>" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome<%= organizacao.id %>" name="nome" value="<%= organizacao.nome %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao<%= organizacao.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= organizacao.id %>" name="descricao" value="<%= organizacao.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="codigo<%= organizacao.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= organizacao.id %>" name="codigo" value="<%= organizacao.codigo %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="ativo<%= organizacao.id %>" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo<%= organizacao.id %>" name="ativo" <%= organizacao.ativo ? 'checked' : '' %>>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Modais para visualizar organização de vendas -->
+  <% organizacoes.forEach(organizacao => { %>
+  <div class="modal fade" id="viewSalesOrgModal<%= organizacao.id %>" tabindex="-1" aria-labelledby="viewSalesOrgModalLabel<%= organizacao.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewSalesOrgModalLabel<%= organizacao.id %>">Visualizar Organização de Vendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="nomeView<%= organizacao.id %>" class="form-label">Nome:</label>
+              <input type="text" class="form-control" id="nomeView<%= organizacao.id %>" name="nomeView" value="<%= organizacao.nome %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="descricaoView<%= organizacao.id %>" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricaoView<%= organizacao.id %>" name="descricaoView" value="<%= organizacao.descricao %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="codigoView<%= organizacao.id %>" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigoView<%= organizacao.id %>" name="codigoView" value="<%= organizacao.codigo %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="ativoView<%= organizacao.id %>" class="form-label">Ativo:</label>
+              <input type="checkbox" class="form-check-input" id="ativoView<%= organizacao.id %>" name="ativoView" <%= organizacao.ativo ? 'checked' : '' %> disabled>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Modals de edição de organização de vendas (um para cada organização) -->
-    <% organizacoes.forEach(organizacao => { %>
-      <div class="modal fade" id="editSalesOrgModal<%= organizacao.id %>" tabindex="-1" aria-labelledby="editSalesOrgModalLabel<%= organizacao.id %>" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="editSalesOrgModalLabel<%= organizacao.id %>">Editar Organização de Vendas</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form id="editSalesOrgForm<%= organizacao.id %>">
-                <input type="hidden" name="id" value="<%= organizacao.id %>">
-                <div class="mb-3">
-                  <label for="nome<%= organizacao.id %>" class="form-label">Nome:</label>
-                  <input type="text" class="form-control" id="nome<%= organizacao.id %>" name="nome" value="<%= organizacao.nome %>" required>
-                </div>
-                <div class="mb-3">
-                  <label for="descricao<%= organizacao.id %>" class="form-label">Descrição:</label>
-                  <input type="text" class="form-control" id="descricao<%= organizacao.id %>" name="descricao" value="<%= organizacao.descricao %>" required>
-                </div>
-                <div class="mb-3">
-                  <label for="codigo<%= organizacao.id %>" class="form-label">Código:</label>
-                  <input type="text" class="form-control" id="codigo<%= organizacao.id %>" name="codigo" value="<%= organizacao.codigo %>" required>
-                </div>
-                <div class="form-check mb-3">
-                  <input type="checkbox" class="form-check-input" id="ativo<%= organizacao.id %>" name="ativo" <% if (organizacao.ativo) { %> checked <% } %>>
-                  <label class="form-check-label" for="ativo<%= organizacao.id %>">Ativo</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% }) %>
-
   </div>
+  <% }) %>
 
+  <!-- Scripts -->
   <script>
+    function resetAddSalesOrgForm() {
+      document.getElementById('addSalesOrgForm').reset();
+    }
+
     document.getElementById('addSalesOrgForm').addEventListener('submit', async function(event) {
       event.preventDefault();
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
-      data.ativo = data.ativo === 'on';
+
+      const data = {
+        nome: document.getElementById('nome').value,
+        descricao: document.getElementById('descricao').value,
+        codigo: document.getElementById('codigo').value,
+        ativo: document.getElementById('ativo').checked
+      };
 
       const response = await fetch('/organizacaovendas', {
         method: 'POST',
@@ -154,37 +276,43 @@
       if (response.ok) {
         location.reload();
       } else {
-        alert('Erro ao adicionar organização de vendas');
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar organização de vendas');
       }
     });
 
     <% organizacoes.forEach(organizacao => { %>
-      document.getElementById('editSalesOrgForm<%= organizacao.id %>').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
-        data.ativo = data.ativo === 'on';
+    document.getElementById('editSalesOrgForm<%= organizacao.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
 
-        const response = await fetch('/organizacaovendas/<%= organizacao.id %>', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': '<%= _csrf %>'
-          },
-          body: JSON.stringify(data)
-        });
+      const data = {
+        nome: document.getElementById(`nome<%= organizacao.id %>`).value,
+        descricao: document.getElementById(`descricao<%= organizacao.id %>`).value,
+        codigo: document.getElementById(`codigo<%= organizacao.id %>`).value,
+        ativo: document.getElementById(`ativo<%= organizacao.id %>`).checked
+      };
 
-        if (response.ok) {
-          location.reload();
-        } else {
-          alert('Erro ao editar organização de vendas');
-        }
+      const response = await fetch(`/organizacaovendas/<%= organizacao.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
       });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar organização de vendas');
+      }
+    });
     <% }) %>
 
     async function deleteSalesOrg(id) {
       if (confirm('Tem certeza que deseja deletar esta organização de vendas?')) {
-        const response = await fetch('/organizacaovendas/' + id, {
+        const response = await fetch(`/organizacaovendas/${id}`, {
           method: 'DELETE',
           headers: {
             'X-CSRF-Token': '<%= _csrf %>'
@@ -194,9 +322,56 @@
         if (response.ok) {
           location.reload();
         } else {
-          alert('Erro ao deletar organização de vendas');
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar organização de vendas');
         }
       }
+    }
+
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+
+    function editSalesOrg(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editSalesOrgModal${id}`));
+      modal.show();
+    }
+
+    function viewSalesOrg(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewSalesOrgModal${id}`));
+      modal.show();
     }
   </script>
 </body>

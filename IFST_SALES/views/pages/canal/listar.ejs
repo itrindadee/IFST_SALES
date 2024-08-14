@@ -1,51 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canal</title>
 </head>
+
 <body>
-  <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center">
-      <h4>Canal</h4> <!-- Título com tamanho menor -->
-      <div class="d-flex">
-        <input type="text" class="form-control me-2" placeholder="Pesquisar por produto..." style="width: 300px;">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCanalModal" onclick="resetAddCanalForm()">
-          Adicionar Canal
-        </button>
+  <main class="table" id="tabela_canais">
+    <section class="table__header">
+      <div class="titulo-produtos">
+        <h3>Canal</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por canal...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCanalModal">
+            Adicionar Canal
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Grupo Conta</th>
+            <th draggable="true">Código</th>
+            <th draggable="true">Descrição</th>
+            <th draggable="true">Ativo</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% canais.forEach(canal => { %>
+          <tr>
+            <td><%= canal.grupoConta %></td>
+            <td><%= canal.codigo %></td>
+            <td><%= canal.descricao %></td>
+            <td><%= canal.ativo ? 'Sim' : 'Não' %></td>
+            <td>
+              <a href="#" onclick="editCanal(<%= canal.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewCanal(<%= canal.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deleteCanal(<%= canal.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-grupo-conta" name="columns" value="grupo conta" checked>
+                  <label class="form-check-label" for="col-grupo-conta">Grupo Conta</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
+                  <label class="form-check-label" for="col-codigo">Código</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição" checked>
+                  <label class="form-check-label" for="col-descrição">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
+                  <label class="form-check-label" for="col-ativo">Ativo</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                  <label class="form-check-label" for="col-ações">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
       </div>
     </div>
-
-    <!-- Tabela de canais existentes -->
-    <table class="table table-bordered mt-4">
-      <thead>
-        <tr>
-          <th>Grupo Conta</th>
-          <th>Código</th>
-          <th>Descrição</th>
-          <th>Ativo</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% canais.forEach(canal => { %>
-        <tr>
-          <td><%= canal.grupoConta %></td>
-          <td><%= canal.codigo %></td>
-          <td><%= canal.descricao %></td>
-          <td><%= canal.ativo ? 'Sim' : 'Não' %></td>
-          <td>
-            <div class="btn-group" role="group">
-              <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewCanalModal<%= canal.id %>">Visualizar</button>
-              <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCanalModal<%= canal.id %>">Editar</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteCanal(<%= canal.id %>)">Deletar</button>
-            </div>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
   </div>
 
   <!-- Modal para adicionar canal -->
@@ -57,7 +123,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addCanalForm">
+          <form id="addCanalForm" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="grupoConta" class="form-label">Grupo Conta:</label>
@@ -102,7 +168,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="editCanalForm<%= canal.id %>">
+          <form id="editCanalForm<%= canal.id %>" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="grupoConta<%= canal.id %>" class="form-label">Grupo Conta:</label>
@@ -255,6 +321,56 @@
         }
       }
     }
+
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        if (header.textContent.trim() !== '') {
+          console.log(`Header ${index + 1}:`, header.textContent);
+        }
+        // Processa o texto do cabeçalho para garantir correspondência
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+    function editCanal(id) {
+  const modal = new bootstrap.Modal(document.getElementById(`editCanalModal${id}`));
+  modal.show();
+}
+
+function viewCanal(id) {
+  const modal = new bootstrap.Modal(document.getElementById(`viewCanalModal${id}`));
+  modal.show();
+}
   </script>
 </body>
+
 </html>

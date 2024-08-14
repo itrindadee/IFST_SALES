@@ -1,0 +1,453 @@
+
+/* Estilos Globais */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+  th {
+    cursor: move;
+  }
+  .dragging {
+    opacity: 0.5;
+  }
+@media print {
+  .table,
+  .table__body {
+    overflow: visible;
+    height: auto !important;
+    width: auto !important;
+  }
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main.table {
+  width: 96vw;
+  height: 84vh;
+  background-color: #fff5;
+  backdrop-filter: blur(7px);
+  box-shadow: 0 6.4px 12.8px #0005;
+  border-radius: 12.8px;
+  overflow: hidden;
+  margin-left: 50px;
+}
+
+.titulo-produtos h3 {
+  margin: 23.5px;
+}
+
+/* Cabeçalho da Tabela */
+.table__header {
+  width: 100%;
+  height: 10%;
+  background-color: #fff4;
+  padding: 12.8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 4px 10px rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.table__header .table-search-bar {
+  position: relative;
+  max-width: 400px;
+  flex: 1;
+}
+
+.table-search-bar input {
+  width: 100%;
+  padding: 10px 40px 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 16px;
+  outline: none;
+}
+
+.table-search-bar i {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Corpo da Tabela */
+.table__body {
+  width: 95%;
+  max-height: calc(89% - 25.6px);
+  background-color: #fffb;
+  margin: 12.8px auto;
+  border-radius: 9.6px;
+  overflow: auto;
+}
+
+.table__body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0);
+}
+.table__body::-webkit-scrollbar-track {
+  background-color: #0004; /* Torna a pista da barra de rolagem transparente */
+}
+
+.table__body::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #0004;
+  visibility: hidden;
+}
+
+.table__body:hover::-webkit-scrollbar-thumb {
+  visibility: visible;
+  border-radius: 8px;
+}
+
+/* Icone tabela*/
+.table__body td i {
+  font-size: 20px; /* Aumenta o tamanho do ícone */
+  color: #888; /* Define a cor cinza para o ícone */
+  margin: 0 5px; /* Adiciona margem ao redor dos ícones para espaçamento */
+  transition: color 0.3s ease; /* Adiciona uma transição suave na cor */
+}
+
+.table__body td i:hover {
+  color: #555; /* Cor mais escura ao passar o mouse sobre o ícone */
+}
+table {
+  width: 100%;
+}
+
+td img {
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+table,
+th,
+td {
+  border-collapse: collapse;
+  padding: 10px;
+  text-align: left;
+}
+
+/* Cabeçalho da Tabela */
+thead th {
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: #3b4a5fdd;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15),
+    0 4px 6px rgba(0, 0, 0, 0.377);
+  cursor: pointer;
+  text-transform: capitalize;
+  color: #ffffff;
+  transition: transform 0.2s ease-in-out;
+}
+
+thead th:hover {
+  transform: translateY(-2px);
+}
+
+tbody tr:nth-child(even) {
+  background-color: #0000000b;
+}
+
+tbody tr {
+  --delay: 0.1s;
+  transition: 0.5s ease-in-out var(--delay), background-color 0s;
+}
+
+tbody tr.hide {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+tbody tr:hover {
+  background-color: #fff6 !important;
+}
+
+tbody tr td,
+tbody tr td p,
+tbody tr td img {
+  transition: 0.2s ease-in-out;
+}
+
+tbody tr.hide td,
+tbody tr.hide td p {
+  padding: 0;
+  font: 0 / 0 sans-serif;
+  transition: 0.2s ease-in-out 0.5s;
+}
+
+tbody tr.hide td img {
+  width: 0;
+  height: 0;
+  transition: 0.2s ease-in-out 0.5s;
+}
+
+thead th span.icon-arrow i {
+  display: inline-block;
+  font-size: 16px;
+  color: #888;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+thead th.active span.icon-arrow i {
+  color: #ffffff;
+}
+
+thead th.asc span.icon-arrow i {
+  transform: rotate(180deg);
+}
+
+/* Exportação de Arquivos */
+.export__file {
+  position: relative;
+}
+
+.export__file .export__file-btn {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: #fff6 url(/images/export.png) center / 80% no-repeat;
+  border-radius: 50%;
+  transition: 0.2s ease-in-out;
+}
+
+.export__file .export__file-btn:hover {
+  background-color: #fff;
+  transform: scale(1.15);
+  cursor: pointer;
+}
+
+.export__file input {
+  display: none;
+}
+
+.export__file .export__file-options {
+  position: absolute;
+  right: 0;
+  width: 192px;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transform-origin: top right;
+  box-shadow: 0 3.2px 8px #0004;
+  transition: 0.2s;
+  pointer-events: none; /* Impede a interação quando fechado */
+}
+#export-file:checked + .export__file-options {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto; /* Permite interação quando aberto */
+}
+.export__file input:checked+.export__file-options {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 100;
+}
+
+.export__file .export__file-options label {
+  display: block;
+  width: 100%;
+  padding: 9.6px 0;
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  transition: 0.2s ease-in-out;
+}
+
+.export__file .export__file-options label:hover {
+  transform: scale(1.05);
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.export__file .export__file-options img {
+  width: 32px;
+  height: auto;
+}
+/* Estilo para dispositivos móveis */
+@media (max-width: 768px) {
+
+  /* Remover espaço à esquerda no contêiner principal */
+  .table__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinha à esquerda */
+    padding: 0 px !important; /* Padding à direita e à esquerda */
+    width: 100%; /* Ocupa toda a largura disponível */
+    margin-left: 0 !important; /* Remove margem à esquerda */
+    overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+  }
+
+  /* Garantir que a tabela ocupe 100% da largura disponível */
+  .table__body table {
+    width: 100%; /* A tabela ocupará toda a largura do contêiner pai */
+    table-layout: fixed; /* Distribui as colunas uniformemente */
+    margin-left: 0; /* Alinha a tabela à esquerda */
+    padding: 0 10px !important; /* Reduz o padding à direita e à esquerda */
+  }
+
+  /* Ajustar o tamanho das colunas */
+  .table__body th, .table__body td {
+    padding: 15px; /* Espaçamento interno das células */
+    text-align: left; /* Alinha o texto à esquerda */
+    overflow: hidden; /* Esconde conteúdo que não cabe nas células */
+    white-space: nowrap; /* Evita que o texto quebre em várias linhas */
+  }
+
+  /* Garantir que o cabeçalho da tabela ocupe 100% da largura */
+  .table__body thead {
+    width: 100%;
+    display: none; /* Esconde o cabeçalho em dispositivos móveis */
+  }
+
+  .table__body tr {
+    display: flex;
+    flex-direction: row; /* Alinha o conteúdo horizontalmente */
+    justify-content: space-between; /* Espaça os elementos */
+    align-items: center;
+    width: 100%; /* Garante que cada bloco ocupe toda a largura disponível */
+    padding: 25px !important; /* Aumenta o espaçamento interno do bloco */
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 25px; /* Espaço entre os blocos */
+    margin-left: 0; /* Alinha os blocos à esquerda */
+    padding: 20px; /* Aumenta o espaçamento interno do bloco */
+    margin-bottom: 20px; /* Espaço entre os blocos */
+  }
+
+  .table__body tr td {
+    width: calc(100% - 70px); /* Espaço disponível ao lado da imagem */
+    text-align: left; /* Alinha o texto à esquerda */
+    font-size: 18px; /* Ajusta o tamanho da fonte */
+    padding: 10px 20px; /* Ajuste no padding para dar mais espaço interno */
+  }
+
+  .table__body tr td img {
+    max-width: 60px; /* Ajusta a largura máxima da imagem para 60px */
+    height: 60px; /* Define a altura da imagem como 60px */
+    width: 60px !important;
+    border-radius: 50px; /* Torna a imagem com cantos arredondados */
+  }
+
+  .table__body tr td strong {
+    font-size: 1.5em; /* Aumenta o tamanho do texto em negrito */
+    color: #2c3e50;
+    display: block;
+    margin-top: 10px;
+  }
+
+  /* Alinhar texto */
+  .table__body tr td {
+    padding: 0px !important;
+    font-size: 16px;
+  }
+
+  .table__body tr td.id,
+  .table__body tr td.codigo,
+  .table__body tr td.descricao {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+
+  /* Remover a borda do lado esquerdo */
+  .table__body tr {
+    border-left: none;
+  }
+
+  /* Ocultar o título "Produtos" */
+  .titulo-produtos {
+    display: none; /* Oculte o texto completamente */
+  }
+
+  /* Estilo para barra de busca e botão */
+  .table-search-bar {
+    width: calc(100% - 20px); /* Aumenta a barra de pesquisa */
+    display: flex;
+    justify-content: flex-start; /* Alinha à esquerda */
+    align-items: center;
+    padding: 12px 0; /* Ajusta o padding */
+    margin-left: 10px; /* Ajusta a margem à esquerda */
+  }
+
+ .table-search-bar {
+    width: 100%; /* A barra de pesquisa ocupará toda a largura do header */
+    display: flex;
+    justify-content: flex-start; /* Alinha à esquerda */
+    align-items: center;
+    padding: 12px 10px; /* Ajusta o padding */
+    margin-right: -10px; /* Move o contêiner um pouco para a esquerda */
+    position: relative; /* Permite ajustes relativos do input */
+}
+
+  .table-search-bar i {
+    position: absolute; /* Ajusta o ícone dentro do input */
+    right: 15px; /* Move o ícone para a direita */
+    font-size: 15px; /* Aumenta o tamanho do ícone */
+  }
+
+  .btn.btn-primary {
+    font-size: 15px; /* Aumenta o tamanho da fonte do botão */
+    border-radius: 4px; /* Ajuste do raio da borda, se necessário */
+    margin-left: 10px; /* Espaçamento à esquerda do botão */
+  }
+
+  /* Ajustes na barra de navegação */
+  .table__header {
+    width: 100%; /* Faz o header ocupar toda a largura da tela */
+    display: flex;
+    justify-content: flex-start; /* Alinha o conteúdo no header à esquerda */
+    align-items: center;
+    padding: 0px;
+    margin-bottom: 20px; /* Espaçamento inferior */
+    margin-left: 0; /* Remove margem à esquerda */
+  }
+
+  main.table {
+    height: auto !important;
+    background-color: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+    margin-left: 0;
+  }
+
+  /* Esconder colunas que não sejam a imagem, o nome e o código */
+  .table__body tr td:not(:nth-child(1)):not(:nth-child(3)):not(:nth-child(4)) {
+    display: none; /* Esconde todas as colunas, exceto a 1ª, 2ª, 3ª e 4ª */
+  }
+}

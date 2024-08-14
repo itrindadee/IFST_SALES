@@ -4,51 +4,118 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Política de Cadastro</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Política de Cadastro</h1>
+  <main class="table" id="tabela_politica">
+    <section class="table__header">
+      <div class="titulo-politicas">
+        <h3>Política de Cadastro</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por política...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPoliticaModal">
+            Adicionar Política
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+      </div>
+    </section>
 
-    <!-- Botão para abrir o modal de criação de política -->
-    <div class="text-end mb-4">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPoliticaModal" onclick="resetAddPoliticaForm()">
-        Adicionar Política
-      </button>
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Nome</th>
+            <th draggable="true">Condições</th>
+            <th draggable="true">Campo Resultado</th>
+            <th draggable="true">Valor Resultado</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% politicas.forEach(politica => { %>
+          <tr>
+            <td><%= politica.nome %></td>
+            <td>
+              <ul>
+                <% politica.condicoes.forEach(condicao => { %>
+                  <li><%= condicao.campo %> <%= condicao.operador %> <%= condicao.valor %></li>
+                <% }) %>
+              </ul>
+            </td>
+            <td><%= politica.campoResultado %></td>
+            <td><%= politica.valorResultado %></td>
+            <td>
+              <a href="#" onclick="editPolitica(<%= politica.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewPolitica(<%= politica.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deletePolitica(<%= politica.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-nome" name="columns" value="nome" checked>
+                  <label class="form-check-label" for="col-nome">Nome</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-condicoes" name="columns" value="condicoes" checked>
+                  <label class="form-check-label" for="col-condicoes">Condições</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-campoResultado" name="columns" value="campoResultado" checked>
+                  <label class="form-check-label" for="col-campoResultado">Campo Resultado</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-valorResultado" name="columns" value="valorResultado" checked>
+                  <label class="form-check-label" for="col-valorResultado">Valor Resultado</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-acoes" name="columns" value="acoes" checked>
+                  <label class="form-check-label" for="col-acoes">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
     </div>
-
-    <!-- Tabela de políticas existentes -->
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Condições</th>
-          <th>Campo Resultado</th>
-          <th>Valor Resultado</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% politicas.forEach(politica => { %>
-        <tr>
-          <td><%= politica.nome %></td>
-          <td>
-            <ul>
-              <% politica.condicoes.forEach(condicao => { %>
-                <li><%= condicao.campo %> <%= condicao.operador %> <%= condicao.valor %></li>
-              <% }) %>
-            </ul>
-          </td>
-          <td><%= politica.campoResultado %></td>
-          <td><%= politica.valorResultado %></td>
-          <td>
-            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPoliticaModal<%= politica.id %>">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="deletePolitica(<%= politica.id %>)">Deletar</button>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
   </div>
 
   <!-- Modal para adicionar política -->
@@ -60,32 +127,37 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addPoliticaForm">
+          <form id="addPoliticaForm" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="nome" class="form-label">Nome da Política:</label>
                 <input type="text" class="form-control" id="nome" name="nome" required>
               </div>
-              <div class="col-md-12 mb-3">
-                <label for="ativo" class="form-label">Ativo:</label>
-                <input type="checkbox" class="form-check-input" id="ativo" name="ativo">
-              </div>
             </div>
             <div id="maisCondicoes" class="mb-3"></div>
             <div class="row">
-              <div class="col-md-6 mb-3">
+              <div class="col-md-12 mb-3">
                 <label for="campoResultado" class="form-label">Campo Resultado:</label>
                 <input type="text" class="form-control" id="campoResultado" name="campoResultado" required>
               </div>
-              <div class="col-md-6 mb-3">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="valorResultado" class="form-label">Valor Resultado:</label>
                 <input type="text" class="form-control" id="valorResultado" name="valorResultado" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
               </div>
             </div>
             <div class="row">
               <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary me-2" onclick="adicionarCondicao()">Adicionar Condição</button>
                 <button type="submit" class="btn btn-primary">Criar Política</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
               </div>
             </div>
           </form>
@@ -96,75 +168,118 @@
 
   <!-- Modais para editar política -->
   <% politicas.forEach(politica => { %>
-    <div class="modal fade" id="editPoliticaModal<%= politica.id %>" tabindex="-1" aria-labelledby="editPoliticaModalLabel<%= politica.id %>" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editPoliticaModalLabel<%= politica.id %>">Editar Política de Cadastro</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="editPoliticaForm<%= politica.id %>">
-              <div class="row">
-                <div class="col-md-12 mb-3">
-                  <label for="nome<%= politica.id %>" class="form-label">Nome da Política:</label>
-                  <input type="text" class="form-control" id="nome<%= politica.id %>" name="nome" value="<%= politica.nome %>" required>
+  <div class="modal fade" id="editPoliticaModal<%= politica.id %>" tabindex="-1" aria-labelledby="editPoliticaModalLabel<%= politica.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPoliticaModalLabel<%= politica.id %>">Editar Política de Cadastro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editPoliticaForm<%= politica.id %>" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome<%= politica.id %>" class="form-label">Nome da Política:</label>
+                <input type="text" class="form-control" id="nome<%= politica.id %>" name="nome" value="<%= politica.nome %>" required>
+              </div>
+            </div>
+            <div id="maisCondicoesEdit<%= politica.id %>" class="mb-3">
+              <% politica.condicoes.forEach((condicao, index) => { %>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="campoCondicional<%= politica.id %><%= index %>" class="form-label">Campo Condicional:</label>
+                  <input type="text" class="form-control" id="campoCondicional<%= politica.id %><%= index %>" name="campoCondicional" value="<%= condicao.campo %>" required>
                 </div>
-                <div class="col-md-12 mb-3">
-                  <label for="ativo<%= politica.id %>" class="form-label">Ativo:</label>
-                  <input type="checkbox" class="form-check-input" id="ativo<%= politica.id %>" name="ativo" <%= politica.ativo ? 'checked' : '' %>>
+                <div class="col-md-4">
+                  <label for="operadorCondicional<%= politica.id %><%= index %>" class="form-label">Operador:</label>
+                  <select class="form-control" id="operadorCondicional<%= politica.id %><%= index %>" name="operadorCondicional" required>
+                    <option value="=" <%= condicao.operador === '=' ? 'selected' : '' %>>=</option>
+                    <option value="!=" <%= condicao.operador === '!=' ? 'selected' : '' %>>!=</option>
+                    <option value=">" <%= condicao.operador === '>' ? 'selected' : '' %>>&gt;</option>
+                    <option value="<" <%= condicao.operador === '<' ? 'selected' : '' %>>&lt;</option>
+                    <option value=">=" <%= condicao.operador === '>=' ? 'selected' : '' %>>&gt;=</option>
+                    <option value="<=" <%= condicao.operador === '<=' ? 'selected' : '' %>>&lt;=</option>
+                    <option value="&&" <%= condicao.operador === '&&' ? 'selected' : '' %>>E</option>
+                    <option value="||" <%= condicao.operador === '||' ? 'selected' : '' %>>Ou</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="valorCondicional<%= politica.id %><%= index %>" class="form-label">Valor Condicional:</label>
+                  <input type="text" class="form-control" id="valorCondicional<%= politica.id %><%= index %>" name="valorCondicional" value="<%= condicao.valor %>" required>
                 </div>
               </div>
-              <div class="row">
-                <% politica.condicoes.forEach((condicao, index) => { %>
-                <div class="row mb-3">
-                  <div class="col-md-4">
-                    <label for="campoCondicional<%= politica.id %><%= index %>" class="form-label">Campo Condicional:</label>
-                    <input type="text" class="form-control" id="campoCondicional<%= politica.id %><%= index %>" name="campoCondicional" value="<%= condicao.campo %>" required>
-                  </div>
-                  <div class="col-md-4">
-                    <label for="operadorCondicional<%= politica.id %><%= index %>" class="form-label">Operador:</label>
-                    <select class="form-control" id="operadorCondicional<%= politica.id %><%= index %>" name="operadorCondicional" required>
-                      <option value="=" <%= condicao.operador === '=' ? 'selected' : '' %>>=</option>
-                      <option value="!=" <%= condicao.operador === '!=' ? 'selected' : '' %>>!=</option>
-                      <option value=">" <%= condicao.operador === '>' ? 'selected' : '' %>>&gt;</option>
-                      <option value="<" <%= condicao.operador === '<' ? 'selected' : '' %>>&lt;</option>
-                      <option value=">=" <%= condicao.operador === '>=' ? 'selected' : '' %>>&gt;=</option>
-                      <option value="<=" <%= condicao.operador === '<=' ? 'selected' : '' %>>&lt;=</option>
-                      <option value="&&" <%= condicao.operador === '&&' ? 'selected' : '' %>>E</option>
-                      <option value="||" <%= condicao.operador === '||' ? 'selected' : '' %>>Ou</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <label for="valorCondicional<%= politica.id %><%= index %>" class="form-label">Valor Condicional:</label>
-                    <input type="text" class="form-control" id="valorCondicional<%= politica.id %><%= index %>" name="valorCondicional" value="<%= condicao.valor %>" required>
-                  </div>
-                </div>
-                <% }) %>
+              <% }) %>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="campoResultado<%= politica.id %>" class="form-label">Campo Resultado:</label>
+                <input type="text" class="form-control" id="campoResultado<%= politica.id %>" name="campoResultado" value="<%= politica.campoResultado %>" required>
               </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="valorResultado<%= politica.id %>" class="form-label">Valor Resultado:</label>
+                <input type="text" class="form-control" id="valorResultado<%= politica.id %>" name="valorResultado" value="<%= politica.valorResultado %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="ativo<%= politica.id %>" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo<%= politica.id %>" name="ativo" <%= politica.ativo ? 'checked' : '' %>>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary me-2" onclick="adicionarCondicaoEdit(<%= politica.id %>)">Adicionar Condição</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
 
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="campoResultado<%= politica.id %>" class="form-label">Campo Resultado:</label>
-                  <input type="text" class="form-control" id="campoResultado<%= politica.id %>" name="campoResultado" value="<%= politica.campoResultado %>" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="valorResultado<%= politica.id %>" class="form-label">Valor Resultado:</label>
-                  <input type="text" class="form-control" id="valorResultado<%= politica.id %>" name="valorResultado" value="<%= politica.valorResultado %>" required>
-                </div>
-              </div>
-              <div class="row">
-                <div id="maisCondicoesEdit<%= politica.id %>" class="mb-3"></div>
-                <div class="d-flex justify-content-between">
-                  <button type="button" class="btn btn-secondary me-2" onclick="adicionarCondicaoEdit(<%= politica.id %>)">Adicionar Condição</button>
-                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                </div>
-              </div>
-            </form>
+  <!-- Modais para visualizar política -->
+  <% politicas.forEach(politica => { %>
+  <div class="modal fade" id="viewPoliticaModal<%= politica.id %>" tabindex="-1" aria-labelledby="viewPoliticaModalLabel<%= politica.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewPoliticaModalLabel<%= politica.id %>">Visualizar Política de Cadastro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="nomeView<%= politica.id %>" class="form-label">Nome da Política:</label>
+              <input type="text" class="form-control" id="nomeView<%= politica.id %>" name="nomeView" value="<%= politica.nome %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="campoResultadoView<%= politica.id %>" class="form-label">Campo Resultado:</label>
+              <input type="text" class="form-control" id="campoResultadoView<%= politica.id %>" name="campoResultadoView" value="<%= politica.campoResultado %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="valorResultadoView<%= politica.id %>" class="form-label">Valor Resultado:</label>
+              <input type="text" class="form-control" id="valorResultadoView<%= politica.id %>" name="valorResultadoView" value="<%= politica.valorResultado %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="ativoView<%= politica.id %>" class="form-label">Ativo:</label>
+              <input type="checkbox" class="form-check-input" id="ativoView<%= politica.id %>" name="ativoView" <%= politica.ativo ? 'checked' : '' %> disabled>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   <% }) %>
 
   <!-- Scripts -->
@@ -351,8 +466,52 @@
         }
       }
     }
-  </script>
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+
+    function editPolitica(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editPoliticaModal${id}`));
+      modal.show();
+    }
+
+    function viewPolitica(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewPoliticaModal${id}`));
+      modal.show();
+    }
+  </script>
 </body>
 </html>

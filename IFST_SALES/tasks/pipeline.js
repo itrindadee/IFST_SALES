@@ -71,6 +71,8 @@ var jsFilesToInject = [
   'dependencies/jquery.min.js',
   'dependencies/vue.js',
   'dependencies/vue-router.js',
+  'dependencies/jspdf/jspdf.umd.min.js',
+  'dependencies/jspdf/jspdf.plugin.autotable.js',
   'dependencies/**/*.js',
 
   // First amongst the app-level files, bring in cloud configuration

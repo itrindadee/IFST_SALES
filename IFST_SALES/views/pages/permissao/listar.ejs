@@ -3,248 +3,319 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Listar Permissões</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Permissões</title>
 </head>
+
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Lista de Permissões</h1>
-
-    <!-- Filtros -->
-    <form method="GET" action="/permissoes/listar" class="mb-4">
-      <div class="form-row">
-        <div class="form-group col-md-4">
-          <label for="nome">Nome:</label>
-          <input type="text" class="form-control" id="nome" name="nome" value="<%= typeof nome !== 'undefined' ? nome : '' %>">
+  <main class="table" id="tabela_permissoes">
+    <section class="table__header">
+      <div class="titulo-permissoes">
+        <h3>Permissões</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por permissão...">
+          <i class="fas fa-search"></i>
         </div>
-        <div class="form-group col-md-4">
-          <label for="descricao">Descrição:</label>
-          <input type="text" class="form-control" id="descricao" name="descricao" value="<%= typeof descricao !== 'undefined' ? descricao : '' %>">
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPermissaoModal">
+            Adicionar Permissão
+          </button>
         </div>
-        <div class="form-group col-md-4 d-flex align-items-end justify-content-end">
-          <!-- Botão Filtrar (alinhado à direita) -->
-          <button type="submit" class="btn btn-primary">Filtrar</button>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group col-md-12 d-flex justify-content-end">
-          <!-- Botão Adicionar (alinhado à direita) -->
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPermissaoModal">Adicionar Permissão</button>
-        </div>
-      </div>
-    </form>
+    </section>
 
-    <!-- Lista de Permissões -->
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="permissaoList">
-        <% permissoes.forEach(permissao => { %>
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Nome</th>
+            <th draggable="true">Descrição</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% permissoes.forEach(permissao => { %>
           <tr>
             <td><%= permissao.nome %></td>
             <td><%= permissao.descricao %></td>
             <td>
-              <button class="btn btn-sm btn-warning editarPermissao" data-id="<%= permissao.id %>" data-toggle="modal" data-target="#editPermissaoModal">Editar</button>
-              <button class="btn btn-danger btn-sm" onclick="deletePermissao(<%= permissao.id %>)">Deletar</button>
+              <a href="#" onclick="editPermissao(<%= permissao.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewPermissao(<%= permissao.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deletePermissao(<%= permissao.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
             </td>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
 
-    <!-- Modal para adicionar permissão -->
-    <div class="modal fade" id="addPermissaoModal" tabindex="-1" role="dialog" aria-labelledby="addPermissaoModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addPermissaoModalLabel">Criar Permissão</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="addPermissaoForm">
-              <div class="form-group">
-                <label for="nome">Nome:</label>
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-nome" name="columns" value="nome" checked>
+                  <label class="form-check-label" for="col-nome">Nome</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descricao" checked>
+                  <label class="form-check-label" for="col-descricao">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-acoes" name="columns" value="acoes" checked>
+                  <label class="form-check-label" for="col-acoes">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para adicionar permissão -->
+  <div class="modal fade" id="addPermissaoModal" tabindex="-1" aria-labelledby="addPermissaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPermissaoModalLabel">Adicionar Permissão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addPermissaoForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome" class="form-label">Nome:</label>
                 <input type="text" class="form-control" id="nome" name="nome" required>
               </div>
-              <div class="form-group">
-                <label for="descricao">Descrição:</label>
-                <input type="text" class="form-control" id="descricao" name="descricao">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
               </div>
-              <button type="submit" class="btn btn-primary">Criar</button>
-            </form>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Permissão</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar permissão -->
+  <% permissoes.forEach(permissao => { %>
+  <div class="modal fade" id="editPermissaoModal<%= permissao.id %>" tabindex="-1" aria-labelledby="editPermissaoModalLabel<%= permissao.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPermissaoModalLabel<%= permissao.id %>">Editar Permissão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editPermissaoForm<%= permissao.id %>" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome<%= permissao.id %>" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome<%= permissao.id %>" name="nome" value="<%= permissao.nome %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao<%= permissao.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= permissao.id %>" name="descricao" value="<%= permissao.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Modais para visualizar permissão -->
+  <% permissoes.forEach(permissao => { %>
+  <div class="modal fade" id="viewPermissaoModal<%= permissao.id %>" tabindex="-1" aria-labelledby="viewPermissaoModalLabel<%= permissao.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewPermissaoModalLabel<%= permissao.id %>">Visualizar Permissão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="nomeView<%= permissao.id %>" class="form-label">Nome:</label>
+              <input type="text" class="form-control" id="nomeView<%= permissao.id %>" name="nomeView" value="<%= permissao.nome %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="descricaoView<%= permissao.id %>" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricaoView<%= permissao.id %>" name="descricaoView" value="<%= permissao.descricao %>" readonly>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+  <% }) %>
 
-    <!-- Modal para editar permissão -->
-    <div class="modal fade" id="editPermissaoModal" tabindex="-1" role="dialog" aria-labelledby="editPermissaoModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editPermissaoModalLabel">Editar Permissão</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="editPermissaoForm">
-              <input type="hidden" id="permissaoId">
-              <div class="form-group">
-                <label for="editNome">Nome:</label>
-                <input type="text" class="form-control" id="editNome" name="nome" required>
-              </div>
-              <div class="form-group">
-                <label for="editDescricao">Descrição:</label>
-                <input type="text" class="form-control" id="editDescricao" name="descricao">
-              </div>
-              <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Scripts -->
+  <script>
+    function resetAddPermissaoForm() {
+      document.getElementById('addPermissaoForm').reset();
+    }
 
-    <!-- Modal de Mensagem -->
-    <div class="modal fade" id="mensagemModal" tabindex="-1" role="dialog" aria-labelledby="mensagemModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content bg-dark text-light">
-          <div class="modal-header border-0">
-            <h5 class="modal-title" id="mensagemModalLabel">Mensagem</h5>
-            <button type="button" class="close text-light" data-dismiss="modal" aria-label="Fechar">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class .modal-body">
-            <p id="mensagemTexto"></p>
-          </div>
-          <div class="modal-footer border-0">
-            <button type="button" id="fecharModalMensagem" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    document.getElementById('addPermissaoForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('fecharModalMensagem').addEventListener('click', fecharModalMensagem);
-        document.getElementById('addPermissaoForm').addEventListener('submit', criarPermissao);
-        document.getElementById('editPermissaoForm').addEventListener('submit', editarPermissao);
+      const data = {
+        nome: document.getElementById('nome').value,
+        descricao: document.getElementById('descricao').value
+      };
+
+      const response = await fetch('/permissoes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
       });
 
-      document.querySelectorAll('.editarPermissao').forEach(button => {
-        button.addEventListener('click', carregarPermissaoParaEdicao);
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao criar permissão');
+      }
+    });
+
+    <% permissoes.forEach(permissao => { %>
+    document.getElementById('editPermissaoForm<%= permissao.id %>').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        nome: document.getElementById(`nome<%= permissao.id %>`).value,
+        descricao: document.getElementById(`descricao<%= permissao.id %>`).value
+      };
+
+      const response = await fetch(`/permissoes/<%= permissao.id %>`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
       });
 
-      async function criarPermissao(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
+      if (response.ok) {
+        location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao atualizar permissão');
+      }
+    });
+    <% }) %>
 
-        try {
-          const response = await fetch('/permissoes', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': '<%= _csrf %>'
-            },
-            body: JSON.stringify(data)
-          });
-
-          if (response.ok) {
-            location.reload();
-          } else {
-            throw new Error('Erro ao adicionar permissão');
+    async function deletePermissao(id) {
+      if (confirm('Tem certeza que deseja deletar esta permissão?')) {
+        const response = await fetch(`/permissoes/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
           }
-        } catch (error) {
-          console.error(error);
-          alert(error.message);
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao deletar permissão');
         }
       }
+    }
 
-      async function carregarPermissaoParaEdicao() {
-        const permissaoId = this.dataset.id;
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-        try {
-          const response = await fetch(`/permissoes/${permissaoId}`);
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
 
-          if (response.ok) {
-            const permissao = await response.json();
-            document.getElementById('permissaoId').value = permissao.id;
-            document.getElementById('editNome').value = permissao.nome;
-            document.getElementById('editDescricao').value = permissao.descricao;
-          } else {
-            throw new Error('Erro ao carregar dados da permissão');
-          }
-        } catch (error) {
-          console.error(error);
-          alert(error.message);
-        }
-      }
+      headers.forEach((header, index) => {
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-      async function editarPermissao(event) {
-        event.preventDefault();
-        const permissaoId = document.getElementById('permissaoId').value;
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
-
-        try {
-          const response = await fetch(`/permissoes/${permissaoId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': '<%= _csrf %>'
-            },
-            body: JSON.stringify(data)
-          });
-
-          if (response.ok) {
-            location.reload();
-          } else {
-            throw new Error('Erro ao editar permissão');
-          }
-        } catch (error) {
-          console.error(error);
-          alert(error.message);
-        }
-      }
-
-      async function deletePermissao(id) {
-        if (confirm('Tem certeza que deseja deletar esta permissão?')) {
-          try {
-            const response = await fetch(`/permissoes/${id}`, {
-              method: 'DELETE',
-              headers: {
-                'X-CSRF-Token': '<%= _csrf %>'
-              }
-            });
-
-            if (response.ok) {
-              location.reload();
-            } else {
-              throw new Error('Erro ao deletar permissão');
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
             }
-          } catch (error) {
-            console.error(error);
-            alert(error.message);
-          }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
         }
-      }
+      });
 
-      function fecharModalMensagem() {
-        $('#mensagemModal').modal('hide');
-      }
-    </script>
-  </body>
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+
+    function editPermissao(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editPermissaoModal${id}`));
+      modal.show();
+    }
+
+    function viewPermissao(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewPermissaoModal${id}`));
+      modal.show();
+    }
+  </script>
+</body>
 </html>
-

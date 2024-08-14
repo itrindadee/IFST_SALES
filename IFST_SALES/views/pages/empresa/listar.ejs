@@ -1,192 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Empresas</title>
-  <style>
-    /* Estilos personalizados */
-    .config-option {
-      border: 1px solid #ddd;
-      padding: 20px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      height: 100%;
-    }
-    .config-section {
-      margin-top: 20px;
-    }
-    .btn:hover {
-      background-color: #007bff; /* Azul padrão do Bootstrap */
-      color: #fff; /* Cor do texto branco */
-    }
-    .row > [class*='col-'] {
-      margin-bottom: 15px;
-    }
-    .table-responsive {
-      margin-top: 20px;
-    }
-    .form-label {
-      font-weight: bold;
-    }
-    .form-control {
-      border-radius: 5px;
-    }
-    .table {
-      margin-bottom: 0;
-    }
-    .table tbody tr:nth-child(even) {
-      background-color: #f9f9f9; /* Cor para as linhas pares */
-    }
-
-    .table tbody tr:nth-child(odd) {
-      background-color: #ffffff; /* Cor para as linhas ímpares */
-    }
-  </style>
 </head>
-<body>
-  <div class="container-fluid">
-    <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-md-4">
-      <h1 class="text-center">Empresas</h1>
 
-      <!-- Filtros -->
-      <div class="config-section">
-        <div class="row">
-          <div class="col-md-3">
-            <div class="config-option">
-              <label for="codigo" class="form-label">Código da Empresa:</label>
-              <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="config-option">
-              <label for="razaoSocial" class="form-label">Razão Social:</label>
-              <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" value="<%= typeof razaoSocial !== 'undefined' ? razaoSocial : '' %>">
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="config-option">
-              <label for="cnpj" class="form-label">CNPJ:</label>
-              <input type="text" class="form-control" id="cnpj" name="cnpj" value="<%= typeof cnpj !== 'undefined' ? cnpj : '' %>">
-            </div>
-          </div>
-          <div class="col-md-3 d-flex justify-content-end">
-            <div class="config-option">
-              <div class="row d-flex flex-column">
-                <button type="submit" class="btn btn-primary mb-2">Filtrar</button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmpresaModal">Adicionar Empresa</button>
-              </div>
-            </div>
-          </div>
+<body>
+  <main class="table" id="tabela_empresas">
+    <section class="table__header">
+      <div class="titulo-empresas">
+        <h3>Empresas</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por empresa...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmpresaModal">
+            Adicionar Empresa
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
         </div>
       </div>
+    </section>
 
-      <!-- Tabela de Empresas -->
-      <div class="table-responsive">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Razão Social</th>
-              <th>CNPJ</th>
-              <th>Endereço</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% empresas.forEach(empresa => { %>
-              <tr>
-                <td><%= empresa.codigo %></td>
-                <td><%= empresa.razaoSocial %></td>
-                <td><%= empresa.cnpj %></td>
-                <td><%= empresa.endereco %></td>
-                <td>
-                  <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editEmpresaModal<%= empresa.id %>">Editar</button>
-                  <button class="btn btn-danger btn-sm" onclick="deleteEmpresa(<%= empresa.id %>)">Deletar</button>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Código</th>
+            <th draggable="true">Razão Social</th>
+            <th draggable="true">CNPJ</th>
+            <th draggable="true">Endereço</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% empresas.forEach(empresa => { %>
+          <tr>
+            <td><%= empresa.codigo %></td>
+            <td><%= empresa.razaoSocial %></td>
+            <td><%= empresa.cnpj %></td>
+            <td><%= empresa.endereco %></td>
+            <td>
+              <a href="#" onclick="editEmpresa(<%= empresa.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewEmpresa(<%= empresa.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deleteEmpresa(<%= empresa.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
+                  <label class="form-check-label" for="col-codigo">Código</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-razao-social" name="columns" value="razão social" checked>
+                  <label class="form-check-label" for="col-razao-social">Razão Social</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-cnpj" name="columns" value="cnpj" checked>
+                  <label class="form-check-label" for="col-cnpj">CNPJ</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-endereco" name="columns" value="endereço" checked>
+                  <label class="form-check-label" for="col-endereco">Endereço</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                  <label class="form-check-label" for="col-ações">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
       </div>
-    </main>
+    </div>
   </div>
 
   <!-- Modal para adicionar empresa -->
   <div class="modal fade" id="addEmpresaModal" tabindex="-1" aria-labelledby="addEmpresaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addEmpresaModalLabel">Adicionar Empresa</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addEmpresaForm">
-            <div class="mb-3">
-              <label for="codigo" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigo" name="codigo" required>
+          <form id="addEmpresaForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="razaoSocial" class="form-label">Razão Social:</label>
-              <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="razaoSocial" class="form-label">Razão Social:</label>
+                <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="cnpj" class="form-label">CNPJ:</label>
-              <input type="text" class="form-control" id="cnpj" name="cnpj" required>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="cnpj" class="form-label">CNPJ:</label>
+                <input type="text" class="form-control" id="cnpj" name="cnpj" required>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="endereco" class="form-label">Endereço:</label>
-              <input type="text" class="form-control" id="endereco" name="endereco">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="endereco" class="form-label">Endereço:</label>
+                <input type="text" class="form-control" id="endereco" name="endereco">
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary">Salvar</button>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Empresa</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Formulário de Edição no Modal -->
+  <!-- Modais para editar empresa -->
   <% empresas.forEach(empresa => { %>
-    <div class="modal fade" id="editEmpresaModal<%= empresa.id %>" tabindex="-1" aria-labelledby="editEmpresaModalLabel<%= empresa.id %>" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editEmpresaModalLabel<%= empresa.id %>">Editar Empresa</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="editEmpresaForm<%= empresa.id %>">
-              <input type="hidden" name="id" value="<%= empresa.id %>">
-              <div class="mb-3">
+  <div class="modal fade" id="editEmpresaModal<%= empresa.id %>" tabindex="-1" aria-labelledby="editEmpresaModalLabel<%= empresa.id %>"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editEmpresaModalLabel<%= empresa.id %>">Editar Empresa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editEmpresaForm<%= empresa.id %>" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="codigo<%= empresa.id %>" class="form-label">Código:</label>
                 <input type="text" class="form-control" id="codigo<%= empresa.id %>" name="codigo" value="<%= empresa.codigo %>" required>
               </div>
-              <div class="mb-3">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="razaoSocial<%= empresa.id %>" class="form-label">Razão Social:</label>
                 <input type="text" class="form-control" id="razaoSocial<%= empresa.id %>" name="razaoSocial" value="<%= empresa.razaoSocial %>" required>
               </div>
-              <div class="mb-3">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="cnpj<%= empresa.id %>" class="form-label">CNPJ:</label>
                 <input type="text" class="form-control" id="cnpj<%= empresa.id %>" name="cnpj" value="<%= empresa.cnpj %>" required>
               </div>
-              <div class="mb-3">
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
                 <label for="endereco<%= empresa.id %>" class="form-label">Endereço:</label>
                 <input type="text" class="form-control" id="endereco<%= empresa.id %>" name="endereco" value="<%= empresa.endereco %>">
               </div>
-              <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-            </form>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Modais para visualizar empresa -->
+  <% empresas.forEach(empresa => { %>
+  <div class="modal fade" id="viewEmpresaModal<%= empresa.id %>" tabindex="-1" aria-labelledby="viewEmpresaModalLabel<%= empresa.id %>"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewEmpresaModalLabel<%= empresa.id %>">Visualizar Empresa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="codigoView<%= empresa.id %>" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigoView<%= empresa.id %>" name="codigoView" value="<%= empresa.codigo %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="razaoSocialView<%= empresa.id %>" class="form-label">Razão Social:</label>
+              <input type="text" class="form-control" id="razaoSocialView<%= empresa.id %>" name="razaoSocialView" value="<%= empresa.razaoSocial %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="cnpjView<%= empresa.id %>" class="form-label">CNPJ:</label>
+              <input type="text" class="form-control" id="cnpjView<%= empresa.id %>" name="cnpjView" value="<%= empresa.cnpj %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="enderecoView<%= empresa.id %>" class="form-label">Endereço:</label>
+              <input type="text" class="form-control" id="enderecoView<%= empresa.id %>" name="enderecoView" value="<%= empresa.endereco %>" readonly>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   <% }) %>
 
-  <!-- Scripts para manipulação do formulário -->
+  <!-- Scripts -->
   <script>
-    document.getElementById('addEmpresaForm').addEventListener('submit', async function(event) {
+    function resetAddEmpresaForm() {
+      document.getElementById('addEmpresaForm').reset();
+    }
+
+    document.getElementById('addEmpresaForm').addEventListener('submit', async function (event) {
       event.preventDefault();
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
+
+      const data = {
+        codigo: document.getElementById('codigo').value,
+        razaoSocial: document.getElementById('razaoSocial').value,
+        cnpj: document.getElementById('cnpj').value,
+        endereco: document.getElementById('endereco').value
+      };
 
       const response = await fetch('/empresa', {
         method: 'POST',
@@ -201,17 +280,22 @@
         location.reload();
       } else {
         const error = await response.json();
-        alert(error.error || 'Erro ao adicionar empresa');
+        alert(error.error || 'Erro ao criar empresa');
       }
     });
 
     <% empresas.forEach(empresa => { %>
-    document.getElementById('editEmpresaForm<%= empresa.id %>').addEventListener('submit', async function(event) {
+    document.getElementById('editEmpresaForm<%= empresa.id %>').addEventListener('submit', async function (event) {
       event.preventDefault();
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
 
-      const response = await fetch(`/empresa/${<%= empresa.id %>}`, {
+      const data = {
+        codigo: document.getElementById(`codigo<%= empresa.id %>`).value,
+        razaoSocial: document.getElementById(`razaoSocial<%= empresa.id %>`).value,
+        cnpj: document.getElementById(`cnpj<%= empresa.id %>`).value,
+        endereco: document.getElementById(`endereco<%= empresa.id %>`).value
+      };
+
+      const response = await fetch(`/empresa/<%= empresa.id %>`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -246,11 +330,57 @@
         }
       }
     }
+
+    function editEmpresa(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editEmpresaModal${id}`));
+      modal.show();
+    }
+
+    function viewEmpresa(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewEmpresaModal${id}`));
+      modal.show();
+    }
+
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        if (header.textContent.trim() !== '') {
+          console.log(`Header ${index + 1}:`, header.textContent);
+        }
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none'; // Oculta a célula correspondente
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
   </script>
 
-  <!-- Inclua os arquivos JS do Bootstrap no final do body -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.min.js"></script>
 </body>
+
 </html>

@@ -1,44 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grupos Conta</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
 </head>
+
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Grupos Conta</h1>
+  <main class="table" id="tabela_gruposConta">
+    <section class="table__header">
+      <div class="titulo-gruposConta">
+        <h3>Grupos Conta</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por grupo conta...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGrupoModal">
+            Adicionar Grupo Conta
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+      </div>
+    </section>
 
-    <!-- Botão para abrir o modal de criação de grupo -->
-    <div class="text-end mb-4">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGrupoModal" onclick="resetAddGrupoForm()">
-        Adicionar Grupo Conta
-      </button>
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Código</th>
+            <th draggable="true">Descrição</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% grupos.forEach(grupo => { %>
+          <tr>
+            <td><%= grupo.codigo %></td>
+            <td><%= grupo.descricao %></td>
+            <td>
+              <a href="#" onclick="editGrupo(<%= grupo.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewGrupo(<%= grupo.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deleteGrupo(<%= grupo.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
+                  <label class="form-check-label" for="col-codigo">Código</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição" checked>
+                  <label class="form-check-label" for="col-descrição">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                  <label class="form-check-label" for="col-ações">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
     </div>
-
-    <!-- Tabela de grupos existentes -->
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Descrição</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% grupos.forEach(grupo => { %>
-        <tr>
-          <td><%= grupo.codigo %></td>
-          <td><%= grupo.descricao %></td>
-          <td>
-            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editGrupoModal<%= grupo.id %>">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteGrupo(<%= grupo.id %>)">Deletar</button>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
   </div>
 
   <!-- Modal para adicionar grupo -->
@@ -50,18 +107,24 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addGrupoForm">
-            <div class="mb-3">
-              <label for="codigo" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigo" name="codigo" required>
+          <form id="addGrupoForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="descricao" class="form-label">Descrição:</label>
-              <input type="text" class="form-control" id="descricao" name="descricao" required>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
             </div>
-            <div class="d-flex justify-content-between">
-              <button type="submit" class="btn btn-primary">Criar Grupo</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Grupo Conta</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
             </div>
           </form>
         </div>
@@ -79,20 +142,54 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="editGrupoForm<%= grupo.id %>">
-            <div class="mb-3">
-              <label for="codigo<%= grupo.id %>" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigo<%= grupo.id %>" name="codigo" value="<%= grupo.codigo %>" required>
+          <form id="editGrupoForm<%= grupo.id %>" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="codigo<%= grupo.id %>" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo<%= grupo.id %>" name="codigo" value="<%= grupo.codigo %>" required>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="descricao<%= grupo.id %>" class="form-label">Descrição:</label>
-              <input type="text" class="form-control" id="descricao<%= grupo.id %>" name="descricao" value="<%= grupo.descricao %>" required>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao<%= grupo.id %>" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao<%= grupo.id %>" name="descricao" value="<%= grupo.descricao %>" required>
+              </div>
             </div>
-            <div class="d-flex justify-content-between">
-              <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
+  <!-- Modais para visualizar grupo -->
+  <% grupos.forEach(grupo => { %>
+  <div class="modal fade" id="viewGrupoModal<%= grupo.id %>" tabindex="-1" aria-labelledby="viewGrupoModalLabel<%= grupo.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewGrupoModalLabel<%= grupo.id %>">Visualizar Grupo Conta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="codigoView<%= grupo.id %>" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigoView<%= grupo.id %>" name="codigoView" value="<%= grupo.codigo %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="descricaoView<%= grupo.id %>" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricaoView<%= grupo.id %>" name="descricaoView" value="<%= grupo.descricao %>" readonly>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -135,8 +232,8 @@
       event.preventDefault();
 
       const data = {
-        codigo: document.getElementById('codigo<%= grupo.id %>').value,
-        descricao: document.getElementById('descricao<%= grupo.id %>').value
+        codigo: document.getElementById(`codigo<%= grupo.id %>`).value,
+        descricao: document.getElementById(`descricao<%= grupo.id %>`).value
       };
 
       const response = await fetch(`/grupoConta/<%= grupo.id %>`, {
@@ -174,8 +271,53 @@
         }
       }
     }
-  </script>
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    function editGrupo(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editGrupoModal${id}`));
+      modal.show();
+    }
+
+    function viewGrupo(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewGrupoModal${id}`));
+      modal.show();
+    }
+
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+  </script>
 </body>
+
 </html>

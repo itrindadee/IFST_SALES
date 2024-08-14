@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produto</title>
+</head>
+
+<body>
+  <main class="table" id="tabela_produtos">
+    <section class="table__header">
+      <div class="titulo-produtos">
+        <h3>Produtos</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquise uma ação...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProdutoModal">
+            Criar Produto
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+        <div class="export__file-container">
+          <div class="export__file">
+            <label for="export-file" class="export__file-btn" title="Export File"></label>
+            <input type="checkbox" id="export-file">
+            <div class="export__file-options">
+              <label for="export-file" id="toPDF">PDF <img src="/images/pdf.png" alt=""></label>
+              <label for="export-file" id="toCSV">CSV <img src="/images/csv.png" alt=""></label>
+              <label for="export-file" id="toEXCEL">EXCEL <img src="/images/excel.png" alt=""></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true"></th>
+            <th draggable="true">Id <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Nome <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Código <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Descrição <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Preço <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Marca <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Grupo de Produto <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Categoria <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Subcategoria <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true">Ações <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% produtos.forEach(produto=> { %>
+            <tr>
+              <td><img src="<%= produto.caminhoImagem %>" alt="Imagem do Produto" width="50"></td>
+              <td>
+                <%= produto.id %>
+              </td>
+              <td>
+                <%= produto.nome %>
+              </td>
+              <td>
+                <%= produto.codigo %>
+              </td>
+              <td>
+                <%= produto.descricao %>
+              </td>
+              <td><strong>R$<%= produto.preco %></strong></td>
+              <td>
+                <%= produto.marca ? produto.marca.descricao : 'N/A' %>
+              </td>
+              <td>
+                <%= produto.grupoproduto ? produto.grupoproduto.descricao : 'N/A' %>
+              </td>
+              <td>
+                <%= produto.categoria ? produto.categoria.descricao : 'N/A' %>
+              </td>
+              <td>
+                <%= produto.subcategoria ? produto.subcategoria.descricao : 'N/A' %>
+              </td>
+              <td>
+                <a href="#" onclick="editProduto(<%= produto.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                <a href="#" onclick="viewProduto(<%= produto.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                <a href="#" onclick="deleteProduto(<%= produto.id %>);" title="Deletar"><i
+                    class="fas fa-trash-alt"></i></a>
+              </td>
+            </tr>
+            <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-imagem" name="columns" value="imagem" checked>
+                  <label class="form-check-label" for="col-imagem">Imagem</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-id" name="columns" value="id" checked>
+                  <label class="form-check-label" for="col-id">Id</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-nome" name="columns" value="nome" checked>
+                  <label class="form-check-label" for="col-nome">Nome</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
+                  <label class="form-check-label" for="col-codigo">Código</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição"
+                    checked>
+                  <label class="form-check-label" for="col-descrição">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-preço" name="columns" value="preço" checked>
+                  <label class="form-check-label" for="col-preço">Preço</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-marca" name="columns" value="marca" checked>
+                  <label class="form-check-label" for="col-marca">Marca</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-grupo-produto" name="columns"
+                    value="grupo de produto" checked>
+                  <label class="form-check-label" for="col-grupo-produto">Grupo de Produto</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-categoria" name="columns" value="categoria"
+                    checked>
+                  <label class="form-check-label" for="col-categoria">Categoria</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-subcategoria" name="columns"
+                    value="subcategoria" checked>
+                  <label class="form-check-label" for="col-subcategoria">Subcategoria</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                  <label class="form-check-label" for="col-ações">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para adicionar produto -->
+  <div class="modal fade" id="addProdutoModal" tabindex="-1" aria-labelledby="addProdutoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addProdutoModalLabel">Adicionar Produto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addProdutoForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="codigo" class="form-label">Código:</label>
+                <input type="text" class="form-control" id="codigo" name="codigo" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="preco" class="form-label">Preço:</label>
+                <input type="number" class="form-control" id="preco" name="preco" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="marca" class="form-label">Marca:</label>
+                <select class="form-control" id="marca" name="marca" required>
+                  <% marcas.forEach(marca=> { %>
+                    <option value="<%= marca.id %>">
+                      <%= marca.descricao %>
+                    </option>
+                    <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="grupoproduto" class="form-label">Grupo de Produto:</label>
+                <select class="form-control" id="grupoproduto" name="grupoproduto" required>
+                  <% grupoprodutos.forEach(grupo=> { %>
+                    <option value="<%= grupo.id %>">
+                      <%= grupo.descricao %>
+                    </option>
+                    <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="categoria" class="form-label">Categoria:</label>
+                <select class="form-control" id="categoria" name="categoria" required>
+                  <% categorias.forEach(categoria=> { %>
+                    <option value="<%= categoria.id %>">
+                      <%= categoria.descricao %>
+                    </option>
+                    <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="subcategoria" class="form-label">Subcategoria:</label>
+                <select class="form-control" id="subcategoria" name="subcategoria" required>
+                  <% subcategorias.forEach(subcategoria=> { %>
+                    <option value="<%= subcategoria.id %>">
+                      <%= subcategoria.descricao %>
+                    </option>
+                    <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="imagem" class="form-label">Imagem do Produto:</label>
+                <input type="file" class="form-control" id="imagem" name="imagem">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="ativo" class="form-label">Ativo:</label>
+                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Produto</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar produto -->
+  <% produtos.forEach(produto=> { %>
+    <div class="modal fade" id="editProdutoModal<%= produto.id %>" tabindex="-1"
+      aria-labelledby="editProdutoModalLabel<%= produto.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProdutoModalLabel<%= produto.id %>">Editar Produto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editProdutoForm<%= produto.id %>" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="nome<%= produto.id %>" class="form-label">Nome:</label>
+                  <input type="text" class="form-control" id="nome<%= produto.id %>" name="nome"
+                    value="<%= produto.nome %>" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="codigo<%= produto.id %>" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo<%= produto.id %>" name="codigo"
+                    value="<%= produto.codigo %>" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="descricao<%= produto.id %>" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao<%= produto.id %>" name="descricao"
+                    value="<%= produto.descricao %>" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="preco<%= produto.id %>" class="form-label">Preço:</label>
+                  <input type="number" class="form-control" id="preco<%= produto.id %>" name="preco"
+                    value="<%= produto.preco %>" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="marca<%= produto.id %>" class="form-label">Marca:</label>
+                  <select class="form-control" id="marca<%= produto.id %>" name="marca" required>
+                    <% marcas.forEach(marca=> { %>
+                      <option value="<%= marca.id %>" <%=produto.marca===marca.id ? 'selected' : '' %>><%=
+                          marca.descricao %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="grupoproduto<%= produto.id %>" class="form-label">Grupo de Produto:</label>
+                  <select class="form-control" id="grupoproduto<%= produto.id %>" name="grupoproduto" required>
+                    <% grupoprodutos.forEach(grupo=> { %>
+                      <option value="<%= grupo.id %>" <%=produto.grupoproduto===grupo.id ? 'selected' : '' %>><%=
+                          grupo.descricao %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="categoria<%= produto.id %>" class="form-label">Categoria:</label>
+                  <select class="form-control" id="categoria<%= produto.id %>" name="categoria" required>
+                    <% categorias.forEach(categoria=> { %>
+                      <option value="<%= categoria.id %>" <%=produto.categoria===categoria.id ? 'selected' : '' %>><%=
+                          categoria.descricao %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="subcategoria<%= produto.id %>" class="form-label">Subcategoria:</label>
+                  <select class="form-control" id="subcategoria<%= produto.id %>" name="subcategoria" required>
+                    <% subcategorias.forEach(subcategoria=> { %>
+                      <option value="<%= subcategoria.id %>" <%=produto.subcategoria===subcategoria.id ? 'selected' : ''
+                        %>><%= subcategoria.descricao %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="imagem<%= produto.id %>" class="form-label">Imagem do Produto:</label>
+                  <input type="file" class="form-control" id="imagem<%= produto.id %>" name="imagem">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="ativo<%= produto.id %>" class="form-label">Ativo:</label>
+                  <input type="checkbox" class="form-check-input" id="ativo<%= produto.id %>" name="ativo"
+                    <%=produto.ativo ? 'checked' : '' %>>
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+
+      <!-- Modais para visualizar produto -->
+      <% produtos.forEach(produto=> { %>
+        <div class="modal fade" id="viewProdutoModal<%= produto.id %>" tabindex="-1"
+          aria-labelledby="viewProdutoModalLabel<%= produto.id %>" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewProdutoModalLabel<%= produto.id %>">Visualizar Produto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="nomeView<%= produto.id %>" class="form-label">Nome:</label>
+                    <input type="text" class="form-control" id="nomeView<%= produto.id %>" value="<%= produto.nome %>"
+                      readonly>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="codigoView<%= produto.id %>" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codigoView<%= produto.id %>"
+                      value="<%= produto.codigo %>" readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="descricaoView<%= produto.id %>" class="form-label">Descrição:</label>
+                    <input type="text" class="form-control" id="descricaoView<%= produto.id %>"
+                      value="<%= produto.descricao %>" readonly>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="precoView<%= produto.id %>" class="form-label">Preço:</label>
+                    <input type="number" class="form-control" id="precoView<%= produto.id %>"
+                      value="<%= produto.preco %>" readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="imagemView<%= produto.id %>" class="form-label">Imagem do Produto:</label>
+                    <img src="<%= produto.caminhoImagem %>" alt="Imagem do Produto" width="100%">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="marcaView<%= produto.id %>" class="form-label">Marca:</label>
+                    <input type="text" class="form-control" id="marcaView<%= produto.id %>"
+                      value="<%= produto.marca ? produto.marca.descricao : 'N/A' %>" readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="grupoprodutoView<%= produto.id %>" class="form-label">Grupo de Produto:</label>
+                    <input type="text" class="form-control" id="grupoprodutoView<%= produto.id %>"
+                      value="<%= produto.grupoproduto ? produto.grupoproduto.descricao : 'N/A' %>" readonly>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="categoriaView<%= produto.id %>" class="form-label">Categoria:</label>
+                    <input type="text" class="form-control" id="categoriaView<%= produto.id %>"
+                      value="<%= produto.categoria ? produto.categoria.descricao : 'N/A' %>" readonly>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="subcategoriaView<%= produto.id %>" class="form-label">Subcategoria:</label>
+                    <input type="text" class="form-control" id="subcategoriaView<%= produto.id %>"
+                      value="<%= produto.subcategoria ? produto.subcategoria.descricao : 'N/A' %>" readonly>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ativoView<%= produto.id %>" class="form-label">Ativo:</label>
+                    <input type="checkbox" class="form-check-input" id="ativoView<%= produto.id %>" <%=produto.ativo
+                      ? 'checked' : '' %> disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+
+          <script>
+            function resetAddProdutoForm() {
+              document.getElementById('addProdutoForm').reset();
+            }
+
+            document.getElementById('addProdutoForm').addEventListener('submit', async function (event) {
+              event.preventDefault();
+              const formData = new FormData(event.target);
+              const response = await fetch('/produto/criar', {
+                method: 'POST',
+                headers: {
+                  'X-CSRF-Token': '<%= _csrf %>'
+                },
+                body: formData
+              });
+
+              if (response.ok) {
+                location.reload();
+              } else {
+                const error = await response.json();
+                alert(error.error || 'Erro ao criar produto');
+              }
+            });
+
+    <% produtos.forEach(produto => { %>
+              document.getElementById('editProdutoForm<%= produto.id %>').addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const response = await fetch(`/produto/atualizar/<%= produto.id %>`, {
+                  method: 'PUT',
+                  headers: {
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  },
+                  body: formData
+                });
+
+                if (response.ok) {
+                  location.reload();
+                } else {
+                  const error = await response.json();
+                  alert(error.error || 'Erro ao atualizar produto');
+                }
+              });
+    <% }) %>
+
+              async function deleteProduto(id) {
+                if (confirm('Tem certeza que deseja deletar este produto?')) {
+                  const response = await fetch(`/produto/deletar/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                      'X-CSRF-Token': '<%= _csrf %>'
+                    }
+                  });
+
+                  if (response.ok) {
+                    location.reload();
+                  } else {
+                    const error = await response.json();
+                    alert(error.error || 'Erro ao deletar produto');
+                  }
+                }
+              }
+
+            function editProduto(id) {
+              const modal = new bootstrap.Modal(document.getElementById(`editProdutoModal${id}`));
+              modal.show();
+            }
+
+            function viewProduto(id) {
+              const modal = new bootstrap.Modal(document.getElementById(`viewProdutoModal${id}`));
+              modal.show();
+            }
+
+            function saveFieldSelection() {
+              const selectedColumns = Array.from(document.querySelectorAll('#manageFieldsForm input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.id);
+              console.log('Colunas selecionadas:', selectedColumns);
+              alert('Configuração de colunas salva com sucesso!');
+            }
+
+            function applyColumnSettings() {
+              const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+              const columnsToShow = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+              const headers = document.querySelectorAll('th');
+              const rows = document.querySelectorAll('tbody tr');
+
+              headers.forEach((header, index) => {
+                if (header.textContent.trim() !== '') {
+                  console.log(`Header ${index + 1}:`, header.textContent);
+                }
+                // Processa o texto do cabeçalho para garantir correspondência
+                const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+                if (columnsToShow.includes(headerText)) {
+                  header.style.display = ''; // Mostra o cabeçalho
+                  rows.forEach(row => {
+                    const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                    if (cell) {
+                      cell.style.display = ''; // Mostra a célula correspondente
+                    }
+                  });
+                } else {
+                  header.style.display = 'none'; // Oculta o cabeçalho
+                  rows.forEach(row => {
+                    const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                    if (cell) {
+                      cell.style.display = 'none';
+                    }
+                  });
+                }
+              });
+
+              // Fechar o modal após aplicar as configurações
+              const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+              modal.hide();
+            }
+          </script>

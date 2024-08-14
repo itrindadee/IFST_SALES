@@ -218,7 +218,6 @@ module.exports = {
     }
   },
 
-
   validarcliente: async function(req, res) {
     try {
         let { cpf, cnpj, empresa, organizacaoVendas } = req.params;

@@ -50,6 +50,11 @@ module.exports.routes = {
 'POST /organizacaovendas':         { action: 'OrganizacaoVendas/OrganizacaoVendas/criar' },
 'DELETE /organizacaovendas/:id':   { action: 'OrganizacaoVendas/OrganizacaoVendas/deletar' },
 
+// Crud de produtos
+'GET /produto/listar':         { action: 'Produto/Produto/listar' },
+'PUT /produto/atualizar/:id':  { action: 'Produto/Produto/atualizar' },
+'POST /produto/criar':          { action: 'Produto/Produto/criar' },
+'DELETE /produto/deletar/:id': { action: 'Produto/Produto/deletar' },
 //Crud Empresas
 'GET /empresa/listar':         { action:'Empresa/Empresas/listar' },
 'POST /empresa/':              { action:'Empresa/Empresas/criar' },

@@ -1,50 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Listagem de Equipes de Vendas</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/css/bootstrap.min.css">
+  <title>Equipes de Vendas</title>
 </head>
+
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Listagem de Equipes de Vendas</h1>
+  <main class="table" id="tabela_equipesVendas">
+    <section class="table__header">
+      <div class="titulo-equipesVendas">
+        <h3>Equipes de Vendas</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por equipe de vendas...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipeVendasModal">
+            Adicionar Equipe de Vendas
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+      </div>
+    </section>
 
-    <!-- Botão para abrir o modal de criação de equipe de vendas -->
-    <div class="text-end mb-4">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipeVendasModal" onclick="resetAddEquipeVendasForm()">
-        Adicionar Equipe de Vendas
-      </button>
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Organização Vendas</th>
+            <th draggable="true">Código</th>
+            <th draggable="true">Descrição</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% equipes.forEach(equipe => { %>
+          <tr>
+            <td><%= equipe.organizacaoVendas %></td>
+            <td><%= equipe.codigo %></td>
+            <td><%= equipe.descricao %></td>
+            <td>
+              <a href="#" onclick="editEquipeVendas(<%= equipe.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+              <a href="#" onclick="viewEquipeVendas(<%= equipe.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+              <a href="#" onclick="deleteEquipeVendas(<%= equipe.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-organizacao-vendas" name="columns" value="organização vendas" checked>
+                  <label class="form-check-label" for="col-organizacao-vendas">Organização Vendas</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
+                  <label class="form-check-label" for="col-codigo">Código</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição" checked>
+                  <label class="form-check-label" for="col-descrição">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                  <label class="form-check-label" for="col-ações">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
     </div>
-
-    <!-- Tabela de equipes de vendas existentes -->
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Organização Vendas</th>
-          <th>Código</th>
-          <th>Descrição</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% equipes.forEach(equipe => { %>
-        <tr>
-          <td><%= equipe.organizacaoVendas %></td>
-          <td><%= equipe.codigo %></td>
-          <td><%= equipe.descricao %></td>
-          <td>
-            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editEquipeVendasModal<%= equipe.id %>">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteEquipeVendas(<%= equipe.id %>)">Deletar</button>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
   </div>
 
   <!-- Modal para adicionar equipe de vendas -->
-  <div class="modal fade" id="addEquipeVendasModal" tabindex="-1" aria-labelledby="addEquipeVendasModalLabel" aria-hidden="true">
+  <div class="modal fade" id="addEquipeVendasModal" tabindex="-1" aria-labelledby="addEquipeVendasModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -52,7 +117,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addEquipeVendasForm">
+          <form id="addEquipeVendasForm" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="organizacaoVendas" class="form-label">Organização Vendas:</label>
@@ -83,7 +148,8 @@
 
   <!-- Modais para editar equipe de vendas -->
   <% equipes.forEach(equipe => { %>
-  <div class="modal fade" id="editEquipeVendasModal<%= equipe.id %>" tabindex="-1" aria-labelledby="editEquipeVendasModalLabel<%= equipe.id %>" aria-hidden="true">
+  <div class="modal fade" id="editEquipeVendasModal<%= equipe.id %>" tabindex="-1"
+    aria-labelledby="editEquipeVendasModalLabel<%= equipe.id %>" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -91,21 +157,24 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="editEquipeVendasForm<%= equipe.id %>">
+          <form id="editEquipeVendasForm<%= equipe.id %>" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-12 mb-3">
                 <label for="organizacaoVendas<%= equipe.id %>" class="form-label">Organização Vendas:</label>
-                <input type="text" class="form-control" id="organizacaoVendas<%= equipe.id %>" name="organizacaoVendas" value="<%= equipe.organizacaoVendas %>" required>
+                <input type="text" class="form-control" id="organizacaoVendas<%= equipe.id %>" name="organizacaoVendas"
+                  value="<%= equipe.organizacaoVendas %>" required>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="codigo<%= equipe.id %>" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo<%= equipe.id %>" name="codigo" value="<%= equipe.codigo %>" required>
+                <input type="text" class="form-control" id="codigo<%= equipe.id %>" name="codigo"
+                  value="<%= equipe.codigo %>" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="descricao<%= equipe.id %>" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao<%= equipe.id %>" name="descricao" value="<%= equipe.descricao %>" required>
+                <input type="text" class="form-control" id="descricao<%= equipe.id %>" name="descricao"
+                  value="<%= equipe.descricao %>" required>
               </div>
             </div>
             <div class="row">
@@ -121,13 +190,49 @@
   </div>
   <% }) %>
 
+  <!-- Modais para visualizar equipe de vendas -->
+  <% equipes.forEach(equipe => { %>
+  <div class="modal fade" id="viewEquipeVendasModal<%= equipe.id %>" tabindex="-1"
+    aria-labelledby="viewEquipeVendasModalLabel<%= equipe.id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewEquipeVendasModalLabel<%= equipe.id %>">Visualizar Equipe de Vendas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="organizacaoVendasView<%= equipe.id %>" class="form-label">Organização Vendas:</label>
+              <input type="text" class="form-control" id="organizacaoVendasView<%= equipe.id %>"
+                name="organizacaoVendasView" value="<%= equipe.organizacaoVendas %>" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="codigoView<%= equipe.id %>" class="form-label">Código:</label>
+              <input type="text" class="form-control" id="codigoView<%= equipe.id %>" name="codigoView"
+                value="<%= equipe.codigo %>" readonly>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="descricaoView<%= equipe.id %>" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricaoView<%= equipe.id %>" name="descricaoView"
+                value="<%= equipe.descricao %>" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+
   <!-- Scripts -->
   <script>
     function resetAddEquipeVendasForm() {
       document.getElementById('addEquipeVendasForm').reset();
     }
 
-    document.getElementById('addEquipeVendasForm').addEventListener('submit', async function(event) {
+    document.getElementById('addEquipeVendasForm').addEventListener('submit', async function (event) {
       event.preventDefault();
 
       const data = {
@@ -154,7 +259,7 @@
     });
 
     <% equipes.forEach(equipe => { %>
-    document.getElementById('editEquipeVendasForm<%= equipe.id %>').addEventListener('submit', async function(event) {
+    document.getElementById('editEquipeVendasForm<%= equipe.id %>').addEventListener('submit', async function (event) {
       event.preventDefault();
 
       const data = {
@@ -198,8 +303,56 @@
         }
       }
     }
-  </script>
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    function editEquipeVendas(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editEquipeVendasModal${id}`));
+      modal.show();
+    }
+
+    function viewEquipeVendas(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewEquipeVendasModal${id}`));
+      modal.show();
+    }
+
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        if (header.textContent.trim() !== '') {
+          console.log(`Header ${index + 1}:`, header.textContent);
+        }
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none'; // Oculta a célula correspondente
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+  </script>
 </body>
+
 </html>
