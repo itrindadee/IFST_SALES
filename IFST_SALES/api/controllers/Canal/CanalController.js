@@ -9,17 +9,27 @@ module.exports = {
     }
   },
 
+  buscar: async function (req, res) {
+    try {
+      const canal = await Canal.findOne({ id: req.params.id });
+      if (!canal) {
+        return res.notFound('Canal não encontrado.');
+      }
+      return res.json(canal);
+    } catch (err) {
+      return res.serverError(err);
+    }
+  },
+
   criar: async function (req, res) {
     try {
       const { grupoConta, codigo, descricao, ativo } = req.body;
-
       const novoCanal = await Canal.create({
         grupoConta,
         codigo,
         descricao,
         ativo
       }).fetch();
-
       return res.status(201).json({
         message: 'Canal criado com sucesso',
         canal: novoCanal
@@ -67,15 +77,6 @@ module.exports = {
       return res.json({
         message: 'Canal deletado com sucesso'
       });
-    } catch (err) {
-      return res.serverError(err);
-    }
-  },
-
-  todos: async function (req, res) {
-    try {
-      const canais = await Canal.find();
-      return res.json(canais);
     } catch (err) {
       return res.serverError(err);
     }

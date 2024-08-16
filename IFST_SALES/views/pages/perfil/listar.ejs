@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Perfis</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .dual-list {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dual-list__available,
+    .dual-list__selected {
+      width: 45%;
+    }
+
+    .dual-list__buttons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dual-list__buttons button {
+      margin: 5px;
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="table" id="tabela_perfil">
+    <section class="table__header">
+      <div class="titulo-perfis">
+        <h3>Gestão de Perfis</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por perfil...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPerfilModal">
+            Adicionar Perfil
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true" data-column="id">Id <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true" data-column="nome">Nome <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true" data-column="descricao">Descrição <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+            <th draggable="true" data-column="acoes">Ações <span class="icon-arrow"><i class="fas fa-arrow-up"></i></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (perfis && perfis.length > 0) { %>
+            <% perfis.forEach(perfil => { %>
+              <tr>
+                <td data-column="id">
+                  <%= perfil.id %>
+                </td>
+                <td data-column="nome">
+                  <%= perfil.nome %>
+                </td>
+                <td data-column="descricao">
+                  <%= perfil.descricao %>
+                </td>
+                <td data-column="acoes">
+                  <a href="#" onclick="editPerfil(<%= perfil.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewPerfil(<%= perfil.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deletePerfil(<%= perfil.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="4">Nenhum perfil encontrado.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para adicionar perfil -->
+  <div class="modal fade" id="addPerfilModal" tabindex="-1" aria-labelledby="addPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPerfilModalLabel">Adicionar Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addPerfilForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="permissoes" class="form-label">Permissões:</label>
+                <div class="dual-list">
+                  <div class="dual-list__available">
+                    <h6>Permissões Disponíveis</h6>
+                    <select multiple class="form-control" id="availablePermissions">
+                      <% permissoes.forEach(permissao => { %>
+                        <option value="<%= permissao.id %>">
+                          <%= permissao.nome %>
+                        </option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="dual-list__buttons">
+                    <button type="button" class="btn btn-primary" onclick="addPermission();">&gt;&gt;</button>
+                    <button type="button" class="btn btn-secondary" onclick="removePermission();">&lt;&lt;</button>
+                  </div>
+                  <div class="dual-list__selected">
+                    <h6>Permissões Selecionadas</h6>
+                    <select multiple class="form-control" id="selectedPermissions" name="permissoes[]"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Perfil</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-id" name="columns" value="id" checked>
+                  <label class="form-check-label" for="col-id">Id</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-nome" name="columns" value="nome" checked>
+                  <label class="form-check-label" for="col-nome">Nome</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descricao" checked>
+                  <label class="form-check-label" for="col-descricao">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-acoes" name="columns" value="acoes" checked>
+                  <label class="form-check-label" for="col-acoes">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar perfil -->
+  <div class="modal fade" id="editPerfilModal" tabindex="-1" aria-labelledby="editPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPerfilModalLabel">Editar Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editPerfilForm">
+            <!-- Campo oculto para armazenar o ID do perfil -->
+            <input type="hidden" id="perfilIdEdit" name="perfilId">
+
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nomeEdit" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nomeEdit" name="nome" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricaoEdit" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricaoEdit" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="permissoesEdit" class="form-label">Permissões:</label>
+                <div class="dual-list">
+                  <div class="dual-list__available">
+                    <h6>Permissões Disponíveis</h6>
+                    <select multiple class="form-control" id="availablePermissionsEdit"></select>
+                  </div>
+                  <div class="dual-list__buttons">
+                    <button type="button" class="btn btn-primary" onclick="addPermission('Edit');">&gt;&gt;</button>
+                    <button type="button" class="btn btn-secondary" onclick="removePermission('Edit');">&lt;&lt;</button>
+                  </div>
+                  <div class="dual-list__selected">
+                    <h6>Permissões Selecionadas</h6>
+                    <select multiple class="form-control" id="selectedPermissionsEdit" name="permissoes[]"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para visualizar perfil -->
+  <div class="modal fade" id="viewPerfilModal" tabindex="-1" aria-labelledby="viewPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewPerfilModalLabel">Visualizar Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="nomeView" class="form-label">Nome:</label>
+              <input type="text" class="form-control" id="nomeView" readonly>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label for="descricaoView" class="form-label">Descrição:</label>
+              <input type="text" class="form-control" id="descricaoView" readonly>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Permissões:</label>
+              <ul id="selectedPermissionsView" class="list-group">
+                <!-- As permissões serão inseridas aqui dinamicamente -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function addPermission(id = '') {
+      const available = document.getElementById('availablePermissions' + id);
+      const selected = document.getElementById('selectedPermissions' + id);
+
+      [...available.selectedOptions].forEach(option => {
+        selected.add(option);
+      });
+    }
+
+    function removePermission(id = '') {
+      const available = document.getElementById('availablePermissions' + id);
+      const selected = document.getElementById('selectedPermissions' + id);
+
+      [...selected.selectedOptions].forEach(option => {
+        available.add(option);
+      });
+    }
+
+    async function editPerfil(id) {
+      try {
+        const response = await fetch(`/perfil/${id}`);
+        const perfilData = await response.json();
+
+        // Preenche os campos de edição com os dados do perfil
+        document.getElementById('nomeEdit').value = perfilData.perfil.nome;
+        document.getElementById('descricaoEdit').value = perfilData.perfil.descricao;
+
+        // Armazena o ID do perfil no campo oculto
+        document.getElementById('perfilIdEdit').value = perfilData.perfil.id;
+
+        const availablePermissionsEdit = document.getElementById('availablePermissionsEdit');
+        const selectedPermissionsEdit = document.getElementById('selectedPermissionsEdit');
+        availablePermissionsEdit.innerHTML = '';
+        selectedPermissionsEdit.innerHTML = '';
+
+        // Percorre todas as permissões disponíveis
+        perfilData.todasPermissoes.forEach(permissao => {
+          // Verifica se a permissão já está associada ao perfil
+          if (perfilData.permissoesAssociadas.some(p => p.id === permissao.id)) {
+            selectedPermissionsEdit.add(new Option(permissao.nome, permissao.id, true, true));
+          } else {
+            availablePermissionsEdit.add(new Option(permissao.nome, permissao.id));
+          }
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('editPerfilModal'));
+        modal.show();
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+      }
+    }
+
+    async function viewPerfil(id) {
+      try {
+        const response = await fetch(`/perfil/${id}`);
+        const perfil = await response.json();
+
+        document.getElementById('nomeView').value = perfil.perfil.nome;
+        document.getElementById('descricaoView').value = perfil.perfil.descricao;
+
+        const selectedPermissionsView = document.getElementById('selectedPermissionsView');
+        selectedPermissionsView.innerHTML = '';
+
+        perfil.permissoesAssociadas.forEach(permissao => {
+          const listItem = document.createElement('li');
+          listItem.className = 'list-group-item';
+          listItem.textContent = permissao.nome;
+          selectedPermissionsView.appendChild(listItem);
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('viewPerfilModal'));
+        modal.show();
+      } catch (error) {
+        console.error('Erro ao visualizar perfil:', error);
+      }
+    }
+
+    async function deletePerfil(id) {
+      if (confirm('Tem certeza que deseja deletar este perfil?')) {
+        try {
+          const response = await fetch(`/perfil/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-Token': '<%= _csrf %>'
+            }
+          });
+
+          if (response.ok) {
+            location.reload();
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Erro ao deletar perfil');
+          }
+        } catch (error) {
+          console.error('Erro ao deletar perfil:', error);
+        }
+      }
+    }
+
+    document.getElementById('addPerfilForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      // Converter as permissões selecionadas em um array de IDs
+      data.permissoes = [...document.getElementById('selectedPermissions').options].map(option => option.value);
+
+      try {
+        const response = await fetch('/perfil', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao criar perfil');
+        }
+      } catch (error) {
+        console.error('Erro ao criar perfil:', error);
+      }
+    });
+
+    document.getElementById('editPerfilForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      // Converter as permissões selecionadas em um array de IDs
+      data.permissoes = [...document.getElementById('selectedPermissionsEdit').options].map(option => option.value);
+
+      // Pega o ID do perfil armazenado no campo oculto
+      const perfilId = document.getElementById('perfilIdEdit').value;
+
+      try {
+        const response = await fetch(`/perfil/${perfilId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erro ao atualizar perfil');
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
+      }
+    });
+
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+      const headers = document.querySelectorAll('thead th');
+      const rows = document.querySelectorAll('tbody tr');
+
+      headers.forEach((header, index) => {
+        const column = header.getAttribute('data-column');
+        if (columnsToShow.includes(column)) {
+          header.style.display = ''; // Mostra o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = ''; // Mostra a célula correspondente
+            }
+          });
+        } else {
+          header.style.display = 'none'; // Oculta o cabeçalho
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
+        }
+      });
+
+      // Fechar o modal após aplicar as configurações
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      modal.hide();
+    }
+  </script>
+</body>
+</html>

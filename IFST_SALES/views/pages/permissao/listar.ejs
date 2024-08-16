@@ -36,6 +36,7 @@
           <tr>
             <th draggable="true">Nome</th>
             <th draggable="true">Descrição</th>
+            <th draggable="true">Tipo de Permissão</th>
             <th draggable="true">Ações</th>
           </tr>
         </thead>
@@ -44,6 +45,7 @@
           <tr>
             <td><%= permissao.nome %></td>
             <td><%= permissao.descricao %></td>
+            <td><%= permissao.tipoPermissao %></td>
             <td>
               <a href="#" onclick="editPermissao(<%= permissao.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
               <a href="#" onclick="viewPermissao(<%= permissao.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
@@ -77,6 +79,12 @@
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descricao" checked>
                   <label class="form-check-label" for="col-descricao">Descrição</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-tipoPermissao" name="columns" value="tipoPermissao" checked>
+                  <label class="form-check-label" for="col-tipoPermissao">Tipo de Permissão</label>
                 </div>
               </div>
               <div class="col-md-4 mb-3">
@@ -120,6 +128,18 @@
               </div>
             </div>
             <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="tipoPermissao" class="form-label">Tipo de Permissão:</label>
+                <select class="form-control" id="tipoPermissao" name="tipoPermissao" required>
+                  <option value="Criar">Criar</option>
+                  <option value="Editar">Editar</option>
+                  <option value="Listar">Listar</option>
+                  <option value="Deletar">Deletar</option>
+                  <option value="Buscar">Buscar</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
               <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Criar Permissão</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -152,6 +172,18 @@
               <div class="col-md-12 mb-3">
                 <label for="descricao<%= permissao.id %>" class="form-label">Descrição:</label>
                 <input type="text" class="form-control" id="descricao<%= permissao.id %>" name="descricao" value="<%= permissao.descricao %>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="tipoPermissao<%= permissao.id %>" class="form-label">Tipo de Permissão:</label>
+                <select class="form-control" id="tipoPermissao<%= permissao.id %>" name="tipoPermissao" required>
+                  <option value="Criar" <%= permissao.tipoPermissao === 'Criar' ? 'selected' : '' %>>Criar</option>
+                  <option value="Editar" <%= permissao.tipoPermissao === 'Editar' ? 'selected' : '' %>>Editar</option>
+                  <option value="Listar" <%= permissao.tipoPermissao === 'Listar' ? 'selected' : '' %>>Listar</option>
+                  <option value="Deletar" <%= permissao.tipoPermissao === 'Deletar' ? 'selected' : '' %>>Deletar</option>
+                  <option value="Buscar" <%= permissao.tipoPermissao === 'Buscar' ? 'selected' : '' %>>Buscar</option>
+                </select>
               </div>
             </div>
             <div class="row">
@@ -189,6 +221,12 @@
               <input type="text" class="form-control" id="descricaoView<%= permissao.id %>" name="descricaoView" value="<%= permissao.descricao %>" readonly>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="tipoPermissaoView<%= permissao.id %>" class="form-label">Tipo de Permissão:</label>
+              <input type="text" class="form-control" id="tipoPermissaoView<%= permissao.id %>" name="tipoPermissaoView" value="<%= permissao.tipoPermissao %>" readonly>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -206,7 +244,8 @@
 
       const data = {
         nome: document.getElementById('nome').value,
-        descricao: document.getElementById('descricao').value
+        descricao: document.getElementById('descricao').value,
+        tipoPermissao: document.getElementById('tipoPermissao').value
       };
 
       const response = await fetch('/permissoes', {
@@ -232,7 +271,8 @@
 
       const data = {
         nome: document.getElementById(`nome<%= permissao.id %>`).value,
-        descricao: document.getElementById(`descricao<%= permissao.id %>`).value
+        descricao: document.getElementById(`descricao<%= permissao.id %>`).value,
+        tipoPermissao: document.getElementById(`tipoPermissao<%= permissao.id %>`).value
       };
 
       const response = await fetch(`/permissoes/<%= permissao.id %>`, {

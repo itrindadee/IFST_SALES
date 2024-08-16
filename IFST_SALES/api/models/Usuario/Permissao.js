@@ -1,25 +1,30 @@
-// Permissao.js
-
+// api/models/Permissao.js
 module.exports = {
   attributes: {
     nome: {
       type: 'string',
       required: true,
-      description: 'Nome da permissão.',
-      maxLength: 120,
-      example: 'VisualizarClientes'
+      description: 'O nome da permissão, como "Gerenciar Usuários".'
     },
+
+    // Descrição da permissão
     descricao: {
       type: 'string',
-      description: 'Descrição da permissão.',
-      maxLength: 250,
-      example: 'Permite visualizar os clientes cadastrados no sistema.'
+      required: true,
+      description: 'Uma descrição detalhada da permissão e o que ela controla.'
     },
-    // Associação com Perfis
-    perfil: {
-      collection: 'Perfil',
-      via: 'permissaoId',
-      through: 'PerfilPermissao' // Use o nome da tabela intermediária
+
+    // Tipo de permissão: Criar, Editar, Listar, Deletar, Buscar
+    tipoPermissao: {
+      type: 'string',
+      isIn: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'],
+      required: true,
+      description: 'O tipo de permissão, como "Criar", "Editar", "Listar", "Deletar",  "Buscar", "Atualizar".'
+    },
+    perfils: {
+      collection: 'perfil',
+      via: 'permissoes'
     }
   }
 };
+

@@ -255,7 +255,9 @@ body {
   padding: 80px 20px 20px 20px;
   transition: margin-left 0.3s;
   position: relative;
+  width: 100%;
   overflow-y: auto;
+  overflow-x: hidden; /* Se não quiser rolagem vertical */
   flex: 1;
 }
 
@@ -352,7 +354,7 @@ footer {
   }
 
   .main-content {
-      margin-left: 0 !important;
+      margin-left: 0;
       padding-top: 60px;
       flex: 1; /* Garante que o conteúdo principal expanda para preencher o espaço restante */
   }

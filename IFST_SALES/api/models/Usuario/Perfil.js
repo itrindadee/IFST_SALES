@@ -1,23 +1,22 @@
-// Perfil.js
-
+// api/models/Perfil.js
 module.exports = {
   attributes: {
     nome: {
       type: 'string',
       required: true,
-      unique: true,
-      description: 'Nome do perfil de usuário.'
+      unique: true
     },
     descricao: {
-      type: 'string',
-      description: 'Descrição do perfil de usuário.'
+      type: 'string'
     },
-    // Associação com Permissões
     permissoes: {
-      collection: 'Permissao',
-      via: 'perfilId',
-      description: 'As permissões atribuídas a este perfil de usuário.',
-      through: 'PerfilPermissao' // Use o nome da tabela intermediária
+      collection: 'permissao',
+      via: 'perfils',
+      dominant: true
+    },
+    usuarios: {
+      collection: 'user',
+      via: 'perfil'
     }
   }
 };

@@ -8,378 +8,397 @@
 </head>
 
 <body>
-  <main class="table" id="tabela_empresas">
-    <section class="table__header">
-      <div class="titulo-empresas">
-        <h3>Empresas</h3>
-      </div>
-      <div class="header-actions">
-        <div class="table-search-bar">
-          <input type="text" placeholder="Pesquisar por empresa...">
-          <i class="fas fa-search"></i>
+  <%- include('../mensagem') %>
+    <main class="table" id="tabela_empresas">
+      <section class="table__header">
+        <div class="titulo-empresas">
+          <h3>Empresas</h3>
         </div>
-        <div>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmpresaModal">
-            Adicionar Empresa
-          </button>
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por empresa...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmpresaModal">
+              Adicionar Empresa
+            </button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+              Gerenciar Colunas
+            </button>
+          </div>
         </div>
-        <div>
-          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
-            Gerenciar Colunas
-          </button>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="table__body">
-      <table>
-        <thead>
-          <tr>
-            <th draggable="true">Código</th>
-            <th draggable="true">Razão Social</th>
-            <th draggable="true">CNPJ</th>
-            <th draggable="true">Endereço</th>
-            <th draggable="true">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% empresas.forEach(empresa => { %>
-          <tr>
-            <td><%= empresa.codigo %></td>
-            <td><%= empresa.razaoSocial %></td>
-            <td><%= empresa.cnpj %></td>
-            <td><%= empresa.endereco %></td>
-            <td>
-              <a href="#" onclick="editEmpresa(<%= empresa.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
-              <a href="#" onclick="viewEmpresa(<%= empresa.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
-              <a href="#" onclick="deleteEmpresa(<%= empresa.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
-            </td>
-          </tr>
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Código</th>
+              <th draggable="true">Razão Social</th>
+              <th draggable="true">CNPJ</th>
+              <th draggable="true">Endereço</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% empresas.forEach(empresa=> { %>
+              <tr>
+                <td>
+                  <%= empresa.codigo %>
+                </td>
+                <td>
+                  <%= empresa.razaoSocial %>
+                </td>
+                <td>
+                  <%= empresa.cnpj %>
+                </td>
+                <td>
+                  <%= empresa.endereco %>
+                </td>
+                <td>
+                  <a href="#" onclick="editEmpresa(<%= empresa.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewEmpresa(<%= empresa.id %>);" title="Visualizar"><i
+                      class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteEmpresa(<%= empresa.id %>);" title="Deletar"><i
+                      class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para Gerenciar Colunas -->
+    <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="manageColumnsForm">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código"
+                      checked>
+                    <label class="form-check-label" for="col-codigo">Código</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-razao-social" name="columns"
+                      value="razão social" checked>
+                    <label class="form-check-label" for="col-razao-social">Razão Social</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-cnpj" name="columns" value="cnpj" checked>
+                    <label class="form-check-label" for="col-cnpj">CNPJ</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-endereco" name="columns" value="endereço"
+                      checked>
+                    <label class="form-check-label" for="col-endereco">Endereço</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                    <label class="form-check-label" for="col-ações">Ações</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para adicionar empresa -->
+    <div class="modal fade" id="addEmpresaModal" tabindex="-1" aria-labelledby="addEmpresaModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addEmpresaModalLabel">Adicionar Empresa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addEmpresaForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="codigo" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo" name="codigo" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="razaoSocial" class="form-label">Razão Social:</label>
+                  <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="cnpj" class="form-label">CNPJ:</label>
+                  <input type="text" class="form-control" id="cnpj" name="cnpj" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="endereco" class="form-label">Endereço:</label>
+                  <input type="text" class="form-control" id="endereco" name="endereco">
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Criar Empresa</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modais para editar empresa -->
+    <% empresas.forEach(empresa=> { %>
+      <div class="modal fade" id="editEmpresaModal<%= empresa.id %>" tabindex="-1"
+        aria-labelledby="editEmpresaModalLabel<%= empresa.id %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editEmpresaModalLabel<%= empresa.id %>">Editar Empresa</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editEmpresaForm<%= empresa.id %>" enctype="multipart/form-data">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="codigo<%= empresa.id %>" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codigo<%= empresa.id %>" name="codigo"
+                      value="<%= empresa.codigo %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="razaoSocial<%= empresa.id %>" class="form-label">Razão Social:</label>
+                    <input type="text" class="form-control" id="razaoSocial<%= empresa.id %>" name="razaoSocial"
+                      value="<%= empresa.razaoSocial %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="cnpj<%= empresa.id %>" class="form-label">CNPJ:</label>
+                    <input type="text" class="form-control" id="cnpj<%= empresa.id %>" name="cnpj"
+                      value="<%= empresa.cnpj %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="endereco<%= empresa.id %>" class="form-label">Endereço:</label>
+                    <input type="text" class="form-control" id="endereco<%= empresa.id %>" name="endereco"
+                      value="<%= empresa.endereco %>">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+
+        <!-- Modais para visualizar empresa -->
+        <% empresas.forEach(empresa=> { %>
+          <div class="modal fade" id="viewEmpresaModal<%= empresa.id %>" tabindex="-1"
+            aria-labelledby="viewEmpresaModalLabel<%= empresa.id %>" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="viewEmpresaModalLabel<%= empresa.id %>">Visualizar Empresa</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="codigoView<%= empresa.id %>" class="form-label">Código:</label>
+                      <input type="text" class="form-control" id="codigoView<%= empresa.id %>" name="codigoView"
+                        value="<%= empresa.codigo %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="razaoSocialView<%= empresa.id %>" class="form-label">Razão Social:</label>
+                      <input type="text" class="form-control" id="razaoSocialView<%= empresa.id %>"
+                        name="razaoSocialView" value="<%= empresa.razaoSocial %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="cnpjView<%= empresa.id %>" class="form-label">CNPJ:</label>
+                      <input type="text" class="form-control" id="cnpjView<%= empresa.id %>" name="cnpjView"
+                        value="<%= empresa.cnpj %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="enderecoView<%= empresa.id %>" class="form-label">Endereço:</label>
+                      <input type="text" class="form-control" id="enderecoView<%= empresa.id %>" name="enderecoView"
+                        value="<%= empresa.endereco %>" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <% }) %>
-        </tbody>
-      </table>
-    </section>
-  </main>
 
-  <!-- Modal para Gerenciar Colunas -->
-  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="manageColumnsForm">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
-                  <label class="form-check-label" for="col-codigo">Código</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-razao-social" name="columns" value="razão social" checked>
-                  <label class="form-check-label" for="col-razao-social">Razão Social</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-cnpj" name="columns" value="cnpj" checked>
-                  <label class="form-check-label" for="col-cnpj">CNPJ</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-endereco" name="columns" value="endereço" checked>
-                  <label class="form-check-label" for="col-endereco">Endereço</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
-                  <label class="form-check-label" for="col-ações">Ações</label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
+            <!-- Scripts -->
+            <script>
+              // Função para resetar o formulário de adição de empresa
+              function resetAddEmpresaForm() {
+                document.getElementById('addEmpresaForm').reset();
+              }
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+              // Evento de envio do formulário para adicionar uma empresa
+              document.getElementById('addEmpresaForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
 
-  <!-- Modal para adicionar empresa -->
-  <div class="modal fade" id="addEmpresaModal" tabindex="-1" aria-labelledby="addEmpresaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addEmpresaModalLabel">Adicionar Empresa</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addEmpresaForm" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo" name="codigo" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="razaoSocial" class="form-label">Razão Social:</label>
-                <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="cnpj" class="form-label">CNPJ:</label>
-                <input type="text" class="form-control" id="cnpj" name="cnpj" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="endereco" class="form-label">Endereço:</label>
-                <input type="text" class="form-control" id="endereco" name="endereco">
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Criar Empresa</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+                const data = {
+                  codigo: document.getElementById('codigo').value,
+                  razaoSocial: document.getElementById('razaoSocial').value,
+                  cnpj: document.getElementById('cnpj').value,
+                  endereco: document.getElementById('endereco').value
+                };
 
-  <!-- Modais para editar empresa -->
-  <% empresas.forEach(empresa => { %>
-  <div class="modal fade" id="editEmpresaModal<%= empresa.id %>" tabindex="-1" aria-labelledby="editEmpresaModalLabel<%= empresa.id %>"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editEmpresaModalLabel<%= empresa.id %>">Editar Empresa</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editEmpresaForm<%= empresa.id %>" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo<%= empresa.id %>" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo<%= empresa.id %>" name="codigo" value="<%= empresa.codigo %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="razaoSocial<%= empresa.id %>" class="form-label">Razão Social:</label>
-                <input type="text" class="form-control" id="razaoSocial<%= empresa.id %>" name="razaoSocial" value="<%= empresa.razaoSocial %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="cnpj<%= empresa.id %>" class="form-label">CNPJ:</label>
-                <input type="text" class="form-control" id="cnpj<%= empresa.id %>" name="cnpj" value="<%= empresa.cnpj %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="endereco<%= empresa.id %>" class="form-label">Endereço:</label>
-                <input type="text" class="form-control" id="endereco<%= empresa.id %>" name="endereco" value="<%= empresa.endereco %>">
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+                const response = await fetch('/empresa', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  },
+                  body: JSON.stringify(data)
+                });
 
-  <!-- Modais para visualizar empresa -->
-  <% empresas.forEach(empresa => { %>
-  <div class="modal fade" id="viewEmpresaModal<%= empresa.id %>" tabindex="-1" aria-labelledby="viewEmpresaModalLabel<%= empresa.id %>"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewEmpresaModalLabel<%= empresa.id %>">Visualizar Empresa</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="codigoView<%= empresa.id %>" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigoView<%= empresa.id %>" name="codigoView" value="<%= empresa.codigo %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="razaoSocialView<%= empresa.id %>" class="form-label">Razão Social:</label>
-              <input type="text" class="form-control" id="razaoSocialView<%= empresa.id %>" name="razaoSocialView" value="<%= empresa.razaoSocial %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="cnpjView<%= empresa.id %>" class="form-label">CNPJ:</label>
-              <input type="text" class="form-control" id="cnpjView<%= empresa.id %>" name="cnpjView" value="<%= empresa.cnpj %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="enderecoView<%= empresa.id %>" class="form-label">Endereço:</label>
-              <input type="text" class="form-control" id="enderecoView<%= empresa.id %>" name="enderecoView" value="<%= empresa.endereco %>" readonly>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+                handleResponse(response);
+              });
 
-  <!-- Scripts -->
-  <script>
-    function resetAddEmpresaForm() {
-      document.getElementById('addEmpresaForm').reset();
-    }
+              // Adicionar eventos para edição de empresas
+              <% empresas.forEach(empresa => { %>
+                document.getElementById('editEmpresaForm<%= empresa.id %>').addEventListener('submit', async function (event) {
+                  event.preventDefault();
 
-    document.getElementById('addEmpresaForm').addEventListener('submit', async function (event) {
-      event.preventDefault();
+                  const data = {
+                    id: <%= empresa.id %>,
+                    codigo: document.getElementById('codigo<%= empresa.id %>').value,
+                    razaoSocial: document.getElementById('razaoSocial<%= empresa.id %>').value,
+                    cnpj: document.getElementById('cnpj<%= empresa.id %>').value,
+                    endereco: document.getElementById('endereco<%= empresa.id %>').value
+                  };
 
-      const data = {
-        codigo: document.getElementById('codigo').value,
-        razaoSocial: document.getElementById('razaoSocial').value,
-        cnpj: document.getElementById('cnpj').value,
-        endereco: document.getElementById('endereco').value
-      };
+                  const response = await fetch(`/empresa/<%= empresa.id %>`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-Token': '<%= _csrf %>'
+                    },
+                    body: JSON.stringify(data)
+                  });
 
-      const response = await fetch('/empresa', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+                  handleResponse(response);
+                });
+              <% }) %>
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao criar empresa');
-      }
-    });
+                // Função para deletar uma empresa
+                async function deleteEmpresa(id) {
+                  if (confirm('Tem certeza que deseja deletar esta empresa?')) {
+                    const response = await fetch(`/empresa/${id}`, {
+                      method: 'DELETE',
+                      headers: {
+                        'X-CSRF-Token': '<%= _csrf %>'
+                      }
+                    });
 
-    <% empresas.forEach(empresa => { %>
-    document.getElementById('editEmpresaForm<%= empresa.id %>').addEventListener('submit', async function (event) {
-      event.preventDefault();
+                    handleResponse(response);
+                  }
+                }
 
-      const data = {
-        codigo: document.getElementById(`codigo<%= empresa.id %>`).value,
-        razaoSocial: document.getElementById(`razaoSocial<%= empresa.id %>`).value,
-        cnpj: document.getElementById(`cnpj<%= empresa.id %>`).value,
-        endereco: document.getElementById(`endereco<%= empresa.id %>`).value
-      };
+              // Função para exibir o modal de edição de uma empresa
+              function editEmpresa(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`editEmpresaModal${id}`));
+                modal.show();
+              }
 
-      const response = await fetch(`/empresa/<%= empresa.id %>`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+              // Função para exibir o modal de visualização de uma empresa
+              function viewEmpresa(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`viewEmpresaModal${id}`));
+                modal.show();
+              }
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao atualizar empresa');
-      }
-    });
-    <% }) %>
+              // Função para aplicar as configurações das colunas
+              function applyColumnSettings() {
+                const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+                const columnsToShow = Array.from(checkboxes)
+                  .filter(checkbox => checkbox.checked)
+                  .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-    async function deleteEmpresa(id) {
-      if (confirm('Tem certeza que deseja deletar esta empresa?')) {
-        const response = await fetch(`/empresa/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': '<%= _csrf %>'
-          }
-        });
+                const headers = document.querySelectorAll('th');
+                const rows = document.querySelectorAll('tbody tr');
 
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao deletar empresa');
-        }
-      }
-    }
+                headers.forEach((header, index) => {
+                  if (header.textContent.trim() !== '') {
+                    console.log(`Header ${index + 1}:`, header.textContent);
+                  }
+                  // Processa o texto do cabeçalho para garantir correspondência
+                  const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-    function editEmpresa(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`editEmpresaModal${id}`));
-      modal.show();
-    }
+                  if (columnsToShow.includes(headerText)) {
+                    header.style.display = ''; // Mostra o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = ''; // Mostra a célula correspondente
+                      }
+                    });
+                  } else {
+                    header.style.display = 'none'; // Oculta o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = 'none';
+                      }
+                    });
+                  }
+                });
 
-    function viewEmpresa(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`viewEmpresaModal${id}`));
-      modal.show();
-    }
-
-    function applyColumnSettings() {
-      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-      const columnsToShow = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
-
-      const headers = document.querySelectorAll('th');
-      const rows = document.querySelectorAll('tbody tr');
-
-      headers.forEach((header, index) => {
-        if (header.textContent.trim() !== '') {
-          console.log(`Header ${index + 1}:`, header.textContent);
-        }
-        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
-
-        if (columnsToShow.includes(headerText)) {
-          header.style.display = ''; // Mostra o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = ''; // Mostra a célula correspondente
-            }
-          });
-        } else {
-          header.style.display = 'none'; // Oculta o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = 'none'; // Oculta a célula correspondente
-            }
-          });
-        }
-      });
-
-      // Fechar o modal após aplicar as configurações
-      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-      modal.hide();
-    }
-  </script>
+                // Fechar o modal após aplicar as configurações
+                const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+                if (modal) {
+                  modal.hide();
+                }
+              }
+            </script>
 
 </body>
 

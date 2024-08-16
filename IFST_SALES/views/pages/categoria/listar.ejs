@@ -8,350 +8,404 @@
 </head>
 
 <body>
-  <main class="table" id="tabela_categorias">
-    <section class="table__header">
-      <div class="titulo-categorias">
-        <h3>Categorias</h3>
-      </div>
-      <div class="header-actions">
-        <div class="table-search-bar">
-          <input type="text" placeholder="Pesquisar por categoria...">
-          <i class="fas fa-search"></i>
+  <!-- Incluindo o arquivo mensagem.ejs -->
+  <%- include('../mensagem') %>
+    <main class="table" id="tabela_categorias">
+      <section class="table__header">
+        <div class="titulo-categorias">
+          <h3>Categorias</h3>
         </div>
-        <div>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoriaModal">
-            Adicionar Categoria
-          </button>
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por categoria...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoriaModal">
+              Adicionar Categoria
+            </button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+              Gerenciar Colunas
+            </button>
+          </div>
         </div>
-        <div>
-          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
-            Gerenciar Colunas
-          </button>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="table__body">
-      <table>
-        <thead>
-          <tr>
-            <th draggable="true">Código</th>
-            <th draggable="true">Descrição</th>
-            <th draggable="true">Ativo</th>
-            <th draggable="true">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% categorias.forEach(categoria => { %>
-          <tr>
-            <td><%= categoria.codigo %></td>
-            <td><%= categoria.descricao %></td>
-            <td><%= categoria.ativo ? 'Sim' : 'Não' %></td>
-            <td>
-              <a href="#" onclick="editCategoria(<%= categoria.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
-              <a href="#" onclick="viewCategoria(<%= categoria.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
-              <a href="#" onclick="deleteCategoria(<%= categoria.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
-            </td>
-          </tr>
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Código</th>
+              <th draggable="true">Descrição</th>
+              <th draggable="true">Ativo</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% categorias.forEach(categoria=> { %>
+              <tr>
+                <td>
+                  <%= categoria.codigo %>
+                </td>
+                <td>
+                  <%= categoria.descricao %>
+                </td>
+                <td>
+                  <%= categoria.ativo ? 'Sim' : 'Não' %>
+                </td>
+                <td>
+                  <a href="#" onclick="editCategoria(<%= categoria.id %>);" title="Editar"><i
+                      class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewCategoria(<%= categoria.id %>);" title="Visualizar"><i
+                      class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteCategoria(<%= categoria.id %>);" title="Deletar"><i
+                      class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para Gerenciar Colunas -->
+    <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="manageColumnsForm">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código"
+                      checked>
+                    <label class="form-check-label" for="col-codigo">Código</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição"
+                      checked>
+                    <label class="form-check-label" for="col-descrição">Descrição</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
+                    <label class="form-check-label" for="col-ativo">Ativo</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                    <label class="form-check-label" for="col-ações">Ações</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para adicionar categoria -->
+    <div class="modal fade" id="addCategoriaModal" tabindex="-1" aria-labelledby="addCategoriaModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addCategoriaModalLabel">Adicionar Categoria</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addCategoriaForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="codigo" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo" name="codigo" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="descricao" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao" name="descricao" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="ativo" class="form-label">Ativo:</label>
+                  <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Criar Categoria</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modais para editar categoria -->
+    <% categorias.forEach(categoria=> { %>
+      <div class="modal fade" id="editCategoriaModal<%= categoria.id %>" tabindex="-1"
+        aria-labelledby="editCategoriaModalLabel<%= categoria.id %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editCategoriaModalLabel<%= categoria.id %>">Editar Categoria</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editCategoriaForm<%= categoria.id %>" enctype="multipart/form-data">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="codigo<%= categoria.id %>" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codigo<%= categoria.id %>" name="codigo"
+                      value="<%= categoria.codigo %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="descricao<%= categoria.id %>" class="form-label">Descrição:</label>
+                    <input type="text" class="form-control" id="descricao<%= categoria.id %>" name="descricao"
+                      value="<%= categoria.descricao %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="ativo<%= categoria.id %>" class="form-label">Ativo:</label>
+                    <input type="checkbox" class="form-check-input" id="ativo<%= categoria.id %>" name="ativo"
+                      <%=categoria.ativo ? 'checked' : '' %>>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+
+        <!-- Modais para visualizar categoria -->
+        <% categorias.forEach(categoria=> { %>
+          <div class="modal fade" id="viewCategoriaModal<%= categoria.id %>" tabindex="-1"
+            aria-labelledby="viewCategoriaModalLabel<%= categoria.id %>" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="viewCategoriaModalLabel<%= categoria.id %>">Visualizar Categoria</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="codigoView<%= categoria.id %>" class="form-label">Código:</label>
+                      <input type="text" class="form-control" id="codigoView<%= categoria.id %>" name="codigoView"
+                        value="<%= categoria.codigo %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="descricaoView<%= categoria.id %>" class="form-label">Descrição:</label>
+                      <input type="text" class="form-control" id="descricaoView<%= categoria.id %>" name="descricaoView"
+                        value="<%= categoria.descricao %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="ativoView<%= categoria.id %>" class="form-label">Ativo:</label>
+                      <input type="checkbox" class="form-check-input" id="ativoView<%= categoria.id %>" name="ativoView"
+                        <%=categoria.ativo ? 'checked' : '' %> disabled>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <% }) %>
-        </tbody>
-      </table>
-    </section>
-  </main>
 
-  <!-- Modal para Gerenciar Colunas -->
-  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="manageColumnsForm">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
-                  <label class="form-check-label" for="col-codigo">Código</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição" checked>
-                  <label class="form-check-label" for="col-descrição">Descrição</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
-                  <label class="form-check-label" for="col-ativo">Ativo</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
-                  <label class="form-check-label" for="col-ações">Ações</label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+            <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                // Configura o listener para o formulário de adição de categoria
+                document.getElementById('addCategoriaForm').addEventListener('submit', async function (event) {
+                  event.preventDefault();
+                  await createCategoria();
+                });
 
-  <!-- Modal para adicionar categoria -->
-  <div class="modal fade" id="addCategoriaModal" tabindex="-1" aria-labelledby="addCategoriaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addCategoriaModalLabel">Adicionar Categoria</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addCategoriaForm" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo" name="codigo" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="descricao" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao" name="descricao" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="ativo" class="form-label">Ativo:</label>
-                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Criar Categoria</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+                // Configura os listeners para os formulários de edição de categoria
+                const categoriaForms = document.querySelectorAll('[id^=editCategoriaForm]');
+                categoriaForms.forEach(form => {
+                  form.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    const id = form.getAttribute('id').match(/\d+$/)[0]; // Extrai o ID do formulário
+                    await updateCategoria(id);
+                  });
+                });
+              });
 
-  <!-- Modais para editar categoria -->
-  <% categorias.forEach(categoria => { %>
-  <div class="modal fade" id="editCategoriaModal<%= categoria.id %>" tabindex="-1" aria-labelledby="editCategoriaModalLabel<%= categoria.id %>"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editCategoriaModalLabel<%= categoria.id %>">Editar Categoria</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editCategoriaForm<%= categoria.id %>" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo<%= categoria.id %>" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo<%= categoria.id %>" name="codigo" value="<%= categoria.codigo %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="descricao<%= categoria.id %>" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao<%= categoria.id %>" name="descricao" value="<%= categoria.descricao %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="ativo<%= categoria.id %>" class="form-label">Ativo:</label>
-                <input type="checkbox" class="form-check-input" id="ativo<%= categoria.id %>" name="ativo" <%= categoria.ativo ? 'checked' : '' %>>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+              // Função para criar uma nova categoria
+              async function createCategoria() {
+                const data = {
+                  codigo: document.getElementById('codigo').value,
+                  descricao: document.getElementById('descricao').value,
+                  ativo: document.getElementById('ativo').checked
+                };
 
-  <!-- Modais para visualizar categoria -->
-  <% categorias.forEach(categoria => { %>
-  <div class="modal fade" id="viewCategoriaModal<%= categoria.id %>" tabindex="-1" aria-labelledby="viewCategoriaModalLabel<%= categoria.id %>"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewCategoriaModalLabel<%= categoria.id %>">Visualizar Categoria</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="codigoView<%= categoria.id %>" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigoView<%= categoria.id %>" name="codigoView" value="<%= categoria.codigo %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="descricaoView<%= categoria.id %>" class="form-label">Descrição:</label>
-              <input type="text" class="form-control" id="descricaoView<%= categoria.id %>" name="descricaoView" value="<%= categoria.descricao %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="ativoView<%= categoria.id %>" class="form-label">Ativo:</label>
-              <input type="checkbox" class="form-check-input" id="ativoView<%= categoria.id %>" name="ativoView" <%= categoria.ativo ? 'checked' : '' %> disabled>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+                const response = await fetch('/categoria', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  },
+                  body: JSON.stringify(data)
+                });
 
-  <!-- Scripts -->
-  <script>
-    function resetAddCategoriaForm() {
-      document.getElementById('addCategoriaForm').reset();
-    }
+                handleResponse(response);
+              }
 
-    document.getElementById('addCategoriaForm').addEventListener('submit', async function (event) {
-      event.preventDefault();
+              // Função para atualizar uma categoria existente
+              async function updateCategoria(id) {
+                const data = {
+                  codigo: document.getElementById(`codigo${id}`).value,
+                  descricao: document.getElementById(`descricao${id}`).value,
+                  ativo: document.getElementById(`ativo${id}`).checked
+                };
 
-      const data = {
-        codigo: document.getElementById('codigo').value,
-        descricao: document.getElementById('descricao').value,
-        ativo: document.getElementById('ativo').checked
-      };
+                const response = await fetch(`/categoria/${id}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  },
+                  body: JSON.stringify(data)
+                });
 
-      const response = await fetch('/categoria', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+                handleResponse(response);
+              }
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao criar categoria');
-      }
-    });
+              // Função para deletar uma categoria
+              async function deleteCategoria(id) {
+                if (confirm('Tem certeza que deseja deletar esta categoria?')) {
+                  const response = await fetch(`/categoria/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                      'X-CSRF-Token': '<%= _csrf %>'
+                    }
+                  });
 
-    <% categorias.forEach(categoria => { %>
-    document.getElementById('editCategoriaForm<%= categoria.id %>').addEventListener('submit', async function (event) {
-      event.preventDefault();
+                  handleResponse(response);
+                }
+              }
 
-      const data = {
-        codigo: document.getElementById(`codigo<%= categoria.id %>`).value,
-        descricao: document.getElementById(`descricao<%= categoria.id %>`).value,
-        ativo: document.getElementById(`ativo<%= categoria.id %>`).checked
-      };
+              // Função para lidar com a resposta do servidor
+              function handleResponse(response) {
+                if (response.ok) {
+                  showSuccessModal('Operação realizada com sucesso!');
+                } else {
+                  response.json().then(error => {
+                    showErrorModal(error.message || 'Erro ao processar a operação');
+                  }).catch(() => {
+                    showErrorModal('Erro desconhecido');
+                  });
+                }
+              }
 
-      const response = await fetch(`/categoria/<%= categoria.id %>`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+              // Função para exibir o modal de mensagem com sucesso
+              function showSuccessModal(message) {
+                showMessageModal(`Sucesso: ${message}`);
+              }
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao atualizar categoria');
-      }
-    });
-    <% }) %>
+              // Função para exibir o modal de mensagem com erro
+              function showErrorModal(error) {
+                showMessageModal(`Erro: ${error}`);
+              }
 
-    async function deleteCategoria(id) {
-      if (confirm('Tem certeza que deseja deletar esta categoria?')) {
-        const response = await fetch(`/categoria/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': '<%= _csrf %>'
-          }
-        });
+              // Função para exibir o modal de mensagem com uma mensagem específica
+              function showMessageModal(message) {
+                const modalBody = document.getElementById('messageModalBody');
+                if (modalBody) {
+                  modalBody.textContent = message;
 
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao deletar categoria');
-        }
-      }
-    }
+                  const messageModalElement = document.getElementById('messageModal');
+                  if (messageModalElement) {
+                    const messageModal = new bootstrap.Modal(messageModalElement);
+                    messageModal.show();
+                  } else {
+                    console.error('Modal element not found.');
+                  }
+                } else {
+                  console.error('Modal body element not found.');
+                }
+              }
 
-    function editCategoria(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`editCategoriaModal${id}`));
-      modal.show();
-    }
+              // Função para exibir o modal de edição de categoria
+              function editCategoria(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`editCategoriaModal${id}`));
+                modal.show();
+              }
 
-    function viewCategoria(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`viewCategoriaModal${id}`));
-      modal.show();
-    }
+              // Função para exibir o modal de visualização de categoria
+              function viewCategoria(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`viewCategoriaModal${id}`));
+                modal.show();
+              }
 
-    function applyColumnSettings() {
-      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-      const columnsToShow = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+              // Função para aplicar configurações de colunas
+              function applyColumnSettings() {
+                const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+                const columnsToShow = Array.from(checkboxes)
+                  .filter(checkbox => checkbox.checked)
+                  .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-      const headers = document.querySelectorAll('th');
-      const rows = document.querySelectorAll('tbody tr');
+                const headers = document.querySelectorAll('th');
+                const rows = document.querySelectorAll('tbody tr');
 
-      headers.forEach((header, index) => {
-        if (header.textContent.trim() !== '') {
-          console.log(`Header ${index + 1}:`, header.textContent);
-        }
-        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+                headers.forEach((header, index) => {
+                  const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-        if (columnsToShow.includes(headerText)) {
-          header.style.display = ''; // Mostra o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = ''; // Mostra a célula correspondente
-            }
-          });
-        } else {
-          header.style.display = 'none'; // Oculta o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = 'none'; // Oculta a célula correspondente
-            }
-          });
-        }
-      });
+                  if (columnsToShow.includes(headerText)) {
+                    header.style.display = ''; // Mostra o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = ''; // Mostra a célula correspondente
+                      }
+                    });
+                  } else {
+                    header.style.display = 'none'; // Oculta o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = 'none'; // Oculta a célula correspondente
+                      }
+                    });
+                  }
+                });
+              }
 
-      // Fechar o modal após aplicar as configurações
-      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-      modal.hide();
-    }
-  </script>
+            </script>
 </body>
 
 </html>
