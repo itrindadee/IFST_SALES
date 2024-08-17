@@ -4,7 +4,10 @@ module.exports = {
       const marcas = await Marca.find();
       return res.view('pages/marca/listar', { marcas });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao listar as marcas.',
+        error: err
+      });
     }
   },
 
@@ -12,11 +15,16 @@ module.exports = {
     try {
       const marca = await Marca.findOne({ id: req.params.id });
       if (!marca) {
-        return res.notFound('Marca não encontrada.');
+        return res.notFound({
+          message: 'Marca não encontrada.'
+        });
       }
       return res.json(marca);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao buscar a marca.',
+        error: err
+      });
     }
   },
 
@@ -33,7 +41,10 @@ module.exports = {
         marca: novaMarca
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao criar a marca.',
+        error: err
+      });
     }
   },
 
@@ -49,7 +60,9 @@ module.exports = {
       });
 
       if (!marcaAtualizada) {
-        return res.notFound('Marca não encontrada.');
+        return res.notFound({
+          message: 'Marca não encontrada.'
+        });
       }
 
       return res.json({
@@ -57,7 +70,10 @@ module.exports = {
         marca: marcaAtualizada
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao atualizar a marca.',
+        error: err
+      });
     }
   },
 
@@ -68,14 +84,19 @@ module.exports = {
       const marcaDeletada = await Marca.destroyOne({ id: marcaId });
 
       if (!marcaDeletada) {
-        return res.notFound('Marca não encontrada.');
+        return res.notFound({
+          message: 'Marca não encontrada.'
+        });
       }
 
       return res.json({
         message: 'Marca deletada com sucesso'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao deletar a marca.',
+        error: err
+      });
     }
   }
 };

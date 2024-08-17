@@ -11,7 +11,10 @@ module.exports = {
       const politicas = await PoliticaCadastro.find().populate('condicoes');
       return res.view('pages/politicaCadastro/listar', { politicas });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao listar as políticas de cadastro.',
+        error: err
+      });
     }
   },
 
@@ -42,7 +45,10 @@ module.exports = {
         politica: novaPolitica
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao criar a política de cadastro.',
+        error: err
+      });
     }
   },
 
@@ -59,7 +65,9 @@ module.exports = {
       });
 
       if (!politicaAtualizada) {
-        return res.notFound('Política de cadastro não encontrada.');
+        return res.notFound({
+          message: 'Política de cadastro não encontrada.'
+        });
       }
 
       // Remove as condições existentes
@@ -82,7 +90,10 @@ module.exports = {
         politica: politicaAtualizada
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao atualizar a política de cadastro.',
+        error: err
+      });
     }
   },
 
@@ -97,14 +108,19 @@ module.exports = {
       const politicaDeletada = await PoliticaCadastro.destroyOne({ id: politicaId });
 
       if (!politicaDeletada) {
-        return res.notFound('Política de cadastro não encontrada.');
+        return res.notFound({
+          message: 'Política de cadastro não encontrada.'
+        });
       }
 
       return res.json({
         message: 'Política de cadastro deletada com sucesso'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao deletar a política de cadastro.',
+        error: err
+      });
     }
   },
 
@@ -113,7 +129,10 @@ module.exports = {
       const politicas = await PoliticaCadastro.find().populate('condicoes');
       return res.json(politicas);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao listar as políticas de cadastro.',
+        error: err
+      });
     }
   }
 };

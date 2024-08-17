@@ -1,4 +1,3 @@
-// api/controllers/ProdutoController.js
 const path = require('path');
 
 module.exports = {
@@ -43,31 +42,28 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ success: false, message: 'Erro ao cadastrar produto.' });
+      return res.status(500).json({ success: false, message: 'Erro ao cadastrar produto.', error: err.message });
     }
   },
 
-      listar: async function (req, res) {
-        try {
-          // Buscar todas as marcas, categorias, subcategorias e grupos de produtos
-          const marcas = await Marca.find();
-          const categorias = await Categoria.find();
-          const subcategorias = await Subcategoria.find();
-          const grupoprodutos = await GrupoProduto.find();
+  listar: async function (req, res) {
+    try {
+      const marcas = await Marca.find();
+      const categorias = await Categoria.find();
+      const subcategorias = await Subcategoria.find();
+      const grupoprodutos = await GrupoProduto.find();
 
-          // Buscar todos os produtos e popular as associações
-          const produtos = await Produto.find()
-            .populate('marca')
-            .populate('categoria')
-            .populate('subcategoria')
-            .populate('grupoproduto');
+      const produtos = await Produto.find()
+        .populate('marca')
+        .populate('categoria')
+        .populate('subcategoria')
+        .populate('grupoproduto');
 
-          // Renderizar a view com os dados
-          return res.view('pages/produto/listar', { produtos, marcas, categorias, subcategorias, grupoprodutos });
-        } catch (err) {
-          return res.serverError(err);
-        }
-      },
+      return res.view('pages/produto/listar', { produtos, marcas, categorias, subcategorias, grupoprodutos });
+    } catch (err) {
+      return res.serverError({ success: false, message: 'Erro ao listar produtos.', error: err.message });
+    }
+  },
 
   atualizar: async function (req, res) {
     try {
@@ -105,13 +101,13 @@ module.exports = {
       });
 
       if (!produtoAtualizado) {
-        return res.notFound('Produto não encontrado.');
+        return res.notFound({ success: false, message: 'Produto não encontrado.' });
       }
 
-      return res.json({ message: 'Produto atualizado com sucesso', produto: produtoAtualizado });
+      return res.json({ success: true, message: 'Produto atualizado com sucesso', produto: produtoAtualizado });
 
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ success: false, message: 'Erro ao atualizar produto.', error: err.message });
     }
   },
 
@@ -122,13 +118,13 @@ module.exports = {
       const produtoDeletado = await Produto.destroyOne({ id: produtoId });
 
       if (!produtoDeletado) {
-        return res.notFound('Produto não encontrado.');
+        return res.notFound({ success: false, message: 'Produto não encontrado.' });
       }
 
-      return res.json({ message: 'Produto deletado com sucesso' });
+      return res.json({ success: true, message: 'Produto deletado com sucesso' });
 
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ success: false, message: 'Erro ao deletar produto.', error: err.message });
     }
   }
 };

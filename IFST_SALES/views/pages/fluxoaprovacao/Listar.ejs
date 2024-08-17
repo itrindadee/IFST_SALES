@@ -1,95 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fluxos de Aprovação</title>
 </head>
+
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Fluxos de Aprovação</h1>
+  <%- include('../mensagem') %>
 
-    <!-- Botão para criar um novo fluxo -->
-    <div class="text-end mb-4">
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFluxoModal">Criar Fluxo</button>
-    </div>
-
-    <!-- Tabela de fluxos existentes -->
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% fluxos.forEach(fluxo => { %>
-        <tr>
-          <td><%= fluxo.nome %></td>
-          <td><%= fluxo.descricao %></td>
-          <td>
-            <button class="btn btn-warning btn-sm" onclick="editFluxo(<%= fluxo.id %>)">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteFluxo(<%= fluxo.id %>)">Deletar</button>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Modal para criar fluxo -->
-  <div class="modal fade" id="createFluxoModal" tabindex="-1" aria-labelledby="createFluxoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="createFluxoModalLabel">Criar Fluxo de Aprovação</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <main class="table" id="tabela_fluxoaprovacao">
+      <section class="table__header">
+        <div class="titulo-fluxoaprovacao">
+          <h3>Fluxos de Aprovação</h3>
         </div>
-        <div class="modal-body">
-          <form id="createFluxoForm">
-            <input type="hidden" id="fluxoId" name="fluxoId">
-            <div class="mb-3">
-              <label for="fluxoNome" class="form-label">Nome</label>
-              <input type="text" class="form-control" id="fluxoNome" name="nome" required>
-            </div>
-            <div class="mb-3">
-              <label for="fluxoDescricao" class="form-label">Descrição</label>
-              <textarea class="form-control" id="fluxoDescricao" name="descricao" rows="3"></textarea>
-            </div>
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por fluxo de aprovação...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFluxoModal">Criar
+              Fluxo</button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+              Gerenciar Colunas
+            </button>
+          </div>
+        </div>
+      </section>
 
-            <!-- Seção para adicionar Regras -->
-            <div class="mb-3">
-              <h5>Regras de Aprovação</h5>
-              <div id="regrasContainer">
-                <!-- Aqui serão adicionadas as regras dinamicamente -->
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Nome</th>
+              <th draggable="true">Descrição</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% fluxos.forEach(fluxo=> { %>
+              <tr>
+                <td>
+                  <%= fluxo.nome %>
+                </td>
+                <td>
+                  <%= fluxo.descricao %>
+                </td>
+                <td>
+                  <a href="#" onclick="editFluxo(<%= fluxo.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewFluxo(<%= fluxo.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteFluxo(<%= fluxo.id %>);" title="Deletar"><i
+                      class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para criar fluxo -->
+    <div class="modal fade" id="createFluxoModal" tabindex="-1" aria-labelledby="createFluxoModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createFluxoModalLabel">Criar Fluxo de Aprovação</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="createFluxoForm">
+              <input type="hidden" id="fluxoId" name="fluxoId">
+              <div class="mb-3">
+                <label for="fluxoNome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="fluxoNome" name="nome" required>
               </div>
-              <button type="button" class="btn btn-outline-primary btn-sm" onclick="addRegra()">Adicionar Regra</button>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Salvar Fluxo</button>
-          </form>
+              <div class="mb-3">
+                <label for="fluxoDescricao" class="form-label">Descrição</label>
+                <textarea class="form-control" id="fluxoDescricao" name="descricao" rows="3"></textarea>
+              </div>
+              <!-- Seção para adicionar Regras -->
+              <div class="mb-3">
+                <h5>Regras de Aprovação</h5>
+                <div id="regrasContainer">
+                  <!-- Aqui serão adicionadas as regras dinamicamente -->
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addRegra()">Adicionar
+                  Regra</button>
+              </div>
+              <button type="submit" class="btn btn-primary">Salvar Fluxo</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
+    <!-- Modal para visualizar fluxo -->
+    <div class="modal fade" id="viewFluxoModal" tabindex="-1" aria-labelledby="viewFluxoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewFluxoModalLabel">Visualizar Fluxo de Aprovação</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="viewFluxoNome" class="form-label">Nome</label>
+              <input type="text" class="form-control" id="viewFluxoNome" name="nome" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="viewFluxoDescricao" class="form-label">Descrição</label>
+              <textarea class="form-control" id="viewFluxoDescricao" name="descricao" rows="3" readonly></textarea>
+            </div>
+            <div class="mb-3">
+              <h5>Regras de Aprovação</h5>
+              <div id="viewRegrasContainer">
+                <!-- Aqui serão adicionadas as regras dinamicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <script>
-    let editing = false;
-    // Função para adicionar uma nova regra dinamicamente no formulário
-    function addRegra(regra = {}) {
-    const regrasContainer = document.getElementById('regrasContainer');
-    const regraDiv = document.createElement('div');
-    regraDiv.classList.add('mb-3');
+    <script>
+      // Função para salvar o novo fluxo ou editar o fluxo existente
+      document.getElementById('createFluxoForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-    // Construa as opções do select de aprovadores
-    let aprovadoresOptions = '';
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = {
+          nome: formData.get('nome'),
+          descricao: formData.get('descricao'),
+          regras: []
+        };
+
+        const fluxoId = formData.get('fluxoId');
+        const method = fluxoId ? 'PUT' : 'POST';
+        const url = fluxoId ? `/fluxoaprovacao/${fluxoId}` : '/fluxoaprovacao';
+
+        const regrasContainer = document.getElementById('regrasContainer');
+        const regras = regrasContainer.querySelectorAll('.row');
+        regras.forEach(regra => {
+          const nivel = regra.querySelector('input[name="nivel"]').value;
+          const tipo = regra.querySelector('select[name="tipo"]').value;
+          const aprovador = regra.querySelector('select[name="aprovador"]').value;
+          data.regras.push({ nivel, tipo, aprovador });
+        });
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '<%= _csrf %>' },
+          body: JSON.stringify(data)
+        });
+
+        handleResponse(response);
+      });
+
+      // Função para adicionar uma nova regra dinamicamente no formulário
+      function addRegra(regra = {}) {
+        const regrasContainer = document.getElementById('regrasContainer');
+        const regraDiv = document.createElement('div');
+        regraDiv.classList.add('mb-3');
+
+        // Construa as opções do select de aprovadores
+        let aprovadoresOptions = '';
     <% usuarios.forEach(usuario => { %>
-        aprovadoresOptions += `<option value="<%= usuario.id %>" ${regra.aprovador === '<%= usuario.id %>' ? 'selected' : ''}><%= usuario.fullName %> (<%= usuario.emailAddress %>)</option>`;
+          aprovadoresOptions += `<option value="<%= usuario.id %>" ${regra.aprovador === '<%= usuario.id %>' ? 'selected' : ''}><%= usuario.fullName %> (<%= usuario.emailAddress %>)</option>`;
     <% }) %>;
 
-    regraDiv.innerHTML = `
+        regraDiv.innerHTML = `
         <div class="row">
           <div class="col-md-3">
             <label for="nivel" class="form-label">Nível da Regra</label>
@@ -114,99 +199,126 @@
           </div>
         </div>
     `;
-    regrasContainer.appendChild(regraDiv);
+        regrasContainer.appendChild(regraDiv);
 
-    // Certifique-se de que o select seja atualizado corretamente
-    regraDiv.querySelector('select[name="aprovador"]').value = regra.aprovador || '';
-}
-    // Função para remover uma regra do formulário
-    function removeRegra(button) {
-      const regraDiv = button.parentElement.parentElement.parentElement;
-      regraDiv.remove();
-    }
-    // Função para salvar o novo fluxo ou editar o fluxo existente
-    document.getElementById('createFluxoForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const form = event.target;
-      const formData = new FormData(form);
-      const data = {
-        nome: formData.get('nome'),
-        descricao: formData.get('descricao'),
-        regras: []
-      };
-
-      const fluxoId = formData.get('fluxoId');
-      const method = fluxoId ? 'PUT' : 'POST';
-      const url = fluxoId ? `/fluxoaprovacao/${fluxoId}` : '/fluxoaprovacao';
-
-      const regrasContainer = document.getElementById('regrasContainer');
-      const regras = regrasContainer.querySelectorAll('.row');
-      regras.forEach(regra => {
-        const nivel = regra.querySelector('input[name="nivel"]').value;
-        const tipo = regra.querySelector('select[name="tipo"]').value;
-        const aprovador = regra.querySelector('select[name="aprovador"]').value;
-        data.regras.push({ nivel, tipo, aprovador });
-      });
-
-      const response = await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '<%= _csrf %>' },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        location.reload();
-      } else {
-        alert('Erro ao salvar fluxo');
+        // Certifique-se de que o select seja atualizado corretamente
+        regraDiv.querySelector('select[name="aprovador"]').value = regra.aprovador || '';
       }
-    });
-    // Função para editar fluxo
-    async function editFluxo(id) {
-      try {
-        const response = await fetch(`/fluxoaprovacao/${id}`);
-        if (!response.ok) {
-          throw new Error('Erro ao buscar os dados do fluxo');
-        }
-        const fluxo = await response.json();
 
-        // Preencher os campos do formulário com os dados do fluxo
-        document.getElementById('fluxoId').value = fluxo.id;
-        document.getElementById('fluxoNome').value = fluxo.nome;
-        document.getElementById('fluxoDescricao').value = fluxo.descricao;
-
-        // Limpar o container de regras
-        const regrasContainer = document.getElementById('regrasContainer');
-        regrasContainer.innerHTML = '';
-
-        // Adicionar as regras existentes ao formulário
-        fluxo.regras.forEach(regra => {
-          addRegra(regra);
-        });
-
-        // Abrir o modal
-        const modal = new bootstrap.Modal(document.getElementById('createFluxoModal'));
-        modal.show();
-      } catch (error) {
-        console.error('Erro ao editar o fluxo:', error);
-        alert('Erro ao editar o fluxo');
+      // Função para remover uma regra do formulário
+      function removeRegra(button) {
+        const regraDiv = button.parentElement.parentElement.parentElement;
+        regraDiv.remove();
       }
-    }
-    // Função para deletar fluxo
-    async function deleteFluxo(id) {
-      if (confirm('Tem certeza que deseja deletar este fluxo?')) {
-        const response = await fetch(`/fluxoaprovacao/${id}`, {
-          method: 'DELETE',
-          headers: { 'X-CSRF-Token': '<%= _csrf %>' }
-        });
 
+      // Função para lidar com a resposta da operação
+      function handleResponse(response) {
         if (response.ok) {
-          location.reload();
+          showSuccessModal('Operação realizada com sucesso!');
         } else {
-          alert('Erro ao deletar fluxo');
+          response.json().then(error => {
+            showErrorModal(error.message || 'Erro ao processar a operação');
+          }).catch(() => {
+            showErrorModal('Erro desconhecido');
+          });
         }
       }
-    }
-  </script>
+
+      // Função para editar fluxo
+      async function editFluxo(id) {
+        try {
+          const response = await fetch(`/fluxoaprovacao/${id}`);
+          if (!response.ok) {
+            throw new Error('Erro ao buscar os dados do fluxo');
+          }
+          const fluxo = await response.json();
+
+          // Preencher os campos do formulário com os dados do fluxo
+          document.getElementById('fluxoId').value = fluxo.id;
+          document.getElementById('fluxoNome').value = fluxo.nome;
+          document.getElementById('fluxoDescricao').value = fluxo.descricao;
+
+          // Limpar o container de regras
+          const regrasContainer = document.getElementById('regrasContainer');
+          regrasContainer.innerHTML = '';
+
+          // Adicionar as regras existentes ao formulário
+          fluxo.regras.forEach(regra => {
+            addRegra(regra);
+          });
+
+          // Abrir o modal
+          const modal = new bootstrap.Modal(document.getElementById('createFluxoModal'));
+          modal.show();
+        } catch (error) {
+          console.error('Erro ao editar o fluxo:', error);
+          showErrorModal('Erro ao editar o fluxo');
+        }
+      }
+
+      // Função para deletar fluxo
+      async function deleteFluxo(id) {
+        if (confirm('Tem certeza que deseja deletar este fluxo?')) {
+          const response = await fetch(`/fluxoaprovacao/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-Token': '<%= _csrf %>' }
+          });
+
+          handleResponse(response);
+        }
+      }
+
+      // Função para visualizar fluxo
+      async function viewFluxo(id) {
+        try {
+          const response = await fetch(`/fluxoaprovacao/${id}`);
+          if (!response.ok) {
+            throw new Error('Erro ao buscar os dados do fluxo');
+          }
+          const fluxo = await response.json();
+
+          // Preencher os campos do modal com os dados do fluxo
+          document.getElementById('viewFluxoNome').value = fluxo.nome;
+          document.getElementById('viewFluxoDescricao').value = fluxo.descricao;
+
+          // Limpar o container de regras
+          const viewRegrasContainer = document.getElementById('viewRegrasContainer');
+          viewRegrasContainer.innerHTML = '';
+
+          // Adicionar as regras existentes ao container de visualização
+          fluxo.regras.forEach(regra => {
+            const regraDiv = document.createElement('div');
+            regraDiv.classList.add('mb-3');
+
+            regraDiv.innerHTML = `
+        <div class="row">
+          <div class="col-md-3">
+            <label class="form-label">Nível da Regra</label>
+            <input type="number" class="form-control" value="${regra.nivel}" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Tipo de Regra</label>
+            <input type="text" class="form-control" value="${regra.tipo}" readonly>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Aprovador</label>
+            <input type="text" class="form-control" value="${regra.aprovadorNome}" readonly>
+          </div>
+        </div>
+      `;
+            viewRegrasContainer.appendChild(regraDiv);
+          });
+
+          // Abrir o modal de visualização
+          const modal = new bootstrap.Modal(document.getElementById('viewFluxoModal'));
+          modal.show();
+        } catch (error) {
+          console.error('Erro ao visualizar o fluxo:', error);
+          showErrorModal('Erro ao visualizar o fluxo');
+        }
+      }
+    </script>
+
 </body>
+
 </html>

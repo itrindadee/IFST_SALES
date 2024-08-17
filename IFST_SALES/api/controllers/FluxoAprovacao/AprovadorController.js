@@ -1,5 +1,3 @@
-// api/controllers/FluxoAprovacao/AprovadorController.js
-
 module.exports = {
 
   listar: async function (req, res) {
@@ -7,7 +5,7 @@ module.exports = {
       const aprovadores = await Aprovador.find().populate('usuario').populate('regra');
       return res.json(aprovadores);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao listar aprovadores.', error: err });
     }
   },
 
@@ -17,12 +15,12 @@ module.exports = {
       const aprovador = await Aprovador.findOne({ id: aprovadorId }).populate('usuario').populate('regra');
 
       if (!aprovador) {
-        return res.notFound('Aprovador não encontrado.');
+        return res.notFound({ message: 'Aprovador não encontrado.' });
       }
 
       return res.json(aprovador);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao buscar aprovador.', error: err });
     }
   },
 
@@ -41,7 +39,7 @@ module.exports = {
         aprovador: novoAprovador
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao criar aprovador.', error: err });
     }
   },
 
@@ -57,7 +55,7 @@ module.exports = {
       });
 
       if (!aprovadorAtualizado) {
-        return res.notFound('Aprovador não encontrado.');
+        return res.notFound({ message: 'Aprovador não encontrado.' });
       }
 
       return res.json({
@@ -65,7 +63,7 @@ module.exports = {
         aprovador: aprovadorAtualizado
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao atualizar aprovador.', error: err });
     }
   },
 
@@ -76,14 +74,14 @@ module.exports = {
       const aprovadorDeletado = await Aprovador.destroyOne({ id: aprovadorId });
 
       if (!aprovadorDeletado) {
-        return res.notFound('Aprovador não encontrado.');
+        return res.notFound({ message: 'Aprovador não encontrado.' });
       }
 
       return res.json({
         message: 'Aprovador deletado com sucesso'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao deletar aprovador.', error: err });
     }
   }
 };

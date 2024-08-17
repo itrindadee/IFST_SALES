@@ -8,6 +8,7 @@
 </head>
 
 <body>
+  <%- include('../mensagem') %>
   <main class="table" id="tabela_regioes">
     <section class="table__header">
       <div class="titulo-regioes">
@@ -218,127 +219,112 @@
 
   <!-- Scripts -->
   <script>
-    function resetAddRegiaoForm() {
-      document.getElementById('addRegiaoForm').reset();
-    }
+   function resetAddRegiaoForm() {
+  document.getElementById('addRegiaoForm').reset();
+}
 
-    document.getElementById('addRegiaoForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
+document.getElementById('addRegiaoForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
 
-      const data = {
-        organizacaoVendas: document.getElementById('organizacaoVendas').value,
-        codigo: document.getElementById('codigo').value,
-        descricao: document.getElementById('descricao').value
-      };
+  const data = {
+    organizacaoVendas: document.getElementById('organizacaoVendas').value,
+    codigo: document.getElementById('codigo').value,
+    descricao: document.getElementById('descricao').value
+  };
 
-      const response = await fetch('/regiao', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+  const response = await fetch('/regiao', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': '<%= _csrf %>'
+    },
+    body: JSON.stringify(data)
+  });
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao criar região');
+  handleResponse(response, 'Região criada com sucesso');
+});
+
+<% regioes.forEach(regiao => { %>
+document.getElementById('editRegiaoForm<%= regiao.id %>').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const data = {
+    organizacaoVendas: document.getElementById(`organizacaoVendas<%= regiao.id %>`).value,
+    codigo: document.getElementById(`codigo<%= regiao.id %>`).value,
+    descricao: document.getElementById(`descricao<%= regiao.id %>`).value
+  };
+
+  const response = await fetch(`/regiao/<%= regiao.id %>`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': '<%= _csrf %>'
+    },
+    body: JSON.stringify(data)
+  });
+
+  handleResponse(response, 'Região atualizada com sucesso');
+});
+<% }) %>
+
+async function deleteRegiao(id) {
+  if (confirm('Tem certeza que deseja deletar esta região?')) {
+    const response = await fetch(`/regiao/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': '<%= _csrf %>'
       }
     });
 
-    <% regioes.forEach(regiao => { %>
-    document.getElementById('editRegiaoForm<%= regiao.id %>').addEventListener('submit', async function(event) {
-      event.preventDefault();
+    handleResponse(response, 'Região deletada com sucesso');
+  }
+}
 
-      const data = {
-        organizacaoVendas: document.getElementById(`organizacaoVendas<%= regiao.id %>`).value,
-        codigo: document.getElementById(`codigo<%= regiao.id %>`).value,
-        descricao: document.getElementById(`descricao<%= regiao.id %>`).value
-      };
+function applyColumnSettings() {
+  const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+  const columnsToShow = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-      const response = await fetch(`/regiao/<%= regiao.id %>`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+  const headers = document.querySelectorAll('th');
+  const rows = document.querySelectorAll('tbody tr');
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao atualizar região');
-      }
-    });
-    <% }) %>
+  headers.forEach((header, index) => {
+    const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-    async function deleteRegiao(id) {
-      if (confirm('Tem certeza que deseja deletar esta região?')) {
-        const response = await fetch(`/regiao/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': '<%= _csrf %>'
-          }
-        });
-
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao deletar região');
-        }
-      }
-    }
-
-    function applyColumnSettings() {
-      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-      const columnsToShow = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
-
-      const headers = document.querySelectorAll('th');
-      const rows = document.querySelectorAll('tbody tr');
-
-      headers.forEach((header, index) => {
-        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
-
-        if (columnsToShow.includes(headerText)) {
-          header.style.display = ''; // Mostra o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = ''; // Mostra a célula correspondente
-            }
-          });
-        } else {
-          header.style.display = 'none'; // Oculta o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = 'none';
-            }
-          });
+    if (columnsToShow.includes(headerText)) {
+      header.style.display = ''; // Mostra o cabeçalho
+      rows.forEach(row => {
+        const cell = row.querySelector(`td:nth-child(${index + 1})`);
+        if (cell) {
+          cell.style.display = ''; // Mostra a célula correspondente
         }
       });
-
-      // Fechar o modal após aplicar as configurações
-      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-      modal.hide();
+    } else {
+      header.style.display = 'none'; // Oculta o cabeçalho
+      rows.forEach(row => {
+        const cell = row.querySelector(`td:nth-child(${index + 1})`);
+        if (cell) {
+          cell.style.display = 'none';
+        }
+      });
     }
+  });
 
-    function editRegiao(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`editRegiaoModal${id}`));
-      modal.show();
-    }
+  // Fechar o modal após aplicar as configurações
+  const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+  modal.hide();
+}
 
-    function viewRegiao(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`viewRegiaoModal${id}`));
-      modal.show();
-    }
+function editRegiao(id) {
+  const modal = new bootstrap.Modal(document.getElementById(`editRegiaoModal${id}`));
+  modal.show();
+}
+
+function viewRegiao(id) {
+  const modal = new bootstrap.Modal(document.getElementById(`viewRegiaoModal${id}`));
+  modal.show();
+}
   </script>
 </body>
 </html>

@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestão de Perfis</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .dual-list {
       display: flex;
@@ -36,6 +35,7 @@
 </head>
 
 <body>
+  <%- include('../mensagem') %>
   <main class="table" id="tabela_perfil">
     <section class="table__header">
       <div class="titulo-perfis">
@@ -292,6 +292,7 @@
 
   <!-- Scripts -->
   <script>
+    // Manipulação do DOM
     function addPermission(id = '') {
       const available = document.getElementById('availablePermissions' + id);
       const selected = document.getElementById('selectedPermissions' + id);
@@ -309,150 +310,6 @@
         available.add(option);
       });
     }
-
-    async function editPerfil(id) {
-      try {
-        const response = await fetch(`/perfil/${id}`);
-        const perfilData = await response.json();
-
-        // Preenche os campos de edição com os dados do perfil
-        document.getElementById('nomeEdit').value = perfilData.perfil.nome;
-        document.getElementById('descricaoEdit').value = perfilData.perfil.descricao;
-
-        // Armazena o ID do perfil no campo oculto
-        document.getElementById('perfilIdEdit').value = perfilData.perfil.id;
-
-        const availablePermissionsEdit = document.getElementById('availablePermissionsEdit');
-        const selectedPermissionsEdit = document.getElementById('selectedPermissionsEdit');
-        availablePermissionsEdit.innerHTML = '';
-        selectedPermissionsEdit.innerHTML = '';
-
-        // Percorre todas as permissões disponíveis
-        perfilData.todasPermissoes.forEach(permissao => {
-          // Verifica se a permissão já está associada ao perfil
-          if (perfilData.permissoesAssociadas.some(p => p.id === permissao.id)) {
-            selectedPermissionsEdit.add(new Option(permissao.nome, permissao.id, true, true));
-          } else {
-            availablePermissionsEdit.add(new Option(permissao.nome, permissao.id));
-          }
-        });
-
-        const modal = new bootstrap.Modal(document.getElementById('editPerfilModal'));
-        modal.show();
-      } catch (error) {
-        console.error('Erro ao carregar perfil:', error);
-      }
-    }
-
-    async function viewPerfil(id) {
-      try {
-        const response = await fetch(`/perfil/${id}`);
-        const perfil = await response.json();
-
-        document.getElementById('nomeView').value = perfil.perfil.nome;
-        document.getElementById('descricaoView').value = perfil.perfil.descricao;
-
-        const selectedPermissionsView = document.getElementById('selectedPermissionsView');
-        selectedPermissionsView.innerHTML = '';
-
-        perfil.permissoesAssociadas.forEach(permissao => {
-          const listItem = document.createElement('li');
-          listItem.className = 'list-group-item';
-          listItem.textContent = permissao.nome;
-          selectedPermissionsView.appendChild(listItem);
-        });
-
-        const modal = new bootstrap.Modal(document.getElementById('viewPerfilModal'));
-        modal.show();
-      } catch (error) {
-        console.error('Erro ao visualizar perfil:', error);
-      }
-    }
-
-    async function deletePerfil(id) {
-      if (confirm('Tem certeza que deseja deletar este perfil?')) {
-        try {
-          const response = await fetch(`/perfil/${id}`, {
-            method: 'DELETE',
-            headers: {
-              'X-CSRF-Token': '<%= _csrf %>'
-            }
-          });
-
-          if (response.ok) {
-            location.reload();
-          } else {
-            const error = await response.json();
-            alert(error.error || 'Erro ao deletar perfil');
-          }
-        } catch (error) {
-          console.error('Erro ao deletar perfil:', error);
-        }
-      }
-    }
-
-    document.getElementById('addPerfilForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
-
-      // Converter as permissões selecionadas em um array de IDs
-      data.permissoes = [...document.getElementById('selectedPermissions').options].map(option => option.value);
-
-      try {
-        const response = await fetch('/perfil', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': '<%= _csrf %>'
-          },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao criar perfil');
-        }
-      } catch (error) {
-        console.error('Erro ao criar perfil:', error);
-      }
-    });
-
-    document.getElementById('editPerfilForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
-
-      // Converter as permissões selecionadas em um array de IDs
-      data.permissoes = [...document.getElementById('selectedPermissionsEdit').options].map(option => option.value);
-
-      // Pega o ID do perfil armazenado no campo oculto
-      const perfilId = document.getElementById('perfilIdEdit').value;
-
-      try {
-        const response = await fetch(`/perfil/${perfilId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': '<%= _csrf %>'
-          },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao atualizar perfil');
-        }
-      } catch (error) {
-        console.error('Erro ao atualizar perfil:', error);
-      }
-    });
 
     function applyColumnSettings() {
       const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
@@ -488,6 +345,146 @@
       const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
       modal.hide();
     }
+
+    // Funções Auxiliares
+    async function editPerfil(id) {
+      try {
+        const response = await fetch(`/perfil/${id}`);
+        const perfilData = await response.json();
+
+        // Preenche os campos de edição com os dados do perfil
+        document.getElementById('nomeEdit').value = perfilData.perfil.nome;
+        document.getElementById('descricaoEdit').value = perfilData.perfil.descricao;
+
+        // Armazena o ID do perfil no campo oculto
+        document.getElementById('perfilIdEdit').value = perfilData.perfil.id;
+
+        const availablePermissionsEdit = document.getElementById('availablePermissionsEdit');
+        const selectedPermissionsEdit = document.getElementById('selectedPermissionsEdit');
+        availablePermissionsEdit.innerHTML = '';
+        selectedPermissionsEdit.innerHTML = '';
+
+        // Percorre todas as permissões disponíveis
+        perfilData.todasPermissoes.forEach(permissao => {
+          // Verifica se a permissão já está associada ao perfil
+          if (perfilData.permissoesAssociadas.some(p => p.id === permissao.id)) {
+            selectedPermissionsEdit.add(new Option(permissao.nome, permissao.id, true, true));
+          } else {
+            availablePermissionsEdit.add(new Option(permissao.nome, permissao.id));
+          }
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('editPerfilModal'));
+        modal.show();
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+        showErrorModal('Erro ao carregar perfil.');
+      }
+    }
+
+    async function viewPerfil(id) {
+      try {
+        const response = await fetch(`/perfil/${id}`);
+        const perfil = await response.json();
+
+        document.getElementById('nomeView').value = perfil.perfil.nome;
+        document.getElementById('descricaoView').value = perfil.perfil.descricao;
+
+        const selectedPermissionsView = document.getElementById('selectedPermissionsView');
+        selectedPermissionsView.innerHTML = '';
+
+        perfil.permissoesAssociadas.forEach(permissao => {
+          const listItem = document.createElement('li');
+          listItem.className = 'list-group-item';
+          listItem.textContent = permissao.nome;
+          selectedPermissionsView.appendChild(listItem);
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('viewPerfilModal'));
+        modal.show();
+      } catch (error) {
+        console.error('Erro ao visualizar perfil:', error);
+        showErrorModal('Erro ao visualizar perfil.');
+      }
+    }
+
+    async function deletePerfil(id) {
+      if (confirm('Tem certeza que deseja deletar este perfil?')) {
+        try {
+          const response = await fetch(`/perfil/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-Token': '<%= _csrf %>'
+            }
+          });
+
+          handleResponse(response, 'Perfil deletado com sucesso!');
+          location.reload();
+        } catch (error) {
+          console.error('Erro ao deletar perfil:', error);
+          showErrorModal('Erro ao deletar perfil.');
+        }
+      }
+    }
+
+    // Funções Assíncronas
+    document.getElementById('addPerfilForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      // Converter as permissões selecionadas em um array de IDs
+      data.permissoes = [...document.getElementById('selectedPermissions').options].map(option => option.value);
+
+      try {
+        const response = await fetch('/perfil', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        handleResponse(response, 'Perfil criado com sucesso!');
+      } catch (error) {
+        console.error('Erro ao criar perfil:', error);
+        showErrorModal('Erro ao criar perfil.');
+      }
+    });
+
+    document.getElementById('editPerfilForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      // Converter as permissões selecionadas em um array de IDs
+      data.permissoes = [...document.getElementById('selectedPermissionsEdit').options].map(option => option.value);
+
+      // Pega o ID do perfil armazenado no campo oculto
+      const perfilId = document.getElementById('perfilIdEdit').value;
+
+      try {
+        const response = await fetch(`/perfil/${perfilId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        handleResponse(response, 'Perfil atualizado com sucesso!');
+      } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
+        showErrorModal('Erro ao atualizar perfil.');
+      }
+    });
+
   </script>
+
+
 </body>
 </html>

@@ -7,6 +7,7 @@
 </head>
 
 <body>
+  <%- include('../mensagem') %>
   <main class="table" id="tabela_permissoes">
     <section class="table__header">
       <div class="titulo-permissoes">
@@ -236,126 +237,108 @@
   <!-- Scripts -->
   <script>
     function resetAddPermissaoForm() {
-      document.getElementById('addPermissaoForm').reset();
-    }
+  document.getElementById('addPermissaoForm').reset();
+}
 
-    document.getElementById('addPermissaoForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
+document.getElementById('addPermissaoForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
 
-      const data = {
-        nome: document.getElementById('nome').value,
-        descricao: document.getElementById('descricao').value,
-        tipoPermissao: document.getElementById('tipoPermissao').value
-      };
+  const data = {
+    nome: document.getElementById('nome').value,
+    descricao: document.getElementById('descricao').value,
+    tipoPermissao: document.getElementById('tipoPermissao').value
+  };
 
-      const response = await fetch('/permissoes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+  const response = await fetch('/permissoes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': '<%= _csrf %>'
+    },
+    body: JSON.stringify(data)
+  });
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao criar permissão');
+  handleResponse(response, 'Permissão criada com sucesso');
+});
+
+<% permissoes.forEach(permissao => { %>
+document.getElementById('editPermissaoForm<%= permissao.id %>').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const data = {
+    nome: document.getElementById(`nome<%= permissao.id %>`).value,
+    descricao: document.getElementById(`descricao<%= permissao.id %>`).value,
+    tipoPermissao: document.getElementById(`tipoPermissao<%= permissao.id %>`).value
+  };
+
+  const response = await fetch(`/permissoes/<%= permissao.id %>`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': '<%= _csrf %>'
+    },
+    body: JSON.stringify(data)
+  });
+
+  handleResponse(response, 'Permissão atualizada com sucesso');
+});
+<% }) %>
+
+async function deletePermissao(id) {
+  if (confirm('Tem certeza que deseja deletar esta permissão?')) {
+    const response = await fetch(`/permissoes/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': '<%= _csrf %>'
       }
     });
 
-    <% permissoes.forEach(permissao => { %>
-    document.getElementById('editPermissaoForm<%= permissao.id %>').addEventListener('submit', async function(event) {
-      event.preventDefault();
+    handleResponse(response, 'Permissão deletada com sucesso');
+  }
+}
 
-      const data = {
-        nome: document.getElementById(`nome<%= permissao.id %>`).value,
-        descricao: document.getElementById(`descricao<%= permissao.id %>`).value,
-        tipoPermissao: document.getElementById(`tipoPermissao<%= permissao.id %>`).value
-      };
+function applyColumnSettings() {
+  const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+  const columnsToShow = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-      const response = await fetch(`/permissoes/<%= permissao.id %>`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+  const headers = document.querySelectorAll('th');
+  const rows = document.querySelectorAll('tbody tr');
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao atualizar permissão');
-      }
-    });
-    <% }) %>
+  headers.forEach((header, index) => {
+    const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-    async function deletePermissao(id) {
-      if (confirm('Tem certeza que deseja deletar esta permissão?')) {
-        const response = await fetch(`/permissoes/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': '<%= _csrf %>'
-          }
-        });
-
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao deletar permissão');
-        }
-      }
-    }
-
-    function applyColumnSettings() {
-      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-      const columnsToShow = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
-
-      const headers = document.querySelectorAll('th');
-      const rows = document.querySelectorAll('tbody tr');
-
-      headers.forEach((header, index) => {
-        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
-
-        if (columnsToShow.includes(headerText)) {
-          header.style.display = ''; // Mostra o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = ''; // Mostra a célula correspondente
-            }
-          });
-        } else {
-          header.style.display = 'none'; // Oculta o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = 'none';
-            }
-          });
+    if (columnsToShow.includes(headerText)) {
+      header.style.display = ''; // Mostra o cabeçalho
+      rows.forEach(row => {
+        const cell = row.querySelector(`td:nth-child(${index + 1})`);
+        if (cell) {
+          cell.style.display = ''; // Mostra a célula correspondente
         }
       });
-
-      // Fechar o modal após aplicar as configurações
-      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-      modal.hide();
+    } else {
+      header.style.display = 'none'; // Oculta o cabeçalho
+      rows.forEach(row => {
+        const cell = row.querySelector(`td:nth-child(${index + 1})`);
+        if (cell) {
+          cell.style.display = 'none';
+        }
+      });
     }
-
-    function editPermissao(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`editPermissaoModal${id}`));
-      modal.show();
-    }
-
-    function viewPermissao(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`viewPermissaoModal${id}`));
-      modal.show();
-    }
+  });
+  // Fechar o modal após aplicar as configurações
+  const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+  modal.hide();
+}
+function editPermissao(id) {
+  const modal = new bootstrap.Modal(document.getElementById(`editPermissaoModal${id}`));
+  modal.show();
+}
+function viewPermissao(id) {
+  const modal = new bootstrap.Modal(document.getElementById(`viewPermissaoModal${id}`));
+  modal.show();
+}
   </script>
 </body>
 </html>

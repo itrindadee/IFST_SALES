@@ -1,5 +1,3 @@
-// controllers/PerfilController.js
-
 module.exports = {
   // Método para listar todos os perfis e todas as permissões
   listar: async function (req, res) {
@@ -8,7 +6,10 @@ module.exports = {
       const permissoes = await Permissao.find();
       return res.view('pages/perfil/listar', { perfis, permissoes });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao listar os perfis',
+        details: err.message
+      });
     }
   },
 
@@ -16,6 +17,12 @@ module.exports = {
   criar: async function (req, res) {
     try {
       const { nome, descricao, permissoes } = req.body;
+
+      // Verifica se já existe um perfil com o mesmo nome
+      const perfilExistente = await Perfil.findOne({ nome });
+      if (perfilExistente) {
+        return res.status(400).json({ error: 'Nome de perfil já existe.' });
+      }
 
       // Criar o perfil sem as permissões inicialmente
       const novoPerfil = await Perfil.create({
@@ -30,11 +37,14 @@ module.exports = {
       }
 
       return res.status(201).json({
-        message: 'Perfil criado com sucesso',
+        message: 'Perfil criado com sucesso!',
         perfil: novoPerfil
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao criar o perfil',
+        details: err.message
+      });
     }
   },
 
@@ -47,7 +57,9 @@ module.exports = {
       const perfil = await Perfil.findOne({ id: perfilId }).populate('permissoes');
 
       if (!perfil) {
-        return res.notFound('Perfil não encontrado.');
+        return res.notFound({
+          error: 'Perfil não encontrado'
+        });
       }
 
       // Buscar todas as permissões disponíveis
@@ -60,25 +72,36 @@ module.exports = {
         todasPermissoes: todasPermissoes // Todas as permissões disponíveis
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao buscar o perfil',
+        details: err.message
+      });
     }
   },
 
   // Método para atualizar um perfil existente
   atualizar: async function (req, res) {
     try {
-      const { id, nome, descricao, permissoes } = req.body;
+      const { nome, descricao, permissoes } = req.body;
       const perfilId = req.params.id;
 
+      // Verifica se o nome já existe em outro perfil
+      const perfilExistente = await Perfil.findOne({ nome, id: { '!=': perfilId } });
+      if (perfilExistente) {
+        return res.status(400).json({ error: 'Nome de perfil já existe.' });
+      }
+
       const perfilAtualizado = await Perfil.updateOne({ id: perfilId }).set({
-        id,
         nome,
         descricao
       });
 
       if (!perfilAtualizado) {
-        return res.notFound('Perfil não encontrado.');
+        return res.notFound({
+          error: 'Perfil não encontrado'
+        });
       }
+
       // Atualizando as permissões associadas ao perfil
       const permissoesArray = Array.isArray(permissoes) ? permissoes : [];
       if (permissoesArray.length > 0) {
@@ -86,12 +109,16 @@ module.exports = {
       } else {
         await Perfil.replaceCollection(perfilId, 'permissoes').members([]);
       }
+
       return res.json({
-        message: 'Perfil atualizado com sucesso',
+        message: 'Perfil atualizado com sucesso!',
         perfil: perfilAtualizado
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao atualizar o perfil',
+        details: err.message
+      });
     }
   },
 
@@ -102,6 +129,12 @@ module.exports = {
 
       // Buscar as permissões associadas ao perfil
       const perfil = await Perfil.findOne({ id: perfilId }).populate('permissoes');
+      if (!perfil) {
+        return res.notFound({
+          error: 'Perfil não encontrado'
+        });
+      }
+
       const permissoesAssociadas = perfil.permissoes.map(permissao => permissao.id);
 
       // Remover todas as permissões associadas ao perfil antes de deletá-lo
@@ -111,14 +144,19 @@ module.exports = {
       const perfilDeletado = await Perfil.destroyOne({ id: perfilId });
 
       if (!perfilDeletado) {
-        return res.notFound('Perfil não encontrado.');
+        return res.notFound({
+          error: 'Perfil não encontrado'
+        });
       }
 
       return res.json({
-        message: 'Perfil deletado com sucesso'
+        message: 'Perfil deletado com sucesso!'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao deletar o perfil',
+        details: err.message
+      });
     }
   }
 };

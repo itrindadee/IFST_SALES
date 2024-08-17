@@ -6,7 +6,7 @@ module.exports = {
       const escritorios = await EscritorioVendas.find();
       return res.view('pages/escritorioVendas/listar', { escritorios });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao listar escritórios de vendas', error: err });
     }
   },
 
@@ -14,11 +14,11 @@ module.exports = {
     try {
       const escritorio = await EscritorioVendas.findOne({ id: req.params.id });
       if (!escritorio) {
-        return res.notFound('Escritório de Vendas não encontrado.');
+        return res.notFound({ message: 'Escritório de Vendas não encontrado.' });
       }
       return res.json(escritorio);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao buscar escritório de vendas', error: err });
     }
   },
 
@@ -35,7 +35,7 @@ module.exports = {
         escritorio: novoEscritorio
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao criar escritório de vendas', error: err });
     }
   },
 
@@ -51,7 +51,7 @@ module.exports = {
       });
 
       if (!escritorioAtualizado) {
-        return res.notFound('Escritório de Vendas não encontrado.');
+        return res.notFound({ message: 'Escritório de Vendas não encontrado.' });
       }
 
       return res.json({
@@ -59,9 +59,10 @@ module.exports = {
         escritorio: escritorioAtualizado
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao atualizar escritório de vendas', error: err });
     }
   },
+
   buscarEscritoriosPorDescricao: async function (req, res) {
     try {
       const termo = req.query.termo || '';
@@ -71,9 +72,10 @@ module.exports = {
       });
       return res.json(escritoriosVendas);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao buscar escritórios de vendas por descrição', error: err });
     }
   },
+
   deletar: async function (req, res) {
     try {
       const escritorioId = req.params.id;
@@ -81,14 +83,14 @@ module.exports = {
       const escritorioDeletado = await EscritorioVendas.destroyOne({ id: escritorioId });
 
       if (!escritorioDeletado) {
-        return res.notFound('Escritório de Vendas não encontrado.');
+        return res.notFound({ message: 'Escritório de Vendas não encontrado.' });
       }
 
       return res.json({
         message: 'Escritório de Vendas deletado com sucesso'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({ message: 'Erro ao deletar escritório de vendas', error: err });
     }
   }
 };

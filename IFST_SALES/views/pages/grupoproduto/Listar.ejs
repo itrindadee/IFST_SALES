@@ -8,343 +8,351 @@
 </head>
 
 <body>
-  <main class="table" id="tabela_grupoProduto">
-    <section class="table__header">
-      <div class="titulo-grupoProduto">
-        <h3>Grupo Produto</h3>
-      </div>
-      <div class="header-actions">
-        <div class="table-search-bar">
-          <input type="text" placeholder="Pesquisar por grupo de produto...">
-          <i class="fas fa-search"></i>
+  <%- include('../mensagem') %>
+    <main class="table" id="tabela_grupoProduto">
+      <section class="table__header">
+        <div class="titulo-grupoProduto">
+          <h3>Grupo Produto</h3>
         </div>
-        <div>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGrupoProdutoModal">
-            Adicionar Grupo Produto
-          </button>
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por grupo de produto...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGrupoProdutoModal">
+              Adicionar Grupo Produto
+            </button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+              Gerenciar Colunas
+            </button>
+          </div>
         </div>
-        <div>
-          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
-            Gerenciar Colunas
-          </button>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="table__body">
-      <table>
-        <thead>
-          <tr>
-            <th draggable="true">Código</th>
-            <th draggable="true">Descrição</th>
-            <th draggable="true">Ativo</th>
-            <th draggable="true">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% gruposProduto.forEach(grupoProduto => { %>
-          <tr>
-            <td><%= grupoProduto.codigo %></td>
-            <td><%= grupoProduto.descricao %></td>
-            <td><%= grupoProduto.ativo ? 'Sim' : 'Não' %></td>
-            <td>
-              <a href="#" onclick="editGrupoProduto(<%= grupoProduto.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
-              <a href="#" onclick="viewGrupoProduto(<%= grupoProduto.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
-              <a href="#" onclick="deleteGrupoProduto(<%= grupoProduto.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
-            </td>
-          </tr>
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Código</th>
+              <th draggable="true">Descrição</th>
+              <th draggable="true">Ativo</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% gruposProduto.forEach(grupoProduto=> { %>
+              <tr>
+                <td>
+                  <%= grupoProduto.codigo %>
+                </td>
+                <td>
+                  <%= grupoProduto.descricao %>
+                </td>
+                <td>
+                  <%= grupoProduto.ativo ? 'Sim' : 'Não' %>
+                </td>
+                <td>
+                  <a href="#" onclick="editGrupoProduto(<%= grupoProduto.id %>);" title="Editar"><i
+                      class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewGrupoProduto(<%= grupoProduto.id %>);" title="Visualizar"><i
+                      class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteGrupoProduto(<%= grupoProduto.id %>);" title="Deletar"><i
+                      class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para Gerenciar Colunas -->
+    <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="manageColumnsForm">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código"
+                      checked>
+                    <label class="form-check-label" for="col-codigo">Código</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descrição"
+                      checked>
+                    <label class="form-check-label" for="col-descricao">Descrição</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
+                    <label class="form-check-label" for="col-ativo">Ativo</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                    <label class="form-check-label" for="col-ações">Ações</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para adicionar grupo de produto -->
+    <div class="modal fade" id="addGrupoProdutoModal" tabindex="-1" aria-labelledby="addGrupoProdutoModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addGrupoProdutoModalLabel">Adicionar Grupo Produto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addGrupoProdutoForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="codigo" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo" name="codigo" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="descricao" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao" name="descricao" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="ativo" class="form-label">Ativo:</label>
+                  <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Criar Grupo Produto</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modais para editar grupo de produto -->
+    <% gruposProduto.forEach(grupoProduto=> { %>
+      <div class="modal fade" id="editGrupoProdutoModal<%= grupoProduto.id %>" tabindex="-1"
+        aria-labelledby="editGrupoProdutoModalLabel<%= grupoProduto.id %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editGrupoProdutoModalLabel<%= grupoProduto.id %>">Editar Grupo Produto</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editGrupoProdutoForm<%= grupoProduto.id %>" enctype="multipart/form-data">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="codigo<%= grupoProduto.id %>" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codigo<%= grupoProduto.id %>" name="codigo"
+                      value="<%= grupoProduto.codigo %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="descricao<%= grupoProduto.id %>" class="form-label">Descrição:</label>
+                    <input type="text" class="form-control" id="descricao<%= grupoProduto.id %>" name="descricao"
+                      value="<%= grupoProduto.descricao %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="ativo<%= grupoProduto.id %>" class="form-label">Ativo:</label>
+                    <input type="checkbox" class="form-check-input" id="ativo<%= grupoProduto.id %>" name="ativo"
+                      <%=grupoProduto.ativo ? 'checked' : '' %>>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+
+        <!-- Modais para visualizar grupo de produto -->
+        <% gruposProduto.forEach(grupoProduto=> { %>
+          <div class="modal fade" id="viewGrupoProdutoModal<%= grupoProduto.id %>" tabindex="-1"
+            aria-labelledby="viewGrupoProdutoModalLabel<%= grupoProduto.id %>" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="viewGrupoProdutoModalLabel<%= grupoProduto.id %>">Visualizar Grupo Produto
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="codigoView<%= grupoProduto.id %>" class="form-label">Código:</label>
+                      <input type="text" class="form-control" id="codigoView<%= grupoProduto.id %>" name="codigoView"
+                        value="<%= grupoProduto.codigo %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="descricaoView<%= grupoProduto.id %>" class="form-label">Descrição:</label>
+                      <input type="text" class="form-control" id="descricaoView<%= grupoProduto.id %>"
+                        name="descricaoView" value="<%= grupoProduto.descricao %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="ativoView<%= grupoProduto.id %>" class="form-label">Ativo:</label>
+                      <input type="checkbox" class="form-check-input" id="ativoView<%= grupoProduto.id %>"
+                        name="ativoView" <%=grupoProduto.ativo ? 'checked' : '' %> disabled>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <% }) %>
-        </tbody>
-      </table>
-    </section>
-  </main>
 
-  <!-- Modal para Gerenciar Colunas -->
-  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="manageColumnsForm">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
-                  <label class="form-check-label" for="col-codigo">Código</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descrição" checked>
-                  <label class="form-check-label" for="col-descricao">Descrição</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
-                  <label class="form-check-label" for="col-ativo">Ativo</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
-                  <label class="form-check-label" for="col-ações">Ações</label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
+            <!-- Scripts -->
+            <script>
+              document.getElementById('addGrupoProdutoForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+                const data = {
+                  codigo: document.getElementById('codigo').value,
+                  descricao: document.getElementById('descricao').value,
+                  ativo: document.getElementById('ativo').checked
+                };
 
-  <!-- Modal para adicionar grupo de produto -->
-  <div class="modal fade" id="addGrupoProdutoModal" tabindex="-1" aria-labelledby="addGrupoProdutoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addGrupoProdutoModalLabel">Adicionar Grupo Produto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addGrupoProdutoForm" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo" name="codigo" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="descricao" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao" name="descricao" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="ativo" class="form-label">Ativo:</label>
-                <input type="checkbox" class="form-check-input" id="ativo" name="ativo" checked>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Criar Grupo Produto</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+                const response = await fetch('/grupoproduto', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  },
+                  body: JSON.stringify(data)
+                });
 
-  <!-- Modais para editar grupo de produto -->
-  <% gruposProduto.forEach(grupoProduto => { %>
-  <div class="modal fade" id="editGrupoProdutoModal<%= grupoProduto.id %>" tabindex="-1" aria-labelledby="editGrupoProdutoModalLabel<%= grupoProduto.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editGrupoProdutoModalLabel<%= grupoProduto.id %>">Editar Grupo Produto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editGrupoProdutoForm<%= grupoProduto.id %>" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo<%= grupoProduto.id %>" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo<%= grupoProduto.id %>" name="codigo" value="<%= grupoProduto.codigo %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="descricao<%= grupoProduto.id %>" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao<%= grupoProduto.id %>" name="descricao" value="<%= grupoProduto.descricao %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="ativo<%= grupoProduto.id %>" class="form-label">Ativo:</label>
-                <input type="checkbox" class="form-check-input" id="ativo<%= grupoProduto.id %>" name="ativo" <%= grupoProduto.ativo ? 'checked' : '' %>>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+                handleResponse(response);
+              });
+                <% gruposProduto.forEach(grupoProduto => { %>
+                document.getElementById('editGrupoProdutoForm<%= grupoProduto.id %>').addEventListener('submit', async function (event) {
+                  event.preventDefault();
 
-  <!-- Modais para visualizar grupo de produto -->
-  <% gruposProduto.forEach(grupoProduto => { %>
-  <div class="modal fade" id="viewGrupoProdutoModal<%= grupoProduto.id %>" tabindex="-1" aria-labelledby="viewGrupoProdutoModalLabel<%= grupoProduto.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewGrupoProdutoModalLabel<%= grupoProduto.id %>">Visualizar Grupo Produto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="codigoView<%= grupoProduto.id %>" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigoView<%= grupoProduto.id %>" name="codigoView" value="<%= grupoProduto.codigo %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="descricaoView<%= grupoProduto.id %>" class="form-label">Descrição:</label>
-              <input type="text" class="form-control" id="descricaoView<%= grupoProduto.id %>" name="descricaoView" value="<%= grupoProduto.descricao %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="ativoView<%= grupoProduto.id %>" class="form-label">Ativo:</label>
-              <input type="checkbox" class="form-check-input" id="ativoView<%= grupoProduto.id %>" name="ativoView" <%= grupoProduto.ativo ? 'checked' : '' %> disabled>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+                  const data = {
+                    codigo: document.getElementById(`codigo<%= grupoProduto.id %>`).value,
+                    descricao: document.getElementById(`descricao<%= grupoProduto.id %>`).value,
+                    ativo: document.getElementById(`ativo<%= grupoProduto.id %>`).checked
+                  };
 
-  <!-- Scripts -->
-  <script>
-    function resetAddGrupoProdutoForm() {
-      document.getElementById('addGrupoProdutoForm').reset();
-    }
+                  const response = await fetch(`/grupoproduto/<%= grupoProduto.id %>`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-Token': '<%= _csrf %>'
+                    },
+                    body: JSON.stringify(data)
+                  });
 
-    document.getElementById('addGrupoProdutoForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
+                  handleResponse(response);
+                });
+              <% }) %>
 
-      const data = {
-        codigo: document.getElementById('codigo').value,
-        descricao: document.getElementById('descricao').value,
-        ativo: document.getElementById('ativo').checked
-      };
+                function resetAddGrupoProdutoForm() {
+                document.getElementById('addGrupoProdutoForm').reset();
+              }
 
-      const response = await fetch('/grupoproduto', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+              function editGrupoProduto(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`editGrupoProdutoModal${id}`));
+                modal.show();
+              }
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao criar grupo de produto');
-      }
-    });
+              function viewGrupoProduto(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`viewGrupoProdutoModal${id}`));
+                modal.show();
+              }
 
-    <% gruposProduto.forEach(grupoProduto => { %>
-    document.getElementById('editGrupoProdutoForm<%= grupoProduto.id %>').addEventListener('submit', async function(event) {
-      event.preventDefault();
+              function applyColumnSettings() {
+                const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+                const columnsToShow = Array.from(checkboxes)
+                  .filter(checkbox => checkbox.checked)
+                  .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-      const data = {
-        codigo: document.getElementById(`codigo<%= grupoProduto.id %>`).value,
-        descricao: document.getElementById(`descricao<%= grupoProduto.id %>`).value,
-        ativo: document.getElementById(`ativo<%= grupoProduto.id %>`).checked
-      };
+                const headers = document.querySelectorAll('th');
+                const rows = document.querySelectorAll('tbody tr');
 
-      const response = await fetch(`/grupoproduto/<%= grupoProduto.id %>`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
+                headers.forEach((header, index) => {
+                  const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao atualizar grupo de produto');
-      }
-    });
-    <% }) %>
+                  if (columnsToShow.includes(headerText)) {
+                    header.style.display = ''; // Mostra o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = ''; // Mostra a célula correspondente
+                      }
+                    });
+                  } else {
+                    header.style.display = 'none'; // Oculta o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = 'none';
+                      }
+                    });
+                  }
+                });
 
-    async function deleteGrupoProduto(id) {
-      if (confirm('Tem certeza que deseja deletar este grupo de produto?')) {
-        const response = await fetch(`/grupoproduto/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': '<%= _csrf %>'
-          }
-        });
+                // Fechar o modal após aplicar as configurações
+                const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+                modal.hide();
+              }
 
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao deletar grupo de produto');
-        }
-      }
-    }
+              async function deleteGrupoProduto(id) {
+                  if (confirm('Tem certeza que deseja deletar este grupo de produto?')) {
+                    const response = await fetch(`/grupoproduto/${id}`, {
+                      method: 'DELETE',
+                      headers: {
+                        'X-CSRF-Token': '<%= _csrf %>'
+                      }
+                    });
 
-    function applyColumnSettings() {
-      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-      const columnsToShow = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
-
-      const headers = document.querySelectorAll('th');
-      const rows = document.querySelectorAll('tbody tr');
-
-      headers.forEach((header, index) => {
-        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
-
-        if (columnsToShow.includes(headerText)) {
-          header.style.display = ''; // Mostra o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = ''; // Mostra a célula correspondente
-            }
-          });
-        } else {
-          header.style.display = 'none'; // Oculta o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = 'none';
-            }
-          });
-        }
-      });
-
-      // Fechar o modal após aplicar as configurações
-      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-      modal.hide();
-    }
-
-    function editGrupoProduto(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`editGrupoProdutoModal${id}`));
-      modal.show();
-    }
-
-    function viewGrupoProduto(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`viewGrupoProdutoModal${id}`));
-      modal.show();
-    }
-  </script>
+                    handleResponse(response);
+                  }
+                }
+            </script>
 </body>
+
 </html>

@@ -7,10 +7,22 @@ module.exports = {
       // Verifica se o campo "ativo" está presente na requisição e converte para booleano
       ativo = ativo === 'on';
 
+      // Verifica se já existe uma organização com o mesmo código
+      const organizacaoExistente = await OrganizacaoVendas.findOne({ codigo });
+      if (organizacaoExistente) {
+        return res.status(400).json({ error: 'Código já existe.' });
+      }
+
       const novaOrganizacao = await OrganizacaoVendas.create({ nome, descricao, codigo, ativo }).fetch();
-      return res.status(201).json(novaOrganizacao);
+      return res.status(201).json({
+        message: 'Organização de Vendas criada com sucesso!',
+        data: novaOrganizacao
+      });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao criar a Organização de Vendas',
+        details: err.message
+      });
     }
   },
 
@@ -22,13 +34,27 @@ module.exports = {
       // Verifica se o campo "ativo" está presente na requisição e converte para booleano
       const ativoBoolean = ativo === 'on' || ativo === true;
 
+      // Verifica se o código já existe em outra organização
+      const organizacaoExistente = await OrganizacaoVendas.findOne({ codigo, id: { '!=': organizacaoId } });
+      if (organizacaoExistente) {
+        return res.status(400).json({ error: 'Código já existe.' });
+      }
+
       const updatedOrganizacao = await OrganizacaoVendas.updateOne({ id: organizacaoId }).set({ nome, descricao, codigo, ativo: ativoBoolean });
       if (!updatedOrganizacao) {
-        return res.notFound({ error: 'Organização de Vendas não encontrada' });
+        return res.notFound({
+          error: 'Organização de Vendas não encontrada'
+        });
       }
-      return res.json(updatedOrganizacao);
+      return res.json({
+        message: 'Organização de Vendas atualizada com sucesso!',
+        data: updatedOrganizacao
+      });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao atualizar a Organização de Vendas',
+        details: err.message
+      });
     }
   },
 
@@ -37,11 +63,18 @@ module.exports = {
       const organizacaoId = req.params.id;
       const deletedOrganizacao = await OrganizacaoVendas.destroyOne({ id: organizacaoId });
       if (!deletedOrganizacao) {
-        return res.notFound({ error: 'Organização de Vendas não encontrada' });
+        return res.notFound({
+          error: 'Organização de Vendas não encontrada'
+        });
       }
-      return res.json({ message: 'Organização de Vendas excluída com sucesso' });
+      return res.json({
+        message: 'Organização de Vendas excluída com sucesso!'
+      });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao excluir a Organização de Vendas',
+        details: err.message
+      });
     }
   },
 
@@ -75,7 +108,10 @@ module.exports = {
         organizacoes, codigo, descricao, totalPages, currentPage: page
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        error: 'Erro ao listar as Organizações de Vendas',
+        details: err.message
+      });
     }
   },
 };

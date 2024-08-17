@@ -4,7 +4,10 @@ module.exports = {
       const subcategorias = await Subcategoria.find();
       return res.view('pages/subcategoria/listar', { subcategorias });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao listar subcategorias.',
+        error: err
+      });
     }
   },
 
@@ -12,11 +15,16 @@ module.exports = {
     try {
       const subcategoria = await Subcategoria.findOne({ id: req.params.id });
       if (!subcategoria) {
-        return res.notFound('Subcategoria não encontrada.');
+        return res.notFound({
+          message: 'Subcategoria não encontrada.'
+        });
       }
       return res.json(subcategoria);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao buscar a subcategoria.',
+        error: err
+      });
     }
   },
 
@@ -34,7 +42,10 @@ module.exports = {
         subcategoria: novaSubcategoria
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao criar a subcategoria.',
+        error: err
+      });
     }
   },
 
@@ -51,7 +62,9 @@ module.exports = {
       });
 
       if (!subcategoriaAtualizada) {
-        return res.notFound('Subcategoria não encontrada.');
+        return res.notFound({
+          message: 'Subcategoria não encontrada.'
+        });
       }
 
       return res.json({
@@ -59,7 +72,10 @@ module.exports = {
         subcategoria: subcategoriaAtualizada
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao atualizar a subcategoria.',
+        error: err
+      });
     }
   },
 
@@ -70,14 +86,19 @@ module.exports = {
       const subcategoriaDeletada = await Subcategoria.destroyOne({ id: subcategoriaId });
 
       if (!subcategoriaDeletada) {
-        return res.notFound('Subcategoria não encontrada.');
+        return res.notFound({
+          message: 'Subcategoria não encontrada.'
+        });
       }
 
       return res.json({
         message: 'Subcategoria deletada com sucesso'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao deletar a subcategoria.',
+        error: err
+      });
     }
   }
 };

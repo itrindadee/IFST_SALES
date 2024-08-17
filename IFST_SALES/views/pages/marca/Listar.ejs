@@ -8,6 +8,7 @@
 </head>
 
 <body>
+  <%- include('../mensagem') %>
   <main class="table" id="tabela_marca">
     <section class="table__header">
       <div class="titulo-marcas">
@@ -42,25 +43,32 @@
           </tr>
         </thead>
         <tbody>
-          <% marcas.forEach(marca => { %>
-          <tr>
-            <td><%= marca.codigo %></td>
-            <td><%= marca.descricao %></td>
-            <td><%= marca.ativo ? 'Sim' : 'Não' %></td>
-            <td>
-              <a href="#" onclick="editMarca(<%= marca.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
-              <a href="#" onclick="viewMarca(<%= marca.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
-              <a href="#" onclick="deleteMarca(<%= marca.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
-            </td>
-          </tr>
-          <% }) %>
+          <% marcas.forEach(marca=> { %>
+            <tr>
+              <td>
+                <%= marca.codigo %>
+              </td>
+              <td>
+                <%= marca.descricao %>
+              </td>
+              <td>
+                <%= marca.ativo ? 'Sim' : 'Não' %>
+              </td>
+              <td>
+                <a href="#" onclick="editMarca(<%= marca.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                <a href="#" onclick="viewMarca(<%= marca.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                <a href="#" onclick="deleteMarca(<%= marca.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+              </td>
+            </tr>
+            <% }) %>
         </tbody>
       </table>
     </section>
   </main>
 
   <!-- Modal para Gerenciar Colunas -->
-  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -78,7 +86,8 @@
               </div>
               <div class="col-md-4 mb-3">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descrição" checked>
+                  <input class="form-check-input" type="checkbox" id="col-descricao" name="columns" value="descrição"
+                    checked>
                   <label class="form-check-label" for="col-descricao">Descrição</label>
                 </div>
               </div>
@@ -147,205 +156,189 @@
   </div>
 
   <!-- Modais para editar marca -->
-  <% marcas.forEach(marca => { %>
-  <div class="modal fade" id="editMarcaModal<%= marca.id %>" tabindex="-1" aria-labelledby="editMarcaModalLabel<%= marca.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editMarcaModalLabel<%= marca.id %>">Editar Marca</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editMarcaForm<%= marca.id %>" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="codigo<%= marca.id %>" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo<%= marca.id %>" name="codigo" value="<%= marca.codigo %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="descricao<%= marca.id %>" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao<%= marca.id %>" name="descricao" value="<%= marca.descricao %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="ativo<%= marca.id %>" class="form-label">Ativo:</label>
-                <input type="checkbox" class="form-check-input" id="ativo<%= marca.id %>" name="ativo" <%= marca.ativo ? 'checked' : '' %>>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
-
-  <!-- Modais para visualizar marca -->
-  <% marcas.forEach(marca => { %>
-  <div class="modal fade" id="viewMarcaModal<%= marca.id %>" tabindex="-1" aria-labelledby="viewMarcaModalLabel<%= marca.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewMarcaModalLabel<%= marca.id %>">Visualizar Marca</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="codigoView<%= marca.id %>" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigoView<%= marca.id %>" name="codigoView" value="<%= marca.codigo %>" readonly>
-            </div>
+  <% marcas.forEach(marca=> { %>
+    <div class="modal fade" id="editMarcaModal<%= marca.id %>" tabindex="-1"
+      aria-labelledby="editMarcaModalLabel<%= marca.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editMarcaModalLabel<%= marca.id %>">Editar Marca</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="descricaoView<%= marca.id %>" class="form-label">Descrição:</label>
-              <input type="text" class="form-control" id="descricaoView<%= marca.id %>" name="descricaoView" value="<%= marca.descricao %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="ativoView<%= marca.id %>" class="form-label">Ativo:</label>
-              <input type="checkbox" class="form-check-input" id="ativoView<%= marca.id %>" name="ativoView" <%= marca.ativo ? 'checked' : '' %> disabled>
-            </div>
+          <div class="modal-body">
+            <form id="editMarcaForm<%= marca.id %>" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="codigo<%= marca.id %>" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo<%= marca.id %>" name="codigo"
+                    value="<%= marca.codigo %>" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="descricao<%= marca.id %>" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao<%= marca.id %>" name="descricao"
+                    value="<%= marca.descricao %>" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="ativo<%= marca.id %>" class="form-label">Ativo:</label>
+                  <input type="checkbox" class="form-check-input" id="ativo<%= marca.id %>" name="ativo" <%=marca.ativo
+                    ? 'checked' : '' %>>
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <% }) %>
-
-  <!-- Scripts -->
-  <script>
-    function resetAddMarcaForm() {
-      document.getElementById('addMarcaForm').reset();
-    }
-
-    document.getElementById('addMarcaForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const data = {
-        codigo: document.getElementById('codigo').value,
-        descricao: document.getElementById('descricao').value,
-        ativo: document.getElementById('ativo').checked
-      };
-
-      const response = await fetch('/marca', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao criar marca');
-      }
-    });
-
-    <% marcas.forEach(marca => { %>
-    document.getElementById('editMarcaForm<%= marca.id %>').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const data = {
-        codigo: document.getElementById(`codigo<%= marca.id %>`).value,
-        descricao: document.getElementById(`descricao<%= marca.id %>`).value,
-        ativo: document.getElementById(`ativo<%= marca.id %>`).checked
-      };
-
-      const response = await fetch(`/marca/<%= marca.id %>`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= _csrf %>'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Erro ao atualizar marca');
-      }
-    });
     <% }) %>
 
-    async function deleteMarca(id) {
-      if (confirm('Tem certeza que deseja deletar esta marca?')) {
-        const response = await fetch(`/marca/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': '<%= _csrf %>'
-          }
-        });
+      <!-- Modais para visualizar marca -->
+      <% marcas.forEach(marca=> { %>
+        <div class="modal fade" id="viewMarcaModal<%= marca.id %>" tabindex="-1"
+          aria-labelledby="viewMarcaModalLabel<%= marca.id %>" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewMarcaModalLabel<%= marca.id %>">Visualizar Marca</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="codigoView<%= marca.id %>" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codigoView<%= marca.id %>" name="codigoView"
+                      value="<%= marca.codigo %>" readonly>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="descricaoView<%= marca.id %>" class="form-label">Descrição:</label>
+                    <input type="text" class="form-control" id="descricaoView<%= marca.id %>" name="descricaoView"
+                      value="<%= marca.descricao %>" readonly>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="ativoView<%= marca.id %>" class="form-label">Ativo:</label>
+                    <input type="checkbox" class="form-check-input" id="ativoView<%= marca.id %>" name="ativoView"
+                      <%=marca.ativo ? 'checked' : '' %> disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% }) %>
 
-        if (response.ok) {
-          location.reload();
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erro ao deletar marca');
-        }
-      }
-    }
+          <!-- Scripts -->
+          <script>
+            document.getElementById('addMarcaForm').addEventListener('submit', async function (event) {
+              event.preventDefault();
+              await submitMarcaForm('POST', '/marca', {
+                codigo: document.getElementById('codigo').value,
+                descricao: document.getElementById('descricao').value,
+                ativo: document.getElementById('ativo').checked
+              });
+            });
 
-    function applyColumnSettings() {
-      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-      const columnsToShow = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+          <% marcas.forEach(marca => { %>
+              document.getElementById('editMarcaForm<%= marca.id %>').addEventListener('submit', async function (event) {
+                event.preventDefault();
+                await submitMarcaForm('PUT', `/marca/<%= marca.id %>`, {
+                  codigo: document.getElementById(`codigo<%= marca.id %>`).value,
+                  descricao: document.getElementById(`descricao<%= marca.id %>`).value,
+                  ativo: document.getElementById(`ativo<%= marca.id %>`).checked
+                });
+              });
+          <% }) %>
 
-      const headers = document.querySelectorAll('th');
-      const rows = document.querySelectorAll('tbody tr');
 
-      headers.forEach((header, index) => {
-        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+              function resetAddMarcaForm() {
+                document.getElementById('addMarcaForm').reset();
+              }
 
-        if (columnsToShow.includes(headerText)) {
-          header.style.display = ''; // Mostra o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = ''; // Mostra a célula correspondente
+            function editMarca(id) {
+              const modal = new bootstrap.Modal(document.getElementById(`editMarcaModal${id}`));
+              modal.show();
             }
-          });
-        } else {
-          header.style.display = 'none'; // Oculta o cabeçalho
-          rows.forEach(row => {
-            const cell = row.querySelector(`td:nth-child(${index + 1})`);
-            if (cell) {
-              cell.style.display = 'none';
+
+            function viewMarca(id) {
+              const modal = new bootstrap.Modal(document.getElementById(`viewMarcaModal${id}`));
+              modal.show();
             }
-          });
-        }
-      });
 
-      // Fechar o modal após aplicar as configurações
-      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-      modal.hide();
-    }
+            function applyColumnSettings() {
+              const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+              const columnsToShow = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-    function editMarca(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`editMarcaModal${id}`));
-      modal.show();
-    }
+              const headers = document.querySelectorAll('th');
+              const rows = document.querySelectorAll('tbody tr');
 
-    function viewMarca(id) {
-      const modal = new bootstrap.Modal(document.getElementById(`viewMarcaModal${id}`));
-      modal.show();
-    }
-  </script>
+              headers.forEach((header, index) => {
+                const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+
+                if (columnsToShow.includes(headerText)) {
+                  header.style.display = ''; // Mostra o cabeçalho
+                  rows.forEach(row => {
+                    const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                    if (cell) {
+                      cell.style.display = ''; // Mostra a célula correspondente
+                    }
+                  });
+                } else {
+                  header.style.display = 'none'; // Oculta o cabeçalho
+                  rows.forEach(row => {
+                    const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                    if (cell) {
+                      cell.style.display = 'none';
+                    }
+                  });
+                }
+              });
+
+              // Fechar o modal após aplicar as configurações
+              const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+              modal.hide();
+            }
+
+            async function submitMarcaForm(method, url, data) {
+              const response = await fetch(url, {
+                method: method,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': '<%= _csrf %>'
+                },
+                body: JSON.stringify(data)
+              });
+
+              handleResponse(response);
+            }
+
+            async function deleteMarca(id) {
+              if (confirm('Tem certeza que deseja deletar esta marca?')) {
+                const response = await fetch(`/marca/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  }
+                });
+
+                handleResponse(response);
+              }
+            }
+
+          </script>
 </body>
 
 </html>

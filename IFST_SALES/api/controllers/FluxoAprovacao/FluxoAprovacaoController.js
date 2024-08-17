@@ -36,6 +36,8 @@ module.exports = {
       // Fazer o populate dos aprovadores para cada regra
       for (let regra of fluxo.regras) {
         regra.aprovadores = await Aprovador.find({ regra: regra.id }).populate('usuario');
+        // Adicionar o nome do aprovador na regra
+        regra.aprovadorNome = regra.aprovadores[0]?.usuario?.fullName || 'Desconhecido';
       }
 
       return res.json(fluxo);
@@ -87,7 +89,10 @@ module.exports = {
         descricao,
       });
 
+      // Remover regras antigas
       await RegraAprovacao.destroy({ fluxo: fluxoId });
+
+      // Adicionar novas regras
       for (const regra of regras) {
         const novaRegra = await RegraAprovacao.create({
           nivel: regra.nivel,
@@ -95,6 +100,7 @@ module.exports = {
           fluxo: fluxoId,
         }).fetch();
 
+        // Criar aprovadores para a nova regra
         await Aprovador.create({
           ordem: 1,
           regra: novaRegra.id,

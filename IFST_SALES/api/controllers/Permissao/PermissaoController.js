@@ -1,28 +1,33 @@
 module.exports = {
-  // Método para listar todas as permissões
   listar: async function (req, res) {
     try {
       const permissoes = await Permissao.find();
       return res.view('pages/permissao/listar', { permissoes });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao listar as permissões.',
+        error: err.message
+      });
     }
   },
 
-  // Método para buscar uma permissão específica
   buscar: async function (req, res) {
     try {
       const permissao = await Permissao.findOne({ id: req.params.id });
       if (!permissao) {
-        return res.notFound('Permissão não encontrada.');
+        return res.notFound({
+          message: 'Permissão não encontrada.'
+        });
       }
       return res.json(permissao);
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao buscar a permissão.',
+        error: err.message
+      });
     }
   },
 
-  // Método para criar uma nova permissão
   criar: async function (req, res) {
     try {
       const { nome, descricao, tipoPermissao } = req.body;
@@ -37,11 +42,13 @@ module.exports = {
         permissao: novaPermissao
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao criar a permissão.',
+        error: err.message
+      });
     }
   },
 
-  // Método para atualizar uma permissão existente
   atualizar: async function (req, res) {
     try {
       const { nome, descricao, tipoPermissao } = req.body;
@@ -54,7 +61,9 @@ module.exports = {
       });
 
       if (!permissaoAtualizada) {
-        return res.notFound('Permissão não encontrada.');
+        return res.notFound({
+          message: 'Permissão não encontrada.'
+        });
       }
 
       return res.json({
@@ -62,11 +71,13 @@ module.exports = {
         permissao: permissaoAtualizada
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao atualizar a permissão.',
+        error: err.message
+      });
     }
   },
 
-  // Método para deletar uma permissão
   deletar: async function (req, res) {
     try {
       const permissaoId = req.params.id;
@@ -74,14 +85,19 @@ module.exports = {
       const permissaoDeletada = await Permissao.destroyOne({ id: permissaoId });
 
       if (!permissaoDeletada) {
-        return res.notFound('Permissão não encontrada.');
+        return res.notFound({
+          message: 'Permissão não encontrada.'
+        });
       }
 
       return res.json({
         message: 'Permissão deletada com sucesso'
       });
     } catch (err) {
-      return res.serverError(err);
+      return res.serverError({
+        message: 'Erro ao deletar a permissão.',
+        error: err.message
+      });
     }
   }
 };

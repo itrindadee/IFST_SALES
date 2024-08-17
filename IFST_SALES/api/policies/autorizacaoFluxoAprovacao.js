@@ -29,7 +29,7 @@ module.exports = async function (req, res, proceed) {
 
     const actionParts = req.options.action.split('/');
     const action = actionParts[actionParts.length - 1].charAt(0).toUpperCase() + actionParts[actionParts.length - 1].slice(1);
-    const moduleName = 'FluxoAprovacao';
+    const moduleName = 'Fluxo Aprovação';
 
     console.log(`Verificando permissão para ação: ${action} no módulo: ${moduleName}`);
 
