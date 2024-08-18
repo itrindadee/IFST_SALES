@@ -36,6 +36,11 @@ module.exports.routes = {
   'GET /account/password': { action: 'account/view-edit-password' },
   'GET /account/profile': { action: 'account/view-edit-profile' },
   'GET /nao-autorizado': { view: '403' },
+
+  // CRUD Logs
+  'GET /logs/listar': { action: 'Log/Log/listar' },
+  'GET /logs/:id': { action: 'Log/Log/buscar' },
+
   //Crud Clientes
   'GET /clientes/validar/:cpf?/:cnpj?/:empresa?/:organizacaoVendas?': { action: 'Cliente/cliente/validarcliente' },
   'GET /clientes/renderizarcadastro': { action: 'Cliente/cliente/renderizarCadastro' },

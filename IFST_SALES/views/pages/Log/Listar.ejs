@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logs de Auditoria</title>
+</head>
+
+<body>
+  <!-- Incluindo o arquivo mensagem.ejs -->
+  <%- include('../mensagem') %>
+    <main class="table" id="tabela_logs">
+      <section class="table__header">
+        <div class="titulo-produtos">
+          <h3>Logs de Auditoria</h3>
+        </div>
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por modelo...">
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+      </section>
+
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Modelo</th>
+              <th draggable="true">Ação</th>
+              <th draggable="true">Data</th>
+              <th draggable="true">Usuário</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% logs.forEach(log => { %>
+              <tr>
+                <td>
+                  <%= log.model %>
+                </td>
+                <td>
+                  <%= log.action %>
+                </td>
+                <td>
+                  <%= new Date(log.createdAt).toLocaleString() %>
+                </td>
+                <td>
+                  <%= log.user || 'N/A' %>
+                </td>
+                <td>
+                  <a href="#" onclick="viewLog(<%= log.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modais para visualizar log -->
+    <% logs.forEach(log => { %>
+      <div class="modal fade" id="viewLogModal<%= log.id %>" tabindex="-1"
+        aria-labelledby="viewLogModalLabel<%= log.id %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="viewLogModalLabel<%= log.id %>">Visualizar Log</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="modelView<%= log.id %>" class="form-label">Modelo:</label>
+                  <input type="text" class="form-control" id="modelView<%= log.id %>" name="modelView"
+                    value="<%= log.model %>" readonly>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="actionView<%= log.id %>" class="form-label">Ação:</label>
+                  <input type="text" class="form-control" id="actionView<%= log.id %>" name="actionView"
+                    value="<%= log.action %>" readonly>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="userView<%= log.id %>" class="form-label">Usuário:</label>
+                  <input type="text" class="form-control" id="userView<%= log.id %>" name="userView"
+                    value="<%= log.user || 'N/A' %>" readonly>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="oldDataView<%= log.id %>" class="form-label">Dados Antigos:</label>
+                  <textarea class="form-control" id="oldDataView<%= log.id %>" name="oldDataView" rows="5" readonly><%= JSON.stringify(log.oldData, null, 2) %></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="newDataView<%= log.id %>" class="form-label">Dados Novos:</label>
+                  <textarea class="form-control" id="newDataView<%= log.id %>" name="newDataView" rows="5" readonly><%= JSON.stringify(log.newData, null, 2) %></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+
+        <script>
+          // Função para exibir o modal de visualização de um log
+          function viewLog(id) {
+            const modal = new bootstrap.Modal(document.getElementById(`viewLogModal${id}`));
+            modal.show();
+          }
+        </script>
+</body>
+</html>

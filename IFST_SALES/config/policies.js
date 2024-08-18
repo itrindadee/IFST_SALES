@@ -35,6 +35,7 @@ module.exports.policies = {
   // Políticas de autorização para o módulo Empresa
   EmpresaController: {
     '*': 'autorizacaoEmpresa',
+    '*': true
   },
 
   // Políticas de autorização para o módulo Equipe de Vendas

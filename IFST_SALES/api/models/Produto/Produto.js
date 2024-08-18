@@ -10,22 +10,22 @@ module.exports = {
       required: true,
       unique: true
     },
-    marca: {  // Este é o nome da chave estrangeira que liga de volta ao modelo Cliente.
+    marca: {
       model: 'marca',
       required: true
-      },
-    categoria: {  // Este é o nome da chave estrangeira que liga de volta ao modelo Cliente.
+    },
+    categoria: {
       model: 'categoria',
       required: true
-      },
-    subcategoria: {  // Este é o nome da chave estrangeira que liga de volta ao modelo Cliente.
+    },
+    subcategoria: {
       model: 'subcategoria',
       required: true
-        },
-    grupoproduto: {  // Este é o nome da chave estrangeira que liga de volta ao modelo Cliente.
+    },
+    grupoproduto: {
       model: 'grupoproduto',
       required: true
-          },
+    },
     descricao: {
       type: 'string',
       required: true
@@ -42,5 +42,40 @@ module.exports = {
       type: 'boolean',
       defaultsTo: true
     }
+  },
+
+  afterCreate: async function (newlyCreatedRecord, proceed) {
+    await sails.models.log.create({
+      model: 'Produto',
+      action: 'create',
+      data: newlyCreatedRecord,
+      user: 'system'  // Substitua 'system' pelo identificador do usuário real se disponível
+    });
+    return proceed();
+  },
+
+  afterUpdate: async function (updatedRecord, proceed) {
+    await sails.models.log.create({
+      model: 'Produto',
+      action: 'update',
+      data: updatedRecord,
+      user: 'system'  // Substitua 'system' pelo identificador do usuário real se disponível
+    });
+    return proceed();
+  },
+
+  afterDestroy: async function (destroyedRecords, proceed) {
+    // Garante que destroyedRecords seja sempre um array
+    destroyedRecords = Array.isArray(destroyedRecords) ? destroyedRecords : [destroyedRecords];
+
+    for (const record of destroyedRecords) {
+      await sails.models.log.create({
+        model: 'Produto',
+        action: 'delete',
+        data: record,
+        user: 'system'  // Substitua 'system' pelo identificador do usuário real se disponível
+      });
+    }
+    return proceed();
   }
 };

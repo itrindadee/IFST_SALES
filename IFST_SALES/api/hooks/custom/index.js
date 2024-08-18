@@ -11,7 +11,6 @@ module.exports = function defineCustomHook(sails) {
      * Runs when a Sails app loads/lifts.
      */
     initialize: async function () {
-
       sails.log.info('Initializing project hook... (`api/hooks/custom/`)');
 
       // Check Stripe/Sendgrid configuration (for billing and emails).
