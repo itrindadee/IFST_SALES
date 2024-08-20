@@ -1,5 +1,25 @@
 // api/controllers/EquipeVendasController.js
 
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   listar: async function (req, res) {
     try {
@@ -24,12 +44,16 @@ module.exports = {
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { organizacaoVendas, codigo, descricao } = req.body;
+
       const novaEquipe = await EquipeVendas.create({
         organizacaoVendas,
         codigo,
-        descricao
+        descricao,
+        createdBy: { id: userId, fullName } // Passa o JSON para o modelo
       }).fetch();
+
       return res.status(201).json({
         message: 'Equipe de Vendas criada com sucesso',
         equipe: novaEquipe
@@ -41,13 +65,15 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { organizacaoVendas, codigo, descricao } = req.body;
       const equipeId = req.params.id;
 
       const equipeAtualizada = await EquipeVendas.updateOne({ id: equipeId }).set({
         organizacaoVendas,
         codigo,
-        descricao
+        descricao,
+        updatedBy: { id: userId, fullName } // Passa o JSON para o modelo
       });
 
       if (!equipeAtualizada) {
@@ -65,6 +91,7 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const equipeId = req.params.id;
 
       const equipeDeletada = await EquipeVendas.destroyOne({ id: equipeId });
@@ -72,7 +99,6 @@ module.exports = {
       if (!equipeDeletada) {
         return res.notFound('Equipe de Vendas não encontrada.');
       }
-
       return res.json({
         message: 'Equipe de Vendas deletada com sucesso'
       });
@@ -80,6 +106,7 @@ module.exports = {
       return res.serverError(err);
     }
   },
+
   buscarEquipesPorDescricao: async function (req, res) {
     try {
       const termo = req.query.termo || '';

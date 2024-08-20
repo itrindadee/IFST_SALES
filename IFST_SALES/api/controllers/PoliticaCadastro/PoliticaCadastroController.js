@@ -5,28 +5,47 @@
  * @docs        :: https://sailsjs.com/docs/concepts/actions
  */
 
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   listar: async function (req, res) {
     try {
       const politicas = await PoliticaCadastro.find().populate('condicoes');
       return res.view('pages/politicaCadastro/listar', { politicas });
     } catch (err) {
-      return res.serverError({
-        message: 'Erro ao listar as políticas de cadastro.',
-        error: err
-      });
+      return res.serverError({ message: 'Erro ao listar as políticas de cadastro', error: err.message });
     }
   },
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, ativo, condicoes, campoResultado, valorResultado } = req.body;
 
       const novaPolitica = await PoliticaCadastro.create({
         nome,
         ativo,
         campoResultado,
-        valorResultado
+        valorResultado,
+        createdBy: { id: userId, fullName }
       }).fetch();
 
       const condicoesPromises = condicoes.map(condicao => {
@@ -34,7 +53,8 @@ module.exports = {
           campo: condicao.campo,
           operador: condicao.operador,
           valor: condicao.valor,
-          politicaCadastro: novaPolitica.id
+          politicaCadastro: novaPolitica.id,
+          createdBy: { id: userId, fullName }
         });
       });
 
@@ -45,15 +65,13 @@ module.exports = {
         politica: novaPolitica
       });
     } catch (err) {
-      return res.serverError({
-        message: 'Erro ao criar a política de cadastro.',
-        error: err
-      });
+      return res.serverError({ message: 'Erro ao criar a política de cadastro', error: err.message });
     }
   },
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, ativo, condicoes, campoResultado, valorResultado } = req.body;
       const politicaId = req.params.id;
 
@@ -61,13 +79,12 @@ module.exports = {
         nome,
         ativo,
         campoResultado,
-        valorResultado
+        valorResultado,
+        updatedBy: { id: userId, fullName }
       });
 
       if (!politicaAtualizada) {
-        return res.notFound({
-          message: 'Política de cadastro não encontrada.'
-        });
+        return res.notFound({ message: 'Política de cadastro não encontrada.' });
       }
 
       // Remove as condições existentes
@@ -79,26 +96,22 @@ module.exports = {
           campo: condicao.campo,
           operador: condicao.operador,
           valor: condicao.valor,
-          politicaCadastro: politicaId
+          politicaCadastro: politicaId,
+          createdBy: { id: userId, fullName }
         });
       });
 
       await Promise.all(condicoesPromises);
 
-      return res.json({
-        message: 'Política de cadastro atualizada com sucesso',
-        politica: politicaAtualizada
-      });
+      return res.json({ message: 'Política de cadastro atualizada com sucesso', politica: politicaAtualizada });
     } catch (err) {
-      return res.serverError({
-        message: 'Erro ao atualizar a política de cadastro.',
-        error: err
-      });
+      return res.serverError({ message: 'Erro ao atualizar a política de cadastro', error: err.message });
     }
   },
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const politicaId = req.params.id;
 
       // Remove as condições associadas primeiro
@@ -108,19 +121,11 @@ module.exports = {
       const politicaDeletada = await PoliticaCadastro.destroyOne({ id: politicaId });
 
       if (!politicaDeletada) {
-        return res.notFound({
-          message: 'Política de cadastro não encontrada.'
-        });
+        return res.notFound({ message: 'Política de cadastro não encontrada.' });
       }
-
-      return res.json({
-        message: 'Política de cadastro deletada com sucesso'
-      });
+      return res.json({ message: 'Política de cadastro deletada com sucesso' });
     } catch (err) {
-      return res.serverError({
-        message: 'Erro ao deletar a política de cadastro.',
-        error: err
-      });
+      return res.serverError({ message: 'Erro ao deletar a política de cadastro', error: err.message });
     }
   },
 
@@ -129,10 +134,7 @@ module.exports = {
       const politicas = await PoliticaCadastro.find().populate('condicoes');
       return res.json(politicas);
     } catch (err) {
-      return res.serverError({
-        message: 'Erro ao listar as políticas de cadastro.',
-        error: err
-      });
+      return res.serverError({ message: 'Erro ao listar as políticas de cadastro', error: err.message });
     }
   }
 };

@@ -1,8 +1,29 @@
 const path = require('path');
 
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, codigo, descricao, preco, ativo, marca, categoria, subcategoria, grupoproduto } = req.body;
       let caminhoImagem = null;
 
@@ -31,8 +52,16 @@ module.exports = {
         subcategoria,
         grupoproduto,
         caminhoImagem,
-        ativo: ativo === 'on'
+        ativo: ativo === 'on',
+        createdBy: { id: userId, fullName }
       }).fetch();
+
+      await sails.models.log.create({
+        model: 'Produto',
+        action: 'create',
+        newData: novoProduto,
+        user: `${userId} - ${fullName}`
+      });
 
       return res.status(201).json({
         success: true,
@@ -41,8 +70,7 @@ module.exports = {
       });
 
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ success: false, message: 'Erro ao cadastrar produto.', error: err.message });
+      return res.serverError({ message: 'Erro ao cadastrar produto.', error: err.message });
     }
   },
 
@@ -61,12 +89,13 @@ module.exports = {
 
       return res.view('pages/produto/listar', { produtos, marcas, categorias, subcategorias, grupoprodutos });
     } catch (err) {
-      return res.serverError({ success: false, message: 'Erro ao listar produtos.', error: err.message });
+      return res.serverError({ message: 'Erro ao listar produtos.', error: err.message });
     }
   },
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, codigo, descricao, preco, ativo, marca, categoria, subcategoria, grupoproduto } = req.body;
       const produtoId = req.params.id;
 
@@ -84,10 +113,12 @@ module.exports = {
 
         if (uploadedFile.length > 0) {
           caminhoImagem = '/uploads/' + path.basename(uploadedFile[0].fd);
+        } else {
+          caminhoImagem = null; // Caso a imagem não tenha sido enviada
         }
       }
 
-      const produtoAtualizado = await Produto.updateOne({ id: produtoId }).set({
+      const updatedData = {
         nome,
         codigo,
         descricao,
@@ -96,35 +127,57 @@ module.exports = {
         categoria,
         subcategoria,
         grupoproduto,
-        caminhoImagem,
-        ativo: ativo === 'on'
-      });
+        ativo: ativo === 'on',
+        updatedBy: { id: userId, fullName }
+      };
 
-      if (!produtoAtualizado) {
-        return res.notFound({ success: false, message: 'Produto não encontrado.' });
+      if (caminhoImagem !== null) {
+        updatedData.caminhoImagem = caminhoImagem;
       }
 
-      return res.json({ success: true, message: 'Produto atualizado com sucesso', produto: produtoAtualizado });
+      const produtoAtualizado = await Produto.updateOne({ id: produtoId }).set(updatedData);
+
+      if (!produtoAtualizado) {
+        return res.notFound({ message: 'Produto não encontrado.' });
+      }
+
+      await sails.models.log.create({
+        model: 'Produto',
+        action: 'update',
+        oldData: produtoAtualizado,
+        newData: produtoAtualizado,
+        user: `${userId} - ${fullName}`
+      });
+
+      return res.json({ message: 'Produto atualizado com sucesso', produto: produtoAtualizado });
 
     } catch (err) {
-      return res.serverError({ success: false, message: 'Erro ao atualizar produto.', error: err.message });
+      return res.serverError({ message: 'Erro ao atualizar produto.', error: err.message });
     }
   },
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const produtoId = req.params.id;
 
       const produtoDeletado = await Produto.destroyOne({ id: produtoId });
 
       if (!produtoDeletado) {
-        return res.notFound({ success: false, message: 'Produto não encontrado.' });
+        return res.notFound({ message: 'Produto não encontrado.' });
       }
 
-      return res.json({ success: true, message: 'Produto deletado com sucesso' });
+      await sails.models.log.create({
+        model: 'Produto',
+        action: 'delete',
+        oldData: produtoDeletado,
+        user: `${userId} - ${fullName}`
+      });
+
+      return res.json({ message: 'Produto deletado com sucesso' });
 
     } catch (err) {
-      return res.serverError({ success: false, message: 'Erro ao deletar produto.', error: err.message });
+      return res.serverError({ message: 'Erro ao deletar produto.', error: err.message });
     }
   }
 };

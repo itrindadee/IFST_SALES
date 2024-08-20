@@ -6,17 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canal</title>
 </head>
-<style>
-.hide-on-mobile {
-    display: none;
-  }
-</style>
 <body>
   <!-- Incluindo o arquivo mensagem.ejs -->
   <%- include('../mensagem') %>
     <main class="table" id="tabela_canais">
       <section class="table__header">
-        <div class="titulo-produtos">
+        <div class="table-titulo">
           <h3>Canal</h3>
         </div>
         <div class="header-actions">
@@ -30,7 +25,7 @@
             </button>
           </div>
           <div>
-            <button type="button" class="btn btn-secondary hide-on-mobile"modal" data-bs-target="#manageColumnsModal">
+            <button type="button" class="btn btn-secondary btn-hide-mobile" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
               Gerenciar Colunas
             </button>
           </div>

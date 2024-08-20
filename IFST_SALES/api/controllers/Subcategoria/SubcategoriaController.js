@@ -1,3 +1,24 @@
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
+
 module.exports = {
   listar: async function (req, res) {
     try {
@@ -6,7 +27,7 @@ module.exports = {
     } catch (err) {
       return res.serverError({
         message: 'Erro ao listar subcategorias.',
-        error: err
+        error: err.message
       });
     }
   },
@@ -23,20 +44,31 @@ module.exports = {
     } catch (err) {
       return res.serverError({
         message: 'Erro ao buscar a subcategoria.',
-        error: err
+        error: err.message
       });
     }
   },
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { categoria, codigo, descricao, ativo } = req.body;
+
       const novaSubcategoria = await Subcategoria.create({
         categoria,
         codigo,
         descricao,
-        ativo
+        ativo,
+        createdBy: { id: userId, fullName }
       }).fetch();
+
+      await sails.models.log.create({
+        model: 'Subcategoria',
+        action: 'create',
+        newData: novaSubcategoria,
+        user: `${userId} - ${fullName}`
+      });
+
       return res.status(201).json({
         message: 'Subcategoria criada com sucesso',
         subcategoria: novaSubcategoria
@@ -44,13 +76,14 @@ module.exports = {
     } catch (err) {
       return res.serverError({
         message: 'Erro ao criar a subcategoria.',
-        error: err
+        error: err.message
       });
     }
   },
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { categoria, codigo, descricao, ativo } = req.body;
       const subcategoriaId = req.params.id;
 
@@ -58,7 +91,8 @@ module.exports = {
         categoria,
         codigo,
         descricao,
-        ativo
+        ativo,
+        updatedBy: { id: userId, fullName }
       });
 
       if (!subcategoriaAtualizada) {
@@ -67,6 +101,14 @@ module.exports = {
         });
       }
 
+      await sails.models.log.create({
+        model: 'Subcategoria',
+        action: 'update',
+        oldData: subcategoriaAtualizada,
+        newData: subcategoriaAtualizada,
+        user: `${userId} - ${fullName}`
+      });
+
       return res.json({
         message: 'Subcategoria atualizada com sucesso',
         subcategoria: subcategoriaAtualizada
@@ -74,13 +116,14 @@ module.exports = {
     } catch (err) {
       return res.serverError({
         message: 'Erro ao atualizar a subcategoria.',
-        error: err
+        error: err.message
       });
     }
   },
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const subcategoriaId = req.params.id;
 
       const subcategoriaDeletada = await Subcategoria.destroyOne({ id: subcategoriaId });
@@ -91,13 +134,20 @@ module.exports = {
         });
       }
 
+      await sails.models.log.create({
+        model: 'Subcategoria',
+        action: 'delete',
+        oldData: subcategoriaDeletada,
+        user: `${userId} - ${fullName}`
+      });
+
       return res.json({
         message: 'Subcategoria deletada com sucesso'
       });
     } catch (err) {
       return res.serverError({
         message: 'Erro ao deletar a subcategoria.',
-        error: err
+        error: err.message
       });
     }
   }

@@ -1,18 +1,16 @@
 module.exports = async function (req, res, proceed) {
   try {
-
     if (!req.session.userId) {
       return res.redirect('/login');
     }
 
     // Carrega o usuário e popula o perfil e as permissões associadas ao perfil
-    const user = await User.findOne({ id: req.session.userId })
-      .populate('perfil');
+    const user = await User.findOne({ id: req.session.userId }).populate('perfil');
 
     if (!user || !user.perfil) {
       return res.status(403).json({
-        redirect: '/nao-autorizado',
-        message: 'Você não tem permissão para realizar esta ação'
+        error: "Você não possui permissão para isso", // A mensagem de erro
+        type: "Forbidden" // O tipo de erro
       });
     }
 
@@ -21,8 +19,8 @@ module.exports = async function (req, res, proceed) {
 
     if (!perfil || !Array.isArray(perfil.permissoes)) {
       return res.status(403).json({
-        redirect: '/nao-autorizado',
-        message: 'Você não tem permissão para realizar esta ação'
+        error: "Você não possui permissão para isso", // A mensagem de erro
+        type: "Forbidden" // O tipo de erro
       });
     }
 
@@ -39,8 +37,8 @@ module.exports = async function (req, res, proceed) {
     if (!hasPermission) {
       console.log(`Permissão não encontrada: ${action} ${moduleName}`);
       return res.status(403).json({
-        redirect: '/nao-autorizado',
-        message: 'Você não tem permissão para realizar esta ação'
+        error: "Você não possui permissão para isso", // A mensagem de erro
+        type: "Forbidden" // O tipo de erro
       });
     }
 
@@ -48,8 +46,8 @@ module.exports = async function (req, res, proceed) {
     if (!perfil.permissoes.some(permissao => permissao.id === hasPermission.id)) {
       console.log(`Usuário não tem permissão: ${hasPermission.id}`);
       return res.status(403).json({
-        redirect: '/nao-autorizado',
-        message: 'Você não tem permissão para realizar esta ação'
+        error: "Você não possui permissão para isso", // A mensagem de erro
+        type: "Forbidden" // O tipo de erro
       });
     }
 
@@ -57,6 +55,12 @@ module.exports = async function (req, res, proceed) {
 
   } catch (err) {
     console.error('Erro no processo de autorização:', err);
-    return res.serverError(err);
+    return res.status(500).json({
+      error: {
+        message: "Erro no processo de autorização.",
+        type: "ServerError",
+        details: err.message
+      }
+    });
   }
 };

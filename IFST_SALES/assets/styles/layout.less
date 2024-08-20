@@ -252,7 +252,7 @@ body {
 
 /* ==================== Conteúdo Principal ==================== */
 .main-content {
-  padding: 80px 20px 20px 20px;
+  padding: 70px 10px 10px 70px;
   transition: margin-left 0.3s;
   position: relative;
   width: 100%;
@@ -260,6 +260,7 @@ body {
   overflow-x: hidden; /* Se não quiser rolagem vertical */
   flex: 1;
 }
+
 
 #Login.main-content {
   overflow-y: hidden;
@@ -331,7 +332,7 @@ footer {
     margin-right: 10px; /*adicionar espaço a esquerda texto mobile*/
   }
   .top-bar {
-      padding: 0 10px;
+      padding: 0 !important;
       align-items: center;
       justify-content: space-between; /* Alinha o logo e os ícones na mesma direção */
   }
@@ -354,9 +355,7 @@ footer {
   }
 
   .main-content {
-      margin-left: 0;
-      padding-top: 60px;
-      flex: 1; /* Garante que o conteúdo principal expanda para preencher o espaço restante */
+    padding: 65px 5px 5px 5px !important;
   }
 
   .title {
@@ -402,10 +401,6 @@ footer {
       width: 200px;
   }
 
-  .main-content {
-    margin-left: 20px;
-  }
-
   .open-btn {
       font-size: 18px;
   }
@@ -418,10 +413,6 @@ footer {
 @media (min-width: 1440px) {
   .sidebar {
       width: 300px;
-  }
-
-  .main-content {
-      margin-left: 20px;
   }
 
   .open-btn {

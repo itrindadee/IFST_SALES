@@ -1,3 +1,23 @@
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   listar: async function (req, res) {
     try {
@@ -30,11 +50,14 @@ module.exports = {
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, descricao, tipoPermissao } = req.body;
+
       const novaPermissao = await Permissao.create({
         nome,
         descricao,
-        tipoPermissao
+        tipoPermissao,
+        createdBy: { id: userId, fullName }
       }).fetch();
 
       return res.status(201).json({
@@ -51,13 +74,15 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, descricao, tipoPermissao } = req.body;
       const permissaoId = req.params.id;
 
       const permissaoAtualizada = await Permissao.updateOne({ id: permissaoId }).set({
         nome,
         descricao,
-        tipoPermissao
+        tipoPermissao,
+        updatedBy: { id: userId, fullName }
       });
 
       if (!permissaoAtualizada) {
@@ -80,6 +105,7 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const permissaoId = req.params.id;
 
       const permissaoDeletada = await Permissao.destroyOne({ id: permissaoId });

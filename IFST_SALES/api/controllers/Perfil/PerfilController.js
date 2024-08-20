@@ -1,5 +1,26 @@
+// api/controllers/PerfilController.js
+
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
-  // Método para listar todos os perfis e todas as permissões
   listar: async function (req, res) {
     try {
       const perfis = await Perfil.find().populate('permissoes');
@@ -7,32 +28,29 @@ module.exports = {
       return res.view('pages/perfil/listar', { perfis, permissoes });
     } catch (err) {
       return res.serverError({
-        error: 'Erro ao listar os perfis',
-        details: err.message
+        message: 'Erro ao listar os perfis',
+        error: err
       });
     }
   },
 
-  // Método para criar um novo perfil
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, descricao, permissoes } = req.body;
 
-      // Verifica se já existe um perfil com o mesmo nome
       const perfilExistente = await Perfil.findOne({ nome });
       if (perfilExistente) {
-        return res.status(400).json({ error: 'Nome de perfil já existe.' });
+        return res.status(400).json({ message: 'Nome de perfil já existe.' });
       }
 
-      // Criar o perfil sem as permissões inicialmente
       const novoPerfil = await Perfil.create({
         nome,
-        descricao
+        descricao,
+        createdBy: { id: userId, fullName }
       }).fetch();
 
-      // Verificar se há permissões para associar
       if (permissoes && permissoes.length > 0) {
-        // Adicionar permissões ao perfil recém-criado
         await Perfil.addToCollection(novoPerfil.id, 'permissoes').members(permissoes);
       }
 
@@ -42,67 +60,61 @@ module.exports = {
       });
     } catch (err) {
       return res.serverError({
-        error: 'Erro ao criar o perfil',
-        details: err.message
+        message: 'Erro ao criar o perfil',
+        error: err
       });
     }
   },
 
-  // Método para buscar (visualizar) um perfil específico
   buscar: async function (req, res) {
     try {
       const perfilId = req.params.id;
 
-      // Buscar o perfil com as permissões associadas
       const perfil = await Perfil.findOne({ id: perfilId }).populate('permissoes');
-
       if (!perfil) {
         return res.notFound({
-          error: 'Perfil não encontrado'
+          message: 'Perfil não encontrado'
         });
       }
 
-      // Buscar todas as permissões disponíveis
       const todasPermissoes = await Permissao.find();
 
-      // Retornar o perfil, as permissões associadas e todas as permissões disponíveis
       return res.json({
         perfil: perfil,
-        permissoesAssociadas: perfil.permissoes, // Permissões associadas ao perfil
-        todasPermissoes: todasPermissoes // Todas as permissões disponíveis
+        permissoesAssociadas: perfil.permissoes,
+        todasPermissoes: todasPermissoes
       });
     } catch (err) {
       return res.serverError({
-        error: 'Erro ao buscar o perfil',
-        details: err.message
+        message: 'Erro ao buscar o perfil',
+        error: err
       });
     }
   },
 
-  // Método para atualizar um perfil existente
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nome, descricao, permissoes } = req.body;
       const perfilId = req.params.id;
 
-      // Verifica se o nome já existe em outro perfil
       const perfilExistente = await Perfil.findOne({ nome, id: { '!=': perfilId } });
       if (perfilExistente) {
-        return res.status(400).json({ error: 'Nome de perfil já existe.' });
+        return res.status(400).json({ message: 'Nome de perfil já existe.' });
       }
 
       const perfilAtualizado = await Perfil.updateOne({ id: perfilId }).set({
         nome,
-        descricao
+        descricao,
+        updatedBy: { id: userId, fullName }
       });
 
       if (!perfilAtualizado) {
         return res.notFound({
-          error: 'Perfil não encontrado'
+          message: 'Perfil não encontrado'
         });
       }
 
-      // Atualizando as permissões associadas ao perfil
       const permissoesArray = Array.isArray(permissoes) ? permissoes : [];
       if (permissoesArray.length > 0) {
         await Perfil.replaceCollection(perfilId, 'permissoes').members(permissoesArray);
@@ -116,36 +128,33 @@ module.exports = {
       });
     } catch (err) {
       return res.serverError({
-        error: 'Erro ao atualizar o perfil',
-        details: err.message
+        message: 'Erro ao atualizar o perfil',
+        error: err
       });
     }
   },
 
-  // Método para deletar um perfil
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const perfilId = req.params.id;
 
-      // Buscar as permissões associadas ao perfil
       const perfil = await Perfil.findOne({ id: perfilId }).populate('permissoes');
       if (!perfil) {
         return res.notFound({
-          error: 'Perfil não encontrado'
+          message: 'Perfil não encontrado'
         });
       }
 
       const permissoesAssociadas = perfil.permissoes.map(permissao => permissao.id);
 
-      // Remover todas as permissões associadas ao perfil antes de deletá-lo
       await Perfil.removeFromCollection(perfilId, 'permissoes').members(permissoesAssociadas);
 
-      // Deletar o perfil
       const perfilDeletado = await Perfil.destroyOne({ id: perfilId });
 
       if (!perfilDeletado) {
         return res.notFound({
-          error: 'Perfil não encontrado'
+          message: 'Perfil não encontrado'
         });
       }
 
@@ -154,8 +163,8 @@ module.exports = {
       });
     } catch (err) {
       return res.serverError({
-        error: 'Erro ao deletar o perfil',
-        details: err.message
+        message: 'Erro ao deletar o perfil',
+        error: err
       });
     }
   }

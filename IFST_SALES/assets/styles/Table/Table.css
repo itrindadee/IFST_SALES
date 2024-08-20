@@ -29,14 +29,12 @@ body {
 }
 
 main.table {
-  width: 96vw;
-  height: 84vh;
+  width: 94vw;
   background-color: #fff5;
   backdrop-filter: blur(7px);
   box-shadow: 0 6.4px 12.8px #0005;
   border-radius: 12.8px;
   overflow: hidden;
-  margin-left: 50px;
 }
 
 .titulo-produtos h3 {
@@ -48,7 +46,6 @@ main.table {
   width: 100%;
   height: 10%;
   background-color: #fff4;
-  padding: 12.8px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -297,6 +294,9 @@ thead th.asc span.icon-arrow i {
 }
 /* Estilo para dispositivos móveis */
 @media (max-width: 768px) {
+  .table-titulo{
+    display: none !important;
+  }
 
   /* Remover espaço à esquerda no contêiner principal */
   .table__body {
@@ -371,7 +371,6 @@ thead th.asc span.icon-arrow i {
 
   /* Alinhar texto */
   .table__body tr td {
-    padding: 0px !important;
     font-size: 16px;
   }
 
@@ -449,5 +448,37 @@ thead th.asc span.icon-arrow i {
   /* Esconder colunas que não sejam a imagem, o nome e o código */
   .table__body tr td:not(:nth-child(1)):not(:nth-child(3)):not(:nth-child(4)) {
     display: none; /* Esconde todas as colunas, exceto a 1ª, 2ª, 3ª e 4ª */
+  }
+  .btn-hide-mobile {
+    display: none;
+  }
+  .titulo-table{
+    display: none;
+  }
+  .table-icons {
+    display: flex; /* Exibe os ícones */
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .table-icons a {
+    margin-left: 15px; /* Espaçamento entre os ícones */
+  }
+
+  .table-icons i {
+    font-size: 20px; /* Tamanho dos ícones */
+    color: #888; /* Cor dos ícones */
+    cursor: pointer;
+  }
+
+  .table-icons i:hover {
+    color: #555; /* Cor mais escura ao passar o mouse */
+  }
+  .table-icons a {
+    margin-left: 10px; /* Diminui o espaçamento entre os ícones em dispositivos móveis */
+  }
+
+  .table-icons i {
+    font-size: 18px; /* Reduz o tamanho dos ícones em dispositivos móveis */
   }
 }

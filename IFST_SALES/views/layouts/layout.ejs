@@ -44,7 +44,6 @@
     <link rel="stylesheet" href="/styles/importer.css">
     <link rel="stylesheet" href="/styles/Table/Table.css">
     <!--STYLES END-->
-
     </head>
 
 
@@ -77,7 +76,6 @@
             </div>
           </div>
         </div>
-
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar collapsed" style="z-index: 1">
           <!-- Logotipo -->
@@ -91,15 +89,17 @@
           <a href="/produto/listar"><i class="fas fa-box"></i> Produtos</a>
           <a href="/configuracoes"><i class="fas fa-cog"></i> Configurações</a>
         </div>
+        <!-- Main content area -->
+        <div class="main-content">
+          <%- body %>
+        </div>
       <% } else { %>
-        <!-- LOGGED-OUT NAVIGATION -->
-        <!-- Código para navegação quando não estiver logado -->
+        <div class="main-content">
+          <!-- Conteúdo da página de login -->
+          <%- body %>
+        </div>
       <% } %>
 
-      <!-- Main content area -->
-      <div class="main-content" id="mainContent">
-        <%- body %>
-      </div>
 
       <footer class="navbar navbar-light justify-content-end" purpose="page-footer">
         <div class="nav" purpose="footer-nav">
@@ -111,6 +111,7 @@
           <% } %>
         </div>
       </footer>
+  </script>
     </body>
 
     <% /*

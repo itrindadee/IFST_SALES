@@ -1,3 +1,25 @@
+// api/controllers/MarcaController.js
+
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   listar: async function (req, res) {
     try {
@@ -30,12 +52,16 @@ module.exports = {
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { codigo, descricao, ativo } = req.body;
+
       const novaMarca = await Marca.create({
         codigo,
         descricao,
-        ativo
+        ativo,
+        createdBy: { id: userId, fullName } // Passa o JSON para o modelo
       }).fetch();
+
       return res.status(201).json({
         message: 'Marca criada com sucesso',
         marca: novaMarca
@@ -50,13 +76,15 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { codigo, descricao, ativo } = req.body;
       const marcaId = req.params.id;
 
       const marcaAtualizada = await Marca.updateOne({ id: marcaId }).set({
         codigo,
         descricao,
-        ativo
+        ativo,
+        updatedBy: { id: userId, fullName } // Passa o JSON para o modelo
       });
 
       if (!marcaAtualizada) {
@@ -79,6 +107,7 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const marcaId = req.params.id;
 
       const marcaDeletada = await Marca.destroyOne({ id: marcaId });
@@ -88,7 +117,6 @@ module.exports = {
           message: 'Marca não encontrada.'
         });
       }
-
       return res.json({
         message: 'Marca deletada com sucesso'
       });

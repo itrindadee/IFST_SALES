@@ -1,3 +1,25 @@
+// api/controllers/FluxoAprovacao/RegraAprovacaoController.js
+
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   listar: async function (req, res) {
     try {
@@ -22,8 +44,16 @@ module.exports = {
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nivel, tipo, fluxo } = req.body;
-      const novaRegra = await RegraAprovacao.create({ nivel, tipo, fluxo }).fetch();
+
+      const novaRegra = await RegraAprovacao.create({
+        nivel,
+        tipo,
+        fluxo,
+        createdBy: { id: userId, fullName }
+      }).fetch();
+
       return res.status(201).json({
         message: 'Regra de Aprovação criada com sucesso',
         regra: novaRegra,
@@ -35,10 +65,15 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { nivel, tipo } = req.body;
       const regraId = req.params.id;
 
-      const regraAtualizada = await RegraAprovacao.updateOne({ id: regraId }).set({ nivel, tipo });
+      const regraAtualizada = await RegraAprovacao.updateOne({ id: regraId }).set({
+        nivel,
+        tipo,
+        updatedBy: { id: userId, fullName }
+      });
 
       if (!regraAtualizada) {
         return res.notFound({ message: 'Regra de Aprovação não encontrada.' });
@@ -55,6 +90,7 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const regraId = req.params.id;
 
       const regraDeletada = await RegraAprovacao.destroyOne({ id: regraId });
@@ -62,7 +98,6 @@ module.exports = {
       if (!regraDeletada) {
         return res.notFound({ message: 'Regra de Aprovação não encontrada.' });
       }
-
       return res.json({
         message: 'Regra de Aprovação deletada com sucesso',
       });

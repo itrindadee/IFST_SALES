@@ -11,53 +11,53 @@
 
 module.exports.bootstrap = async function () {
 
-  const modulosPermissoes = [
-    { modulo: 'Canal', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Categoria', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Cliente', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Empresa', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Equipe Vendas', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Escritorio Vendas', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Fluxo Aprovação', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Grupo Conta', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Grupo Empresa', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Grupo Produto', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Marca', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Organizacao Vendas', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Perfil', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Permissão', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Politica Cadastro', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Produto', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Regiao', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Sub Canal', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
-    { modulo: 'Sub Categoria', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] }
-  ];
-  // Criação de permissões
-  for (let item of modulosPermissoes) {
-    for (let permissao of item.permissoes) {
-      await Permissao.findOrCreate(
-        { nome: `${permissao} ${item.modulo}` },
-        {
-          nome: `${permissao} ${item.modulo}`,
-          descricao: `Permissão para ${permissao.toLowerCase()} no módulo ${item.modulo}`,
-          tipoPermissao: permissao
-        }
-      );
-    }
-  }
-  sails.log('Permissões criadas ou já existentes.');
+  // const modulosPermissoes = [
+  //   { modulo: 'Canal', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Categoria', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Cliente', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Empresa', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Equipe Vendas', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Escritorio Vendas', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Fluxo Aprovação', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Grupo Conta', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Grupo Empresa', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Grupo Produto', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Marca', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Organizacao Vendas', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Perfil', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Permissão', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Politica Cadastro', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Produto', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Regiao', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Sub Canal', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
+  //   { modulo: 'Sub Categoria', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] }
+  // ];
+  // // Criação de permissões
+  // for (let item of modulosPermissoes) {
+  //   for (let permissao of item.permissoes) {
+  //     await Permissao.findOrCreate(
+  //       { nome: `${permissao} ${item.modulo}` },
+  //       {
+  //         nome: `${permissao} ${item.modulo}`,
+  //         descricao: `Permissão para ${permissao.toLowerCase()} no módulo ${item.modulo}`,
+  //         tipoPermissao: permissao
+  //       }
+  //     );
+  //   }
+  // }
+  // sails.log('Permissões criadas ou já existentes.');
 
-  // Criar o perfil ADMINISTRADOR e associar todas as permissões
-  const perfilAdministrador = await Perfil.findOrCreate(
-    { nome: 'ADMINISTRADOR' },
-    { nome: 'ADMINISTRADOR', descricao: 'Perfil com todas as permissões' }
-  );
+  // // Criar o perfil ADMINISTRADOR e associar todas as permissões
+  // const perfilAdministrador = await Perfil.findOrCreate(
+  //   { nome: 'ADMINISTRADOR' },
+  //   { nome: 'ADMINISTRADOR', descricao: 'Perfil com todas as permissões' }
+  // );
 
-  // Associar todas as permissões ao perfil ADMINISTRADOR
-  const todasPermissoes = await Permissao.find();
-  await Perfil.addToCollection(perfilAdministrador.id, 'permissoes', todasPermissoes.map(p => p.id));
+  // // Associar todas as permissões ao perfil ADMINISTRADOR
+  // const todasPermissoes = await Permissao.find();
+  // await Perfil.addToCollection(perfilAdministrador.id, 'permissoes', todasPermissoes.map(p => p.id));
 
-  sails.log('Perfil ADMINISTRADOR criado ou já existente e associado a todas as permissões.');
+  // sails.log('Perfil ADMINISTRADOR criado ou já existente e associado a todas as permissões.');
 
 
   // Import dependencies

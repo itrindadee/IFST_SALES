@@ -49,6 +49,8 @@ module.exports.routes = {
   'POST /clientes': { action: 'Cliente/Cliente/criar', policies: ['aplicarPoliticaCadastro'] },
   'POST  /clientes/salvar': { action: 'Cliente/cliente/atualizar' },
 
+  'GET /editor': { action: 'Editor/Editor/index' },
+
   //Crud organização de vendas
   'GET /organizacaovendas/listar': { action: 'OrganizacaoVendas/OrganizacaoVendas/listar' },
   'PUT /organizacaovendas/:id': { action: 'OrganizacaoVendas/OrganizacaoVendas/atualizar' },

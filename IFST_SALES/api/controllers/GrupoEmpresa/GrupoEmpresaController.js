@@ -1,8 +1,29 @@
 // api/controllers/GrupoEmpresaController.js
 
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { codigo, nome } = req.body;
 
       if (!codigo || !nome) {
@@ -15,7 +36,12 @@ module.exports = {
         return res.status(400).json({ message: 'Código já existe.' });
       }
 
-      const novoGrupoEmpresa = await GrupoEmpresa.create({ codigo, nome }).fetch();
+      const novoGrupoEmpresa = await GrupoEmpresa.create({
+        codigo,
+        nome,
+        createdBy: { id: userId, fullName }
+      }).fetch();
+
       return res.status(201).json({
         message: 'Grupo Empresa cadastrado com sucesso',
         grupoEmpresa: novoGrupoEmpresa
@@ -69,6 +95,7 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { id, codigo, nome } = req.body;
 
       if (!id) {
@@ -81,7 +108,12 @@ module.exports = {
         return res.status(400).json({ message: 'Código já existe.' });
       }
 
-      const grupoEmpresaAtualizado = await GrupoEmpresa.updateOne({ id }).set({ codigo, nome });
+      const grupoEmpresaAtualizado = await GrupoEmpresa.updateOne({ id }).set({
+        codigo,
+        nome,
+        updatedBy: { id: userId, fullName }
+      });
+
       if (!grupoEmpresaAtualizado) {
         return res.notFound({ message: 'Grupo Empresa não encontrado.' });
       }
@@ -106,6 +138,7 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const grupoEmpresaId = req.params.id;
 
       const grupoEmpresaDeletado = await GrupoEmpresa.destroyOne({ id: grupoEmpresaId });

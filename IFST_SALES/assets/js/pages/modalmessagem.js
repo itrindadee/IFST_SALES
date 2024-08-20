@@ -42,6 +42,8 @@ function handleResponse(response) {
     showSuccessModal('Operação realizada com sucesso!');
   } else {
     response.json().then(error => {
+      console.log(error.type);
+      console.log(response.error);
       switch (error.type) {
         case 'ValidationError':
           showErrorModal(`Erro de validação: ${error.error}`);
@@ -56,8 +58,17 @@ function handleResponse(response) {
           showErrorModal(`Erro no servidor: ${error.error}`);
           console.error('Detalhes do erro:', error.details);
           break;
+        case 'AuthorizationError':
+          showErrorModal('Você não tem permissão para realizar esta ação.');
+          break;
+        case 'Forbidden':
+          showErrorModal('Acesso proibido: Você não tem permissão para realizar esta ação.');
+          // Opcional: Redirecionar para uma página de "não autorizado"
+          //window.location.href = '/nao-autorizado';
+          break;
         default:
           showErrorModal('Erro desconhecido');
+          break;
       }
     }).catch(() => {
       showErrorModal('Erro desconhecido');

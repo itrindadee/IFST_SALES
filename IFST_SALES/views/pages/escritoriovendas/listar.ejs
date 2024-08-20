@@ -9,345 +9,361 @@
 
 <body>
   <%- include('../mensagem') %>
-  <main class="table" id="tabela_escritoriosVendas">
-    <section class="table__header">
-      <div class="titulo-escritoriosVendas">
+    <main class="table" id="tabela_escritoriosVendas">
+      <section class="table__header">
+        <div class="table-titulo">
         <h3>Escritórios de Vendas</h3>
       </div>
-      <div class="header-actions">
-        <div class="table-search-bar">
-          <input type="text" placeholder="Pesquisar por escritório de vendas...">
-          <i class="fas fa-search"></i>
+      <div class=" header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por escritório de vendas...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+              data-bs-target="#addEscritorioVendasModal">
+              Adicionar Escritório de Vendas
+            </button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary btn-hide-mobile" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+              Gerenciar Colunas
+            </button>
+          </div>
         </div>
-        <div>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEscritorioVendasModal">
-            Adicionar Escritório de Vendas
-          </button>
-        </div>
-        <div>
-          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
-            Gerenciar Colunas
-          </button>
+      </section>
+
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Organização Vendas</th>
+              <th draggable="true">Código</th>
+              <th draggable="true">Descrição</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% escritorios.forEach(escritorio=> { %>
+              <tr>
+                <td>
+                  <%= escritorio.organizacaoVendas %>
+                </td>
+                <td>
+                  <%= escritorio.codigo %>
+                </td>
+                <td>
+                  <%= escritorio.descricao %>
+                </td>
+                <td>
+                  <a href="#" onclick="editEscritorioVendas(<%= escritorio.id %>);" title="Editar"><i
+                      class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewEscritorioVendas(<%= escritorio.id %>);" title="Visualizar"><i
+                      class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteEscritorioVendas(<%= escritorio.id %>);" title="Deletar"><i
+                      class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para Gerenciar Colunas -->
+    <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="manageColumnsForm">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-organizacao-vendas" name="columns"
+                      value="organização vendas" checked>
+                    <label class="form-check-label" for="col-organizacao-vendas">Organização Vendas</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código"
+                      checked>
+                    <label class="form-check-label" for="col-codigo">Código</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição"
+                      checked>
+                    <label class="form-check-label" for="col-descrição">Descrição</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
+                    <label class="form-check-label" for="col-ações">Ações</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="table__body">
-      <table>
-        <thead>
-          <tr>
-            <th draggable="true">Organização Vendas</th>
-            <th draggable="true">Código</th>
-            <th draggable="true">Descrição</th>
-            <th draggable="true">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% escritorios.forEach(escritorio => { %>
-          <tr>
-            <td><%= escritorio.organizacaoVendas %></td>
-            <td><%= escritorio.codigo %></td>
-            <td><%= escritorio.descricao %></td>
-            <td>
-              <a href="#" onclick="editEscritorioVendas(<%= escritorio.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
-              <a href="#" onclick="viewEscritorioVendas(<%= escritorio.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
-              <a href="#" onclick="deleteEscritorioVendas(<%= escritorio.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
-            </td>
-          </tr>
+    <!-- Modal para adicionar escritório de vendas -->
+    <div class="modal fade" id="addEscritorioVendasModal" tabindex="-1" aria-labelledby="addEscritorioVendasModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addEscritorioVendasModalLabel">Adicionar Escritório de Vendas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addEscritorioVendasForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="organizacaoVendas" class="form-label">Organização Vendas:</label>
+                  <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="codigo" class="form-label">Código:</label>
+                  <input type="text" class="form-control" id="codigo" name="codigo" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="descricao" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao" name="descricao" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Criar Escritório de Vendas</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modais para editar escritório de vendas -->
+    <% escritorios.forEach(escritorio=> { %>
+      <div class="modal fade" id="editEscritorioVendasModal<%= escritorio.id %>" tabindex="-1"
+        aria-labelledby="editEscritorioVendasModalLabel<%= escritorio.id %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editEscritorioVendasModalLabel<%= escritorio.id %>">Editar Escritório de
+                Vendas</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editEscritorioVendasForm<%= escritorio.id %>" enctype="multipart/form-data">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="organizacaoVendas<%= escritorio.id %>" class="form-label">Organização Vendas:</label>
+                    <input type="text" class="form-control" id="organizacaoVendas<%= escritorio.id %>"
+                      name="organizacaoVendas" value="<%= escritorio.organizacaoVendas %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="codigo<%= escritorio.id %>" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codigo<%= escritorio.id %>" name="codigo"
+                      value="<%= escritorio.codigo %>" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="descricao<%= escritorio.id %>" class="form-label">Descrição:</label>
+                    <input type="text" class="form-control" id="descricao<%= escritorio.id %>" name="descricao"
+                      value="<%= escritorio.descricao %>" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+
+        <!-- Modais para visualizar escritório de vendas -->
+        <% escritorios.forEach(escritorio=> { %>
+          <div class="modal fade" id="viewEscritorioVendasModal<%= escritorio.id %>" tabindex="-1"
+            aria-labelledby="viewEscritorioVendasModalLabel<%= escritorio.id %>" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="viewEscritorioVendasModalLabel<%= escritorio.id %>">Visualizar Escritório
+                    de Vendas</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label for="organizacaoVendasView<%= escritorio.id %>" class="form-label">Organização
+                        Vendas:</label>
+                      <input type="text" class="form-control" id="organizacaoVendasView<%= escritorio.id %>"
+                        name="organizacaoVendasView" value="<%= escritorio.organizacaoVendas %>" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="codigoView<%= escritorio.id %>" class="form-label">Código:</label>
+                      <input type="text" class="form-control" id="codigoView<%= escritorio.id %>" name="codigoView"
+                        value="<%= escritorio.codigo %>" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="descricaoView<%= escritorio.id %>" class="form-label">Descrição:</label>
+                      <input type="text" class="form-control" id="descricaoView<%= escritorio.id %>"
+                        name="descricaoView" value="<%= escritorio.descricao %>" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <% }) %>
-        </tbody>
-      </table>
-    </section>
-  </main>
 
-  <!-- Modal para Gerenciar Colunas -->
-  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="manageColumnsForm">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-organizacao-vendas" name="columns" value="organização vendas" checked>
-                  <label class="form-check-label" for="col-organizacao-vendas">Organização Vendas</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-codigo" name="columns" value="código" checked>
-                  <label class="form-check-label" for="col-codigo">Código</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-descrição" name="columns" value="descrição" checked>
-                  <label class="form-check-label" for="col-descrição">Descrição</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="col-ações" name="columns" value="ações" checked>
-                  <label class="form-check-label" for="col-ações">Ações</label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
+            <!-- Scripts -->
+            <script>
+              function resetAddEscritorioVendasForm() {
+                document.getElementById('addEscritorioVendasForm').reset();
+              }
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+              document.getElementById('addEscritorioVendasForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
 
-  <!-- Modal para adicionar escritório de vendas -->
-  <div class="modal fade" id="addEscritorioVendasModal" tabindex="-1" aria-labelledby="addEscritorioVendasModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addEscritorioVendasModalLabel">Adicionar Escritório de Vendas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addEscritorioVendasForm" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="organizacaoVendas" class="form-label">Organização Vendas:</label>
-                <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="codigo" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo" name="codigo" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="descricao" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao" name="descricao" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Criar Escritório de Vendas</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+                const data = {
+                  organizacaoVendas: document.getElementById('organizacaoVendas').value,
+                  codigo: document.getElementById('codigo').value,
+                  descricao: document.getElementById('descricao').value
+                };
 
-  <!-- Modais para editar escritório de vendas -->
-  <% escritorios.forEach(escritorio => { %>
-  <div class="modal fade" id="editEscritorioVendasModal<%= escritorio.id %>" tabindex="-1"
-    aria-labelledby="editEscritorioVendasModalLabel<%= escritorio.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editEscritorioVendasModalLabel<%= escritorio.id %>">Editar Escritório de Vendas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editEscritorioVendasForm<%= escritorio.id %>" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col-md-12 mb-3">
-                <label for="organizacaoVendas<%= escritorio.id %>" class="form-label">Organização Vendas:</label>
-                <input type="text" class="form-control" id="organizacaoVendas<%= escritorio.id %>" name="organizacaoVendas"
-                  value="<%= escritorio.organizacaoVendas %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="codigo<%= escritorio.id %>" class="form-label">Código:</label>
-                <input type="text" class="form-control" id="codigo<%= escritorio.id %>" name="codigo"
-                  value="<%= escritorio.codigo %>" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="descricao<%= escritorio.id %>" class="form-label">Descrição:</label>
-                <input type="text" class="form-control" id="descricao<%= escritorio.id %>" name="descricao"
-                  value="<%= escritorio.descricao %>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
+                const response = await fetch('/escritoriovendas', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= _csrf %>'
+                  },
+                  body: JSON.stringify(data)
+                });
 
-  <!-- Modais para visualizar escritório de vendas -->
-  <% escritorios.forEach(escritorio => { %>
-  <div class="modal fade" id="viewEscritorioVendasModal<%= escritorio.id %>" tabindex="-1"
-    aria-labelledby="viewEscritorioVendasModalLabel<%= escritorio.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewEscritorioVendasModalLabel<%= escritorio.id %>">Visualizar Escritório de Vendas</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label for="organizacaoVendasView<%= escritorio.id %>" class="form-label">Organização Vendas:</label>
-              <input type="text" class="form-control" id="organizacaoVendasView<%= escritorio.id %>"
-                name="organizacaoVendasView" value="<%= escritorio.organizacaoVendas %>" readonly>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="codigoView<%= escritorio.id %>" class="form-label">Código:</label>
-              <input type="text" class="form-control" id="codigoView<%= escritorio.id %>" name="codigoView"
-                value="<%= escritorio.codigo %>" readonly>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="descricaoView<%= escritorio.id %>" class="form-label">Descrição:</label>
-              <input type="text" class="form-control" id="descricaoView<%= escritorio.id %>" name="descricaoView"
-                value="<%= escritorio.descricao %>" readonly>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% }) %>
-
-  <!-- Scripts -->
-  <script>
-  function resetAddEscritorioVendasForm() {
-  document.getElementById('addEscritorioVendasForm').reset();
-}
-
-document.getElementById('addEscritorioVendasForm').addEventListener('submit', async function(event) {
-  event.preventDefault();
-
-  const data = {
-    organizacaoVendas: document.getElementById('organizacaoVendas').value,
-    codigo: document.getElementById('codigo').value,
-    descricao: document.getElementById('descricao').value
-  };
-
-  const response = await fetch('/escritoriovendas', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': '<%= _csrf %>'
-    },
-    body: JSON.stringify(data)
-  });
-
-  handleResponse(response);
-});
+                handleResponse(response);
+              });
 
 <% escritorios.forEach(escritorio => { %>
-document.getElementById('editEscritorioVendasForm<%= escritorio.id %>').addEventListener('submit', async function(event) {
-  event.preventDefault();
+                document.getElementById('editEscritorioVendasForm<%= escritorio.id %>').addEventListener('submit', async function (event) {
+                  event.preventDefault();
 
-  const data = {
-    organizacaoVendas: document.getElementById(`organizacaoVendas<%= escritorio.id %>`).value,
-    codigo: document.getElementById(`codigo<%= escritorio.id %>`).value,
-    descricao: document.getElementById(`descricao<%= escritorio.id %>`).value
-  };
+                  const data = {
+                    organizacaoVendas: document.getElementById(`organizacaoVendas<%= escritorio.id %>`).value,
+                    codigo: document.getElementById(`codigo<%= escritorio.id %>`).value,
+                    descricao: document.getElementById(`descricao<%= escritorio.id %>`).value
+                  };
 
-  const response = await fetch(`/escritoriovendas/<%= escritorio.id %>`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': '<%= _csrf %>'
-    },
-    body: JSON.stringify(data)
-  });
+                  const response = await fetch(`/escritoriovendas/<%= escritorio.id %>`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-Token': '<%= _csrf %>'
+                    },
+                    body: JSON.stringify(data)
+                  });
 
-  handleResponse(response);
-});
+                  handleResponse(response);
+                });
 <% }) %>
 
-async function deleteEscritorioVendas(id) {
-  if (confirm('Tem certeza que deseja deletar este escritório de vendas?')) {
-    const response = await fetch(`/escritoriovendas/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRF-Token': '<%= _csrf %>'
-      }
-    });
+                async function deleteEscritorioVendas(id) {
+                  if (confirm('Tem certeza que deseja deletar este escritório de vendas?')) {
+                    const response = await fetch(`/escritoriovendas/${id}`, {
+                      method: 'DELETE',
+                      headers: {
+                        'X-CSRF-Token': '<%= _csrf %>'
+                      }
+                    });
 
-    handleResponse(response);
-  }
-}
+                    handleResponse(response);
+                  }
+                }
 
-function handleResponse(response) {
-  if (response.ok) {
-    showSuccessModal('Operação realizada com sucesso!');
-  } else {
-    response.json().then(error => {
-      showErrorModal(error.error || 'Erro ao processar a operação');
-    }).catch(() => {
-      showErrorModal('Erro desconhecido');
-    });
-  }
-}
+              function handleResponse(response) {
+                if (response.ok) {
+                  showSuccessModal('Operação realizada com sucesso!');
+                } else {
+                  response.json().then(error => {
+                    showErrorModal(error.error || 'Erro ao processar a operação');
+                  }).catch(() => {
+                    showErrorModal('Erro desconhecido');
+                  });
+                }
+              }
 
-function editEscritorioVendas(id) {
-  const modal = new bootstrap.Modal(document.getElementById(`editEscritorioVendasModal${id}`));
-  modal.show();
-}
+              function editEscritorioVendas(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`editEscritorioVendasModal${id}`));
+                modal.show();
+              }
 
-function viewEscritorioVendas(id) {
-  const modal = new bootstrap.Modal(document.getElementById(`viewEscritorioVendasModal${id}`));
-  modal.show();
-}
+              function viewEscritorioVendas(id) {
+                const modal = new bootstrap.Modal(document.getElementById(`viewEscritorioVendasModal${id}`));
+                modal.show();
+              }
 
-function applyColumnSettings() {
-  const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
-  const columnsToShow = Array.from(checkboxes)
-    .filter(checkbox => checkbox.checked)
-    .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+              function applyColumnSettings() {
+                const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+                const columnsToShow = Array.from(checkboxes)
+                  .filter(checkbox => checkbox.checked)
+                  .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
 
-  const headers = document.querySelectorAll('th');
-  const rows = document.querySelectorAll('tbody tr');
+                const headers = document.querySelectorAll('th');
+                const rows = document.querySelectorAll('tbody tr');
 
-  headers.forEach((header, index) => {
-    const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+                headers.forEach((header, index) => {
+                  const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
 
-    if (columnsToShow.includes(headerText)) {
-      header.style.display = ''; // Mostra o cabeçalho
-      rows.forEach(row => {
-        const cell = row.querySelector(`td:nth-child(${index + 1})`);
-        if (cell) {
-          cell.style.display = ''; // Mostra a célula correspondente
-        }
-      });
-    } else {
-      header.style.display = 'none'; // Oculta o cabeçalho
-      rows.forEach(row => {
-        const cell = row.querySelector(`td:nth-child(${index + 1})`);
-        if (cell) {
-          cell.style.display = 'none'; // Oculta a célula correspondente
-        }
-      });
-    }
-  });
+                  if (columnsToShow.includes(headerText)) {
+                    header.style.display = ''; // Mostra o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = ''; // Mostra a célula correspondente
+                      }
+                    });
+                  } else {
+                    header.style.display = 'none'; // Oculta o cabeçalho
+                    rows.forEach(row => {
+                      const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                      if (cell) {
+                        cell.style.display = 'none'; // Oculta a célula correspondente
+                      }
+                    });
+                  }
+                });
 
-  // Fechar o modal após aplicar as configurações
-  const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
-  modal.hide();
-}
-  </script>
+                // Fechar o modal após aplicar as configurações
+                const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+                modal.hide();
+              }
+            </script>
 </body>
 
 </html>

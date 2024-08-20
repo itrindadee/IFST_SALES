@@ -1,12 +1,43 @@
+// api/controllers/EmpresaController.js
+
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { codigo, razaoSocial, cnpj, endereco } = req.body;
+
       if (!codigo || !razaoSocial || !cnpj) {
         return res.status(400).json({ type: 'ValidationError', error: 'Por favor, forneça todos os campos obrigatórios.' });
       }
 
-      const novaEmpresa = await Empresa.create({ codigo, razaoSocial, cnpj, endereco }).fetch();
+      const novaEmpresa = await Empresa.create({
+        codigo,
+        razaoSocial,
+        cnpj,
+        endereco,
+        createdBy: { id: userId, fullName } // Passa o JSON para o modelo
+      }).fetch();
+
       return res.status(201).json({ message: 'Empresa cadastrada com sucesso', empresa: novaEmpresa });
     } catch (err) {
       if (err.code === 'E_UNIQUE') {
@@ -55,12 +86,21 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { id, codigo, razaoSocial, cnpj, endereco } = req.body;
+
       if (!id) {
         return res.status(400).json({ type: 'ValidationError', error: 'ID da empresa não fornecido.' });
       }
 
-      const empresa = await Empresa.updateOne({ id }).set({ codigo, razaoSocial, cnpj, endereco });
+      const empresa = await Empresa.updateOne({ id }).set({
+        codigo,
+        razaoSocial,
+        cnpj,
+        endereco,
+        updatedBy: { id: userId, fullName } // Passa o JSON para o modelo
+      });
+
       if (!empresa) {
         return res.status(404).json({ type: 'NotFoundError', error: 'Empresa não encontrada.' });
       }
@@ -76,11 +116,14 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const empresaId = req.params.id;
+
       const empresa = await Empresa.destroyOne({ id: empresaId });
       if (!empresa) {
         return res.status(404).json({ type: 'NotFoundError', error: 'Empresa não encontrada.' });
       }
+
       return res.json({ message: 'Empresa deletada com sucesso' });
     } catch (err) {
       return res.status(500).json({ type: 'ServerError', error: 'Erro interno do servidor.', details: err.message });

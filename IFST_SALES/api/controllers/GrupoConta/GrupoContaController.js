@@ -5,6 +5,26 @@
  * @docs        :: https://sailsjs.com/docs/concepts/actions
  */
 
+async function captureUserInfo(req) {
+  const userId = req.session.userId;
+  let fullName = req.session.fullName;
+
+  if (!userId) {
+    throw new Error('ID de usuário ausente na sessão');
+  }
+
+  if (!fullName) {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    fullName = user.fullName;
+    req.session.fullName = fullName;
+  }
+
+  return { userId, fullName };
+}
+
 module.exports = {
   listar: async function (req, res) {
     try {
@@ -17,6 +37,7 @@ module.exports = {
 
   criar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { codigo, descricao } = req.body;
 
       if (!codigo || !descricao) {
@@ -31,7 +52,8 @@ module.exports = {
 
       const novoGrupo = await GrupoConta.create({
         codigo,
-        descricao
+        descricao,
+        createdBy: { id: userId, fullName }
       }).fetch();
 
       return res.status(201).json({
@@ -45,6 +67,7 @@ module.exports = {
 
   atualizar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const { codigo, descricao } = req.body;
       const grupoId = req.params.id;
 
@@ -60,7 +83,8 @@ module.exports = {
 
       const grupoAtualizado = await GrupoConta.updateOne({ id: grupoId }).set({
         codigo,
-        descricao
+        descricao,
+        updatedBy: { id: userId, fullName }
       });
 
       if (!grupoAtualizado) {
@@ -78,6 +102,7 @@ module.exports = {
 
   deletar: async function (req, res) {
     try {
+      const { userId, fullName } = await captureUserInfo(req);
       const grupoId = req.params.id;
 
       const grupoDeletado = await GrupoConta.destroyOne({ id: grupoId });
@@ -94,12 +119,18 @@ module.exports = {
     }
   },
 
-  todos: async function (req, res) {
+  buscar: async function (req, res) {
     try {
-      const grupos = await GrupoConta.find();
-      return res.json(grupos);
+      const grupoId = req.params.id;
+      const grupo = await GrupoConta.findOne({ id: grupoId });
+
+      if (!grupo) {
+        return res.notFound({ message: 'Grupo Conta não encontrado.' });
+      }
+
+      return res.json(grupo);
     } catch (err) {
-      return res.serverError({ message: 'Erro ao listar todos os grupos de conta', error: err });
+      return res.serverError({ message: 'Erro ao buscar grupo de conta por ID', error: err });
     }
   }
 };

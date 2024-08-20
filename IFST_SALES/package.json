@@ -10,6 +10,7 @@
     "@sailshq/lodash": "^3.10.6",
     "@sailshq/socket.io-redis": "^6.1.2",
     "bootstrap": "^5.3.3",
+    "grapesjs": "^0.21.12",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "sails": "^1.5.11",
