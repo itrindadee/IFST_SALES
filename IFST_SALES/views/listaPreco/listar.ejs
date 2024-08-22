@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Listas de Preço</title>
+  <style>
+    .dual-list {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dual-list__available,
+    .dual-list__selected {
+      width: 45%;
+    }
+    .dual-list__buttons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .dual-list__buttons button {
+      margin: 5px;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../mensagem') %>
+  <main class="table" id="tabela_listapreco">
+    <section class="table__header">
+      <div class="table-titulo">
+        <h3>Gestão de Listas de Preço</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por lista de preço...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addListaPrecoModal">
+            Adicionar Lista de Preço
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Nome</th>
+            <th draggable="true">Descrição</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (listasPreco && listasPreco.length > 0) { %>
+            <% listasPreco.forEach(listaPreco => { %>
+              <tr>
+                <td><%= listaPreco.nome %></td>
+                <td><%= listaPreco.descricao %></td>
+                <td>
+                  <a href="#" onclick="editListaPreco(<%= listaPreco.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewListaPreco(<%= listaPreco.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteListaPreco(<%= listaPreco.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="3">Nenhuma lista de preço encontrada.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para adicionar lista de preço -->
+  <div class="modal fade" id="addListaPrecoModal" tabindex="-1" aria-labelledby="addListaPrecoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addListaPrecoModalLabel">Adicionar Lista de Preço</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addListaPrecoForm">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="descricao" class="form-label">Descrição:</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="produtos" class="form-label">Produtos:</label>
+                <div class="dual-list">
+                  <div class="dual-list__available">
+                    <h6>Produtos Disponíveis</h6>
+                    <select multiple class="form-control" id="availableProdutos">
+                      <% produtos.forEach(produto => { %>
+                        <option value="<%= produto.id %>">
+                          <%= produto.nome %>
+                        </option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="dual-list__buttons">
+                    <button type="button" class="btn btn-primary" onclick="addProduto();">&gt;&gt;</button>
+                    <button type="button" class="btn btn-secondary" onclick="removeProduto();">&lt;&lt;</button>
+                  </div>
+                  <div class="dual-list__selected">
+                    <h6>Produtos Selecionados</h6>
+                    <select multiple class="form-control" id="selectedProdutos" name="produtos[]"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Lista de Preço</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function addProduto() {
+      const available = document.getElementById('availableProdutos');
+      const selected = document.getElementById('selectedProdutos');
+
+      [...available.selectedOptions].forEach(option => {
+        selected.add(option);
+      });
+    }
+
+    function removeProduto() {
+      const available = document.getElementById('availableProdutos');
+      const selected = document.getElementById('selectedProdutos');
+
+      [...selected.selectedOptions].forEach(option => {
+        available.add(option);
+      });
+    }
+
+    async function editListaPreco(id) {
+      try {
+        const response = await fetch(`/listapreco/${id}`);
+        const listaPrecoData = await response.json();
+
+        // Preenche os campos de edição com os dados da lista de preço
+        document.getElementById('nomeEdit').value = listaPrecoData.listaPreco.nome;
+        document.getElementById('descricaoEdit').value = listaPrecoData.listaPreco.descricao;
+
+        // Armazena o ID da lista de preço no campo oculto
+        document.getElementById('listaPrecoIdEdit').value = listaPrecoData.listaPreco.id;
+
+        const availableProdutosEdit = document.getElementById('availableProdutosEdit');
+        const selectedProdutosEdit = document.getElementById('selectedProdutosEdit');
+        availableProdutosEdit.innerHTML = '';
+        selectedProdutosEdit.innerHTML = '';
+
+        // Percorre todos os produtos disponíveis
+        listaPrecoData.todosProdutos.forEach(produto => {
+          // Verifica se o produto já está associado à lista de preço
+          if (listaPrecoData.produtosAssociados.some(p => p.id === produto.id)) {
+            selectedProdutosEdit.add(new Option(produto.nome, produto.id, true, true));
+          } else {
+            availableProdutosEdit.add(new Option(produto.nome, produto.id));
+          }
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('editListaPrecoModal'));
+        modal.show();
+      } catch (error) {
+        console.error('Erro ao carregar lista de preço:', error);
+        showErrorModal('Erro ao carregar lista de preço.');
+      }
+    }
+
+    async function viewListaPreco(id) {
+      try {
+        const response = await fetch(`/listapreco/${id}`);
+        const listaPreco = await response.json();
+
+        document.getElementById('nomeView').value = listaPreco.listaPreco.nome;
+        document.getElementById('descricaoView').value = listaPreco.listaPreco.descricao;
+
+        const selectedProdutosView = document.getElementById('selectedProdutosView');
+        selectedProdutosView.innerHTML = '';
+
+        listaPreco.produtosAssociados.forEach(produto => {
+          const listItem = document.createElement('li');
+          listItem.className = 'list-group-item';
+          listItem.textContent = produto.nome;
+          selectedProdutosView.appendChild(listItem);
+        });
+
+        const modal = new bootstrap.Modal(document.getElementById('viewListaPrecoModal'));
+        modal.show();
+      } catch (error) {
+        console.error('Erro ao visualizar lista de preço:', error);
+        showErrorModal('Erro ao visualizar lista de preço.');
+      }
+    }
+
+    async function deleteListaPreco(id) {
+      if (confirm('Tem certeza que deseja deletar esta lista de preço?')) {
+        try {
+          const response = await fetch(`/listapreco/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-Token': '<%= _csrf %>'
+            }
+          });
+
+          handleResponse(response, 'Lista de preço deletada com sucesso!');
+          location.reload();
+        } catch (error) {
+          console.error('Erro ao deletar lista de preço:', error);
+          showErrorModal('Erro ao deletar lista de preço.');
+        }
+      }
+    }
+
+    document.getElementById('addListaPrecoForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      data.produtos = [...document.getElementById('selectedProdutos').options].map(option => option.value);
+
+      try {
+        const response = await fetch('/listapreco', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        handleResponse(response, 'Lista de preço criada com sucesso!');
+      } catch (error) {
+        console.error('Erro ao criar lista de preço:', error);
+        showErrorModal('Erro ao criar lista de preço.');
+      }
+    });
+
+    document.getElementById('editListaPrecoForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData.entries());
+
+      data.produtos = [...document.getElementById('selectedProdutosEdit').options].map(option => option.value);
+
+      const listaPrecoId = document.getElementById('listaPrecoIdEdit').value;
+
+      try {
+        const response = await fetch(`/listapreco/${listaPrecoId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        handleResponse(response, 'Lista de preço atualizada com sucesso!');
+      } catch (error) {
+        console.error('Erro ao atualizar lista de preço:', error);
+        showErrorModal('Erro ao atualizar lista de preço.');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -19,6 +19,10 @@ module.exports = {
       type: 'boolean',
       defaultsTo: true
     },
+    vendas: {
+      collection: 'Venda',
+      via: 'organizacaoVendas'
+    },
     createdBy: {
       type: 'json',
       description: 'ID e nome do usuário que criou o registro',

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,190 +13,216 @@
       margin-bottom: 20px;
       height: 100%;
     }
+
     .config-section {
       margin-top: 20px;
     }
+
     .btn:hover {
       background-color: #007bff;
       color: #fff;
     }
-    .row > [class*='col-'] {
+
+    .row>[class*='col-'] {
       margin-bottom: 15px;
     }
   </style>
   <script>
     // Função para carregar listas via AJAX
     function carregarLista(url) {
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      if (response.ok) {
-        // Redireciona automaticamente para a página desejada
-        window.location.href = url;
-      } else {
-        handleResponse(response); // Manipula erros e outros status não 200
-      }
-    })
-    .catch(error => {
-      console.error('Erro ao carregar lista:', error);
-      showErrorModal('Erro desconhecido ao tentar carregar a lista.');
-    });
-  }
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            // Redireciona automaticamente para a página desejada
+            window.location.href = url;
+          } else {
+            handleResponse(response); // Manipula erros e outros status não 200
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar lista:', error);
+          showErrorModal('Erro desconhecido ao tentar carregar a lista.');
+        });
+    }
 
   </script>
 </head>
+
 <body>
   <%- include('mensagem') %>
-  <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-md-4">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/home">Home</a></li>
-        <li class="breadcrumb-item"><a href="/painel">Painel Administrativo</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Configurações do Sistema</li>
-      </ol>
-    </nav>
-    <!-- Seção de Configurações -->
-    <div class="config-section">
-      <div class="row">
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Empresa</h4>
-            <p>Configurações referente a empresas</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/empresa/listar')">Ver Configurações</button>
+    <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-md-4">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/home">Home</a></li>
+          <li class="breadcrumb-item"><a href="/painel">Painel Administrativo</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Configurações do Sistema</li>
+        </ol>
+      </nav>
+      <!-- Seção de Configurações -->
+      <div class="config-section">
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Empresa</h4>
+              <p>Configurações referente a empresas</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/empresa/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Politica de Cadastro</h4>
+              <p>Configuração referente a política de cadastro</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/politicacadastro/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Organização de Vendas</h4>
+              <p>Configurações referente a organização de vendas</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/organizacaovendas/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Permissão</h4>
+              <p>Configuração referente a permissão</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/permissoes/listar')">Ver Configurações</button>
+            </div>
           </div>
         </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Politica de Cadastro</h4>
-            <p>Configuração referente a política de cadastro</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/politicacadastro/listar')">Ver Configurações</button>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Grupo Empresa</h4>
+              <p>Configuração grupo empresa</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/grupoempresa/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Perfil</h4>
+              <p>Configuração referente a perfil</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/perfil/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Grupo Conta</h4>
+              <p>Configuração Grupo Conta</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/grupoconta/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Canal</h4>
+              <p>Configuração Canal</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/canal/listar')">Ver Configurações</button>
+            </div>
           </div>
         </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Organização de Vendas</h4>
-            <p>Configurações referente a organização de vendas</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/organizacaovendas/listar')">Ver Configurações</button>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Subcanal</h4>
+              <p>Configuração Subcanal</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/subcanal/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Região</h4>
+              <p>Região</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/regiao/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Escritorio de Vendas</h4>
+              <p>Configuração Escritório de vendas</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/escritoriovendas/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Equipe Vendas</h4>
+              <p>Configuração Equipe Vendas</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/equipevendas/listar')">Ver
+                Configurações</button>
+            </div>
           </div>
         </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Permissão</h4>
-            <p>Configuração referente a permissão</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/permissoes/listar')">Ver Configurações</button>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Categoria</h4>
+              <p>Configuração Categoria</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/categoria/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Subcategoria</h4>
+              <p>Configuração Subcategoria</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/subcategoria/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Marca</h4>
+              <p>Configuração Marca</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/marca/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Grupo de Produto</h4>
+              <p>Configuração Grupo de Produto</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/grupoproduto/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Fluxo Aprovação</h4>
+              <p>Configuração Fluxo Aprovação</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/fluxoaprovacao/listar')">Ver
+                Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Logs</h4>
+              <p>Logs do sistema</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/logs/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Usuario</h4>
+              <p>Configuração de Usuario</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/usuario/listar')">Ver Configurações</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="config-option">
+              <h4>Lista de Preço</h4>
+              <p>Configuração de Lista de Preço</p>
+              <button class="btn btn-secondary" onclick="carregarLista('/listaPreco/listar')">Ver Configurações</button>
+            </div>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Grupo Empresa</h4>
-            <p>Configuração grupo empresa</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/grupoempresa/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Perfil</h4>
-            <p>Configuração referente a perfil</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/perfil/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Grupo Conta</h4>
-            <p>Configuração Grupo Conta</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/grupoconta/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Canal</h4>
-            <p>Configuração Canal</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/canal/listar')">Ver Configurações</button>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Subcanal</h4>
-            <p>Configuração Subcanal</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/subcanal/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Região</h4>
-            <p>Região</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/regiao/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Escritorio de Vendas</h4>
-            <p>Configuração Escritório de vendas</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/escritoriovendas/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Equipe Vendas</h4>
-            <p>Configuração Equipe Vendas</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/equipevendas/listar')">Ver Configurações</button>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Categoria</h4>
-            <p>Configuração Categoria</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/categoria/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Subcategoria</h4>
-            <p>Configuração Subcategoria</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/subcategoria/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Marca</h4>
-            <p>Configuração Marca</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/marca/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Grupo de Produto</h4>
-            <p>Configuração Grupo de Produto</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/grupoproduto/listar')">Ver Configurações</button>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Fluxo Aprovação</h4>
-            <p>Configuração Fluxo Aprovação</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/fluxoaprovacao/listar')">Ver Configurações</button>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-3">
-          <div class="config-option">
-            <h4>Logs</h4>
-            <p>Logs do sistema</p>
-            <button class="btn btn-secondary" onclick="carregarLista('/logs/listar')">Ver Configurações</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+    </main>

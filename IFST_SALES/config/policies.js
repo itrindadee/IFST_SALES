@@ -14,6 +14,10 @@ module.exports.policies = {
   // Políticas de autorização para o módulo Canal
  '*': 'is-logged-in',
 
+  UsuarioController: {
+    '*': 'autorizacaoUsuario',
+  },
+
  PerfilController: {
   '*': 'autorizacaoPerfil',
 },

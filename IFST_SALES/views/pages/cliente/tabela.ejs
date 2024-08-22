@@ -1,19 +1,42 @@
-<!-- Tabela de clientes -->
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Código</th>
-      <th>Razão Social</th>
-      <th>Empresas</th>
-      <th>Organizações de Vendas</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% clientes.forEach(cliente => { %>
-      <% if (cliente.organizacoesVendas.length > 0) { %>
-        <% cliente.organizacoesVendas.forEach(organizacaoVendas => { %>
+<section class="table__body">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Código</th>
+        <th>Razão Social</th>
+        <th>Empresas</th>
+        <th>Organizações de Vendas</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% clientes.forEach(cliente => { %>
+        <% if (cliente.organizacoesVendas.length > 0) { %>
+          <% cliente.organizacoesVendas.forEach(organizacaoVendas => { %>
+            <tr>
+              <td><%= cliente.id %></td>
+              <td><%= cliente.codigo %></td>
+              <td><%= cliente.razaoSocial %></td>
+              <td>
+                <% cliente.empresas.forEach(empresa => { %>
+                  <div><%= empresa.codigo %></div>
+                <% }); %>
+              </td>
+              <td><%= organizacaoVendas.codigo %></td>
+              <td>
+                <div class="table-icons">
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#editClienteModal<%= cliente.id %>" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="#" onclick="deleteCliente(<%= cliente.id %>);" title="Deletar">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
           <tr>
             <td><%= cliente.id %></td>
             <td><%= cliente.codigo %></td>
@@ -23,30 +46,20 @@
                 <div><%= empresa.codigo %></div>
               <% }); %>
             </td>
-            <td><%= organizacaoVendas.codigo %></td>
+            <td>N/A</td>
             <td>
-              <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editClienteModal<%= cliente.id %>">Editar</button>
-              <button class="btn btn-danger btn-sm" id="deleteButton<%= cliente.id %>">Deletar</button>
+              <div class="table-icons">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#editClienteModal<%= cliente.id %>" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="#" onclick="deleteCliente(<%= cliente.id %>);" title="Deletar">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </div>
             </td>
           </tr>
-        <% }); %>
-      <% } else { %>
-        <tr>
-          <td><%= cliente.id %></td>
-          <td><%= cliente.codigo %></td>
-          <td><%= cliente.razaoSocial %></td>
-          <td>
-            <% cliente.empresas.forEach(empresa => { %>
-              <div><%= empresa.codigo %></div>
-            <% }); %>
-          </td>
-          <td>N/A</td>
-          <td>
-            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editClienteModal<%= cliente.id %>">Editar</button>
-            <button class="btn btn-danger btn-sm" id="deleteButton<%= cliente.id %>">Deletar</button>
-          </td>
-        </tr>
-      <% } %>
-    <% }); %>
-  </tbody>
-</table>
+        <% } %>
+      <% }); %>
+    </tbody>
+  </table>
+</section>

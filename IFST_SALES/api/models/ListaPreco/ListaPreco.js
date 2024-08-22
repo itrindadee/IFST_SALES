@@ -1,26 +1,17 @@
-// api/models/Canal.js
+// api/models/ListaPreco.js
 module.exports = {
   attributes: {
-    grupoConta: {
-      type: 'string',
-      required: true
-    },
-    codigo: {
+    nome: {
       type: 'string',
       required: true,
-      unique: true
     },
     descricao: {
       type: 'string',
-      required: true
+      required: true,
     },
-    ativo: {
-      type: 'boolean',
-      defaultsTo: true
-    },
-    vendas: {
-      collection: 'venda',
-      via: 'canal'
+    produtos: {
+      collection: 'listaprecoproduto',
+      via: 'listaPreco',
     },
     createdBy: {
       type: 'json',
@@ -33,13 +24,12 @@ module.exports = {
       defaultsTo: {}
     }
   },
-
   // Auditoria após a criação
   afterCreate: async function (newlyCreatedRecord, proceed) {
     try {
       const user = `${newlyCreatedRecord.createdBy.id} - ${newlyCreatedRecord.createdBy.fullName}`;
       await sails.models.log.create({
-        model: 'Canal',
+        model: 'Lista Preço',
         action: 'create',
         newData: newlyCreatedRecord,
         user: user
@@ -55,7 +45,7 @@ module.exports = {
     try {
       const user = `${updatedRecord.updatedBy.id} - ${updatedRecord.updatedBy.fullName}`;
       await sails.models.log.create({
-        model: 'Canal',
+        model: 'Lista Preço',
         action: 'update',
         newData: updatedRecord,
         user: user
@@ -73,7 +63,7 @@ module.exports = {
       for (const record of destroyedRecords) {
         const user = `${record.updatedBy.id || record.createdBy.id} - ${record.updatedBy.fullName || record.createdBy.fullName}`;
         await sails.models.log.create({
-          model: 'Canal',
+          model: 'Lista Preço',
           action: 'delete',
           oldData: record,
           user: user

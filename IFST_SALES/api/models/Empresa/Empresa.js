@@ -18,6 +18,10 @@ module.exports = {
     endereco: {
       type: 'string'
     },
+    vendas: {
+      collection: 'venda',
+      via: 'empresa'
+    },
     createdBy: {
       type: 'json',
       description: 'ID e nome do usuário que criou o registro',

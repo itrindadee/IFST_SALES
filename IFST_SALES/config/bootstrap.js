@@ -11,7 +11,7 @@
 
 module.exports.bootstrap = async function () {
 
-  // const modulosPermissoes = [
+   const modulosPermissoes = [
   //   { modulo: 'Canal', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
   //   { modulo: 'Categoria', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
   //   { modulo: 'Cliente', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
@@ -31,33 +31,34 @@ module.exports.bootstrap = async function () {
   //   { modulo: 'Regiao', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
   //   { modulo: 'Sub Canal', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] },
   //   { modulo: 'Sub Categoria', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] }
-  // ];
-  // // Criação de permissões
-  // for (let item of modulosPermissoes) {
-  //   for (let permissao of item.permissoes) {
-  //     await Permissao.findOrCreate(
-  //       { nome: `${permissao} ${item.modulo}` },
-  //       {
-  //         nome: `${permissao} ${item.modulo}`,
-  //         descricao: `Permissão para ${permissao.toLowerCase()} no módulo ${item.modulo}`,
-  //         tipoPermissao: permissao
-  //       }
-  //     );
-  //   }
-  // }
-  // sails.log('Permissões criadas ou já existentes.');
+       { modulo: 'Usuário', permissoes: ['Criar', 'Editar', 'Listar', 'Deletar', 'Buscar', 'Atualizar'] }
+   ];
+  //Criação de permissões
+   for (let item of modulosPermissoes) {
+     for (let permissao of item.permissoes) {
+       await Permissao.findOrCreate(
+         { nome: `${permissao} ${item.modulo}` },
+         {
+           nome: `${permissao} ${item.modulo}`,
+           descricao: `Permissão para ${permissao.toLowerCase()} no módulo ${item.modulo}`,
+           tipoPermissao: permissao
+         }
+       );
+     }
+  }
+   sails.log('Permissões criadas ou já existentes.');
 
   // // Criar o perfil ADMINISTRADOR e associar todas as permissões
-  // const perfilAdministrador = await Perfil.findOrCreate(
-  //   { nome: 'ADMINISTRADOR' },
-  //   { nome: 'ADMINISTRADOR', descricao: 'Perfil com todas as permissões' }
-  // );
+   const perfilAdministrador = await Perfil.findOrCreate(
+     { nome: 'ADMINISTRADOR' },
+     { nome: 'ADMINISTRADOR', descricao: 'Perfil com todas as permissões' }
+   );
 
   // // Associar todas as permissões ao perfil ADMINISTRADOR
-  // const todasPermissoes = await Permissao.find();
-  // await Perfil.addToCollection(perfilAdministrador.id, 'permissoes', todasPermissoes.map(p => p.id));
+   const todasPermissoes = await Permissao.find();
+   await Perfil.addToCollection(perfilAdministrador.id, 'permissoes', todasPermissoes.map(p => p.id));
 
-  // sails.log('Perfil ADMINISTRADOR criado ou já existente e associado a todas as permissões.');
+   sails.log('Perfil ADMINISTRADOR criado ou já existente e associado a todas as permissões.');
 
 
   // Import dependencies

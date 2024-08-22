@@ -1,26 +1,30 @@
-// api/models/Canal.js
+// api/models/ListaPrecoProduto.js
 module.exports = {
   attributes: {
-    grupoConta: {
-      type: 'string',
-      required: true
-    },
-    codigo: {
-      type: 'string',
+    produto: {
+      model: 'produto',
       required: true,
-      unique: true
     },
-    descricao: {
+    listaPreco: {
+      model: 'listaPreco',
+      required: true,
+    },
+    valor: {
+      type: 'number',
+      required: true,
+      description: 'O valor do produto na lista de preço',
+    },
+    moeda: {
       type: 'string',
-      required: true
+      isIn: ['BRL', 'USD', 'EUR'], // Lista de moedas permitidas
+      defaultsTo: 'BRL',
+      description: 'A moeda em que o valor está representado',
     },
-    ativo: {
-      type: 'boolean',
-      defaultsTo: true
-    },
-    vendas: {
-      collection: 'venda',
-      via: 'canal'
+    validade: {
+      type: 'ref',
+      columnType: 'date',
+      required: true,
+      description: 'A data de validade para este valor na lista de preço',
     },
     createdBy: {
       type: 'json',
@@ -31,7 +35,7 @@ module.exports = {
       type: 'json',
       description: 'ID e nome do usuário que atualizou o registro',
       defaultsTo: {}
-    }
+    },
   },
 
   // Auditoria após a criação
@@ -39,7 +43,7 @@ module.exports = {
     try {
       const user = `${newlyCreatedRecord.createdBy.id} - ${newlyCreatedRecord.createdBy.fullName}`;
       await sails.models.log.create({
-        model: 'Canal',
+        model: 'Lista Preço',
         action: 'create',
         newData: newlyCreatedRecord,
         user: user
@@ -55,7 +59,7 @@ module.exports = {
     try {
       const user = `${updatedRecord.updatedBy.id} - ${updatedRecord.updatedBy.fullName}`;
       await sails.models.log.create({
-        model: 'Canal',
+        model: 'Lista Preço',
         action: 'update',
         newData: updatedRecord,
         user: user
@@ -73,7 +77,7 @@ module.exports = {
       for (const record of destroyedRecords) {
         const user = `${record.updatedBy.id || record.createdBy.id} - ${record.updatedBy.fullName || record.createdBy.fullName}`;
         await sails.models.log.create({
-          model: 'Canal',
+          model: 'Lista Preço',
           action: 'delete',
           oldData: record,
           user: user

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Listas de Preço</title>
+  <style>
+    .dual-list {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dual-list__available,
+    .dual-list__selected {
+      width: 45%;
+    }
+
+    .dual-list__buttons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dual-list__buttons button {
+      margin: 5px;
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+
+    .table__body {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('../mensagem') %>
+    <main class="table" id="tabela_listapreco">
+      <section class="table__header">
+        <div class="table-titulo">
+          <h3>Gestão de Listas de Preço</h3>
+        </div>
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por lista de preço...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+              data-bs-target="#gerenciarProdutosModal">
+              Adicionar Lista de Preço
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Nome</th>
+              <th draggable="true">Descrição</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (listasPreco && listasPreco.length> 0) { %>
+              <% listasPreco.forEach(listaPreco=> { %>
+                <tr>
+                  <td>
+                    <%= listaPreco.nome %>
+                  </td>
+                  <td>
+                    <%= listaPreco.descricao %>
+                  </td>
+                  <td>
+                    <a href="#" onclick="editListaPreco('<%= listaPreco.id %>');" title="Editar"><i
+                        class="fas fa-edit"></i></a>
+                    <a href="#" onclick="viewListaPreco('<%= listaPreco.id %>');" title="Visualizar"><i
+                        class="fas fa-eye"></i></a>
+                    <a href="#" onclick="deleteListaPreco('<%= listaPreco.id %>');" title="Deletar"><i
+                        class="fas fa-trash-alt"></i></a>
+                  </td>
+                </tr>
+                <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="3">Nenhuma lista de preço encontrada.</td>
+                    </tr>
+                    <% } %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para gerenciar produtos na lista de preço -->
+    <div class="modal fade" id="gerenciarProdutosModal" tabindex="-1" aria-labelledby="gerenciarProdutosModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="gerenciarProdutosModalLabel">Gerenciar Produtos na Lista de Preço</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addListaPrecoForm"> <!-- Corrigi o ID aqui -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="nome" class="form-label">Nome:</label>
+                  <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="descricao" class="form-label">Descrição:</label>
+                  <input type="text" class="form-control" id="descricao" name="descricao" required>
+                </div>
+              </div>
+              <ul class="nav nav-tabs" id="produtoTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link active" id="produtos-associados-tab" data-bs-toggle="tab"
+                    href="#produtos-associados" role="tab" aria-controls="produtos-associados"
+                    aria-selected="true">Produtos Associados</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link" id="produtos-para-associar-tab" data-bs-toggle="tab"
+                    href="#produtos-para-associar" role="tab" aria-controls="produtos-para-associar"
+                    aria-selected="false">Adicionar Produtos</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="produtoTabsContent">
+                <!-- Aba Produtos Associados -->
+                <div class="tab-pane fade show active" id="produtos-associados" role="tabpanel"
+                  aria-labelledby="produtos-associados-tab">
+                  <div class="row mt-3">
+                    <div class="col-md-12 mb-3">
+                      <label for="produtoBuscaAssociados" class="form-label">Pesquisar Produto:</label>
+                      <input type="text" id="produtoBuscaAssociados" class="form-control"
+                        placeholder="Digite o nome ou código do produto">
+                    </div>
+                  </div>
+                  <section class="table__body">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Produto</th>
+                          <th>Valor</th>
+                          <th>Moeda</th>
+                          <th>Validade</th>
+                          <th>Ação</th>
+                        </tr>
+                      </thead>
+                      <tbody id="produtosAssociadosBody">
+                        <!-- Os produtos associados serão preenchidos dinamicamente aqui -->
+                      </tbody>
+                    </table>
+                  </section>
+                </div>
+
+                <!-- Aba Adicionar Produtos -->
+                <div class="tab-pane fade" id="produtos-para-associar" role="tabpanel"
+                  aria-labelledby="produtos-para-associar-tab">
+                  <div class="row mt-3">
+                    <div class="col-md-12 mb-3">
+                      <label for="produtoBuscaParaAssociar" class="form-label">Pesquisar Produto:</label>
+                      <input type="text" id="produtoBuscaParaAssociar" class="form-control"
+                        placeholder="Digite o nome ou código do produto">
+                    </div>
+                  </div>
+                  <section class="table__body">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Produto</th>
+                          <th>Valor</th>
+                          <th>Moeda</th>
+                          <th>Validade</th>
+                          <th>Ação</th>
+                        </tr>
+                      </thead>
+                      <tbody id="produtosParaAssociarBody">
+                        <% if (produtos && produtos.length> 0) { %>
+                          <% produtos.forEach(produto=> { %>
+                            <tr>
+                              <td>
+                                <%= produto.nome %>
+                              </td>
+                              <td><input type="number" class="form-control produto-valor" placeholder="Valor"></td>
+                              <td>
+                                <select class="form-control produto-moeda">
+                                  <option value="BRL">BRL</option>
+                                  <option value="USD">USD</option>
+                                  <option value="EUR">EUR</option>
+                                </select>
+                              </td>
+                              <td><input type="date" class="form-control produto-validade"></td>
+                              <td>
+                                <button type="button" class="btn btn-success btn-sm"
+                                  onclick="adicionarProdutoNaLista(this, '<%= produto.id %>')">Adicionar</button>
+                              </td>
+                            </tr>
+                            <% }) %>
+                              <% } else { %>
+                                <tr>
+                                  <td colspan="5">Nenhum produto disponível para associar.</td>
+                                </tr>
+                                <% } %>
+                      </tbody>
+                    </table>
+                  </section>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary" id="submitListaPrecoForm">Salvar Lista de Preço</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Formulário de adição
+    const formAdd = document.getElementById('addListaPrecoForm');
+    if (formAdd) {
+      formAdd.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        console.log('Formulário de adição foi submetido');
+
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        data.produtos = [...document.querySelectorAll('#produtosAssociadosBody tr')].map(row => ({
+          id: row.dataset.id,
+          valor: row.querySelector('td:nth-child(2)').textContent,
+          moeda: row.querySelector('td:nth-child(3)').textContent,
+          validade: row.querySelector('td:nth-child(4)').textContent,
+        }));
+
+        try {
+          const response = await fetch('/listapreco', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': '<%= _csrf %>'  // Substitua pelo token CSRF correto se necessário
+            },
+            body: JSON.stringify(data)
+          });
+
+          handleResponse(response, 'Lista de preço criada com sucesso!');
+        } catch (error) {
+          console.error('Erro ao criar lista de preço:', error);
+          showErrorModal('Erro ao criar lista de preço.');
+        }
+      });
+    }
+  });
+
+  // Função para salvar a lista de preço ao editar
+  async function salvarListaPreco(event) {
+    event.preventDefault();
+
+    const formData = new FormData(document.getElementById('editListaPrecoForm'));
+    const data = Object.fromEntries(formData.entries());
+
+    data.produtos = [...document.querySelectorAll('#produtosAssociadosBody tr')].map(row => ({
+      id: row.dataset.id,
+      valor: row.querySelector('td:nth-child(2)').textContent,
+      moeda: row.querySelector('td:nth-child(3)').textContent,
+      validade: row.querySelector('td:nth-child(4)').textContent,
+    }));
+
+    const listaPrecoId = document.getElementById('listaPrecoIdEdit').value;
+
+    try {
+      const response = await fetch(`/listapreco/${listaPrecoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'  // Substitua pelo token CSRF correto se necessário
+        },
+        body: JSON.stringify(data)
+      });
+
+      handleResponse(response, 'Lista de preço atualizada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar lista de preço:', error);
+      showErrorModal('Erro ao atualizar lista de preço.');
+    }
+  }
+
+  // Função para adicionar produtos à lista de preço
+  function adicionarProdutoNaLista(button, produtoId) {
+    const row = button.closest('tr');
+    const valor = row.querySelector('.produto-valor').value;
+    const moeda = row.querySelector('.produto-moeda').value;
+    const validade = row.querySelector('.produto-validade').value;
+
+    if (!valor || !validade) {
+      alert('Por favor, preencha o valor e a validade do produto.');
+      return;
+    }
+
+    const produtosAssociadosBody = document.getElementById('produtosAssociadosBody');
+    if (produtosAssociadosBody) {
+      const rowAssociado = document.createElement('tr');
+      rowAssociado.dataset.id = produtoId;
+      rowAssociado.innerHTML = `
+        <td>${row.querySelector('td').textContent}</td>
+        <td>${valor}</td>
+        <td>${moeda}</td>
+        <td>${validade}</td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removerProdutoDaLista(this)">Remover</button></td>
+      `;
+      produtosAssociadosBody.appendChild(rowAssociado);
+
+      row.remove();
+    } else {
+      console.error('Elemento produtosAssociadosBody não encontrado.');
+    }
+  }
+
+  // Função para remover produtos da lista de preço
+  function removerProdutoDaLista(button) {
+    const row = button.closest('tr');
+    row.remove();
+  }
+
+  // Função para editar uma lista de preço existente
+  async function editListaPreco(id) {
+    try {
+      const response = await fetch(`/listapreco/${id}`);
+      const listaPrecoData = await response.json();
+
+      document.getElementById('nomeEdit').value = listaPrecoData.listaPreco.nome;
+      document.getElementById('descricaoEdit').value = listaPrecoData.listaPreco.descricao;
+      document.getElementById('listaPrecoIdEdit').value = listaPrecoData.listaPreco.id;
+
+      const produtosAssociadosBody = document.getElementById('produtosAssociadosBody');
+      produtosAssociadosBody.innerHTML = '';
+
+      listaPrecoData.produtosAssociados.forEach(produto => {
+        const row = document.createElement('tr');
+        row.dataset.id = produto.id;
+        row.innerHTML = `
+          <td>${produto.nome}</td>
+          <td>${produto.valor}</td>
+          <td>${produto.moeda}</td>
+          <td>${produto.validade}</td>
+          <td><button type="button" class="btn btn-danger btn-sm" onclick="removerProdutoDaLista(this)">Remover</button></td>
+        `;
+        produtosAssociadosBody.appendChild(row);
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById('gerenciarProdutosModal'));
+      modal.show();
+    } catch (error) {
+      console.error('Erro ao carregar lista de preço:', error);
+      showErrorModal('Erro ao carregar lista de preço.');
+    }
+  }
+
+  // Função para visualizar uma lista de preço existente
+  async function viewListaPreco(id) {
+    try {
+      const response = await fetch(`/listapreco/${id}`);
+      const listaPreco = await response.json();
+
+      document.getElementById('nomeView').value = listaPreco.listaPreco.nome;
+      document.getElementById('descricaoView').value = listaPreco.listaPreco.descricao;
+
+      const produtosViewList = document.getElementById('produtosViewList');
+      produtosViewList.innerHTML = '';
+
+      listaPreco.produtosAssociados.forEach(produto => {
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item';
+        listItem.textContent = `Produto: ${produto.nome} - Valor: ${produto.valor} ${produto.moeda} - Validade: ${produto.validade}`;
+        produtosViewList.appendChild(listItem);
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById('viewListaPrecoModal'));
+      modal.show();
+    } catch (error) {
+      console.error('Erro ao visualizar lista de preço:', error);
+      showErrorModal('Erro ao visualizar lista de preço.');
+    }
+  }
+
+  // Função para deletar uma lista de preço existente
+  async function deleteListaPreco(id) {
+    if (confirm('Tem certeza que deseja deletar esta lista de preço?')) {
+      try {
+        const response = await fetch(`/listapreco/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'  // Substitua pelo token CSRF correto se necessário
+          }
+        });
+
+        handleResponse(response, 'Lista de preço deletada com sucesso!');
+        location.reload();
+      } catch (error) {
+        console.error('Erro ao deletar lista de preço:', error);
+        showErrorModal('Erro ao deletar lista de preço.');
+      }
+    }
+  }
+
+    </script>
+</body>
+
+</html>

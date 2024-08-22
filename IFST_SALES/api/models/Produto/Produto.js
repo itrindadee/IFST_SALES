@@ -51,7 +51,16 @@ module.exports = {
       type: 'json',
       description: 'ID e nome do usuário que atualizou o registro',
       defaultsTo: {}
-    }
+    },
+    vendas: {
+      collection: 'venda',
+      via: 'produto',
+      through: 'vendaproduto'
+    },
+    listaPrecos: {
+      collection: 'listaprecoproduto',
+      via: 'produto',
+    },
   },
 
   // Auditoria após a criação

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendas</title>
+</head>
+
+<body>
+  <!-- Incluindo o arquivo mensagem.ejs -->
+  <%- include('../mensagem') %>
+
+  <main class="table" id="tabela_vendas">
+    <section class="table__header">
+      <div class="table-titulo">
+        <h3>Vendas</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por venda...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <!-- Botão Adicionar Venda exibido fora do modal -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVendaModal">
+            Adicionar Venda
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Número do Pedido</th>
+            <th draggable="true">Organização de Vendas</th>
+            <th draggable="true">Empresa</th>
+            <th draggable="true">Cliente</th>
+            <th draggable="true">Status</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% vendas.forEach(venda => { %>
+            <tr>
+              <td><%= venda.id %></td> <!-- Supondo que o número do pedido seja o ID -->
+              <td><%= venda.organizacaoVendas.nome %></td>
+              <td><%= venda.empresa.nome %></td>
+              <td><%= venda.cliente.nome %></td>
+              <td><%= venda.status %></td>
+              <td>
+                <a href="#" onclick="editVenda(<%= venda.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                <a href="#" onclick="viewVenda(<%= venda.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                <a href="#" onclick="deleteVenda(<%= venda.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para adicionar venda -->
+  <div class="modal fade" id="addVendaModal" tabindex="-1" aria-labelledby="addVendaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addVendaModalLabel">Adicionar Venda</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addVendaForm">
+            <ul class="nav nav-tabs" id="vendaTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="geral-tab" data-bs-toggle="tab" href="#geralTab" role="tab" aria-controls="geral" aria-selected="true">Geral</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link disabled" id="cliente-tab" data-bs-toggle="tab" href="#clienteTab" role="tab" aria-controls="cliente" aria-selected="false">Cliente</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link disabled" id="produtos-tab" data-bs-toggle="tab" href="#produtosTab" role="tab" aria-controls="produtos" aria-selected="false">Produtos</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link disabled" id="pagamento-tab" data-bs-toggle="tab" href="#pagamentoTab" role="tab" aria-controls="pagamento" aria-selected="false">Pagamento</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link disabled" id="resumo-tab" data-bs-toggle="tab" href="#resumoTab" role="tab" aria-controls="resumo" aria-selected="false">Resumo</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="vendaTabsContent">
+              <!-- Aba Geral -->
+              <div class="tab-pane fade show active" id="geralTab" role="tabpanel" aria-labelledby="geral-tab">
+                <div class="row mt-1">
+                  <div class="col-md-6 mb-3">
+                    <label for="organizacaoVendas" class="form-label">Organização de Vendas:</label>
+                    <select id="organizacaoVendas" name="organizacaoVendas" class="form-select" required>
+                      <option value="">Selecione a organização de vendas</option>
+                      <% organizacoesVendas.forEach(org => { %>
+                        <option value="<%= org.id %>"><%= org.nome %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="canal" class="form-label">Canal:</label>
+                    <select id="canal" name="canal" class="form-select" required>
+                      <option value="">Selecione o canal</option>
+                      <% canais.forEach(canal => { %>
+                        <option value="<%= canal.id %>"><%= canal.descricao %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="empresa" class="form-label">Empresa:</label>
+                    <select id="empresa" name="empresa" class="form-select" required>
+                      <option value="">Selecione a empresa</option>
+                      <% empresas.forEach(empresa => { %>
+                        <option value="<%= empresa.id %>"><%= empresa.razaoSocial %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmGeral">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Cliente -->
+              <div class="tab-pane fade" id="clienteTab" role="tabpanel" aria-labelledby="cliente-tab">
+                <div class="row mt-3">
+                  <div class="col-md-12 mb-3">
+                    <label for="cliente" class="form-label">Cliente:</label>
+                    <select id="cliente" name="cliente" class="form-select" required>
+                      <option value="">Selecione um cliente</option>
+                      <% clientes.forEach(cliente => { %>
+                        <option value="<%= cliente.id %>"><%= cliente.nome %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmCliente">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Produtos -->
+              <div class="tab-pane fade" id="produtosTab" role="tabpanel" aria-labelledby="produtos-tab">
+                <div class="row mt-3">
+                  <div class="col-md-12 mb-3">
+                    <label for="produtoBusca" class="form-label">Pesquisar Produto:</label>
+                    <input type="text" id="produtoBusca" class="form-control" placeholder="Digite o nome ou código do produto">
+                  </div>
+                </div>
+                <section class="table__body">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th draggable="true">Produto</th>
+                        <th draggable="true">Qtd</th>
+                        <th draggable="true">Ação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% produtos.forEach(produto => { %>
+                      <tr data-id="<%= produto.id %>">
+                        <td><%= produto.nome %></td>
+                        <td><input type="number" class="form-control produto-quantidade" value="1" min="1"></td>
+                        <td>
+                          <button type="button" class="btn btn-success btn-sm" onclick="adicionarProdutoNaVenda(this, '<%= produto.id %>')">Adicionar</button>
+                          <button type="button" class="btn btn-danger btn-sm" onclick="removerProdutoDaVenda(this)">Remover</button>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </section>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmProdutos">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Pagamento -->
+              <div class="tab-pane fade" id="pagamentoTab" role="tabpanel" aria-labelledby="pagamento-tab">
+                <div class="row mt-3">
+                  <div class="col-md-12 mb-3">
+                    <label for="formaPagamento" class="form-label">Forma de Pagamento:</label>
+                    <select id="formaPagamento" name="formaPagamento" class="form-select" required>
+                      <option value="cartao">Cartão de Crédito</option>
+                      <option value="boleto">Boleto</option>
+                      <option value="transferencia">Transferência Bancária</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmPagamento">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Resumo -->
+              <div class="tab-pane fade" id="resumoTab" role="tabpanel" aria-labelledby="resumo-tab">
+                <div class="row mt-3">
+                  <div class="col-md-12 mb-3">
+                    <h5>Resumo do Pedido</h5>
+                    <p><strong>Cliente:</strong> <span id="resumoCliente"></span></p>
+                    <p><strong>Produtos:</strong></p>
+                    <ul id="resumoProdutos"></ul>
+                    <p><strong>Forma de Pagamento:</strong> <span id="resumoPagamento"></span></p>
+                    <p><strong>Total:</strong> R$ <span id="resumoTotal"></span></p>
+                    <p><strong>Data:</strong> <span id="resumoData"></span></p>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-primary" id="criarPedidoVendaBtn" style="display: none;">Criar Pedido de Venda</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    document.getElementById('confirmGeral').addEventListener('click', function() {
+      const organizacaoVendas = document.getElementById('organizacaoVendas').value.trim();
+      const canal = document.getElementById('canal').value.trim();
+      const empresa = document.getElementById('empresa').value.trim();
+
+      if (organizacaoVendas && canal && empresa) {
+        // Habilitar a aba Cliente e permitir navegação
+        document.getElementById('cliente-tab').classList.remove('disabled');
+        const nextTab = new bootstrap.Tab(document.getElementById('cliente-tab'));
+        nextTab.show();
+      } else {
+        alert('Por favor, preencha todos os campos obrigatórios na aba Geral.');
+      }
+    });
+
+    document.getElementById('confirmCliente').addEventListener('click', function() {
+      // Habilitar a aba Produtos e permitir navegação
+      document.getElementById('produtos-tab').classList.remove('disabled');
+      const nextTab = new bootstrap.Tab(document.getElementById('produtos-tab'));
+      nextTab.show();
+    });
+
+    document.getElementById('confirmProdutos').addEventListener('click', function() {
+      // Habilitar a aba Pagamento e permitir navegação
+      document.getElementById('pagamento-tab').classList.remove('disabled');
+      const nextTab = new bootstrap.Tab(document.getElementById('pagamento-tab'));
+      nextTab.show();
+    });
+
+    document.getElementById('confirmPagamento').addEventListener('click', function() {
+      // Habilitar a aba Resumo e permitir navegação
+      document.getElementById('resumo-tab').classList.remove('disabled');
+      const nextTab = new bootstrap.Tab(document.getElementById('resumo-tab'));
+      nextTab.show();
+
+      // Exibir o botão "Criar Pedido de Venda"
+      document.getElementById('criarPedidoVendaBtn').style.display = 'block';
+
+      // Preencher o resumo do pedido
+      document.getElementById('resumoCliente').textContent = document.getElementById('cliente').selectedOptions[0].textContent;
+      document.getElementById('resumoPagamento').textContent = document.getElementById('formaPagamento').selectedOptions[0].textContent;
+      document.getElementById('resumoTotal').textContent = document.getElementById('total').value;
+      document.getElementById('resumoData').textContent = new Date(document.getElementById('data').value).toLocaleDateString();
+    });
+
+    let produtosSelecionados = [];
+
+    function adicionarProdutoNaVenda(button, produtoId) {
+      const tr = button.closest('tr');
+      const produtoNome = tr.querySelector('td').textContent;
+      const quantidade = tr.querySelector('.produto-quantidade').value;
+
+      produtosSelecionados.push({
+        id: produtoId,
+        nome: produtoNome,
+        quantidade: quantidade
+      });
+
+      button.disabled = true;
+      atualizarResumoProdutos();
+    }
+
+    function removerProdutoDaVenda(button) {
+      const tr = button.closest('tr');
+      const produtoId = tr.dataset.id;
+
+      produtosSelecionados = produtosSelecionados.filter(produto => produto.id !== produtoId);
+
+      const addButton = tr.querySelector('.btn-success');
+      if (addButton) {
+        addButton.disabled = false;
+      }
+
+      atualizarResumoProdutos();
+    }
+
+    function atualizarResumoProdutos() {
+      const ul = document.getElementById('resumoProdutos');
+      ul.innerHTML = '';
+
+      produtosSelecionados.forEach(produto => {
+        const li = document.createElement('li');
+        li.textContent = `${produto.nome} (Qtd: ${produto.quantidade})`;
+        ul.appendChild(li);
+      });
+    }
+
+    // Função para adicionar uma nova venda
+    document.getElementById('addVendaForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const data = {
+        cliente: document.getElementById('cliente').value,
+        produtos: produtosSelecionados,
+        formaPagamento: document.getElementById('formaPagamento').value,
+        total: document.getElementById('total').value,
+        data: document.getElementById('data').value,
+        organizacaoVendas: document.getElementById('organizacaoVendas').value,
+        canal: document.getElementById('canal').value,
+        empresa: document.getElementById('empresa').value
+      };
+
+      const response = await fetch('/vendas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+
+      handleResponse(response);
+    });
+
+    function handleResponse(response) {
+      if (response.ok) {
+        showSuccessModal('Operação realizada com sucesso!');
+      } else {
+        response.json().then(error => {
+          showErrorModal(error.message || 'Erro ao processar a operação');
+        }).catch(() => {
+          showErrorModal('Erro desconhecido');
+        });
+      }
+    }
+
+    function showSuccessModal(message) {
+      alert(message); // Substitua pelo modal de sucesso
+    }
+
+    function showErrorModal(message) {
+      alert(message); // Substitua pelo modal de erro
+    }
+  </script>
+</body>
+
+</html>

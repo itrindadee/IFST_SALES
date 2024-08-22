@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuários</title>
+</head>
+
+<body>
+  <!-- Incluindo o arquivo mensagem.ejs -->
+  <%- include('../mensagem') %>
+
+  <main class="table" id="tabela_usuarios">
+    <section class="table__header">
+      <div class="table-titulo">
+        <h3>Usuários</h3>
+      </div>
+      <div class="header-actions">
+        <div class="table-search-bar">
+          <input type="text" placeholder="Pesquisar por usuário...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            Adicionar Usuário
+          </button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary btn-hide-mobile" data-bs-toggle="modal" data-bs-target="#manageColumnsModal">
+            Gerenciar Colunas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th draggable="true">Nome Completo</th>
+            <th draggable="true">Email</th>
+            <th draggable="true">Perfil</th>
+            <th draggable="true">Ativo</th>
+            <th draggable="true">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% usuarios.forEach(usuario => { %>
+            <tr>
+              <td><%= usuario.fullName %></td>
+              <td><%= usuario.emailAddress %></td>
+              <td><%= usuario.perfil ? usuario.perfil.nome : 'Sem perfil' %></td>
+              <td><%= usuario.isSuperAdmin ? 'Sim' : 'Não' %></td>
+              <td>
+                <a href="#" onclick="editUser(<%= usuario.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                <a href="#" onclick="viewUser(<%= usuario.id %>);" title="Visualizar"><i class="fas fa-eye"></i></a>
+                <a href="#" onclick="deleteUser(<%= usuario.id %>);" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal para Gerenciar Colunas -->
+  <div class="modal fade" id="manageColumnsModal" tabindex="-1" aria-labelledby="manageColumnsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="manageColumnsModalLabel">Gerenciar Colunas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="manageColumnsForm">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-fullname" name="columns" value="nome completo" checked>
+                  <label class="form-check-label" for="col-fullname">Nome Completo</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-email" name="columns" value="email" checked>
+                  <label class="form-check-label" for="col-email">Email</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-perfil" name="columns" value="perfil" checked>
+                  <label class="form-check-label" for="col-perfil">Perfil</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-ativo" name="columns" value="ativo" checked>
+                  <label class="form-check-label" for="col-ativo">Ativo</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="col-acoes" name="columns" value="ações" checked>
+                  <label class="form-check-label" for="col-acoes">Ações</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="applyColumnSettings()">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para adicionar usuário -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">Adicionar Usuário</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addUserForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="fullName" class="form-label">Nome Completo:</label>
+                <input type="text" class="form-control" id="fullName" name="fullName" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="emailAddress" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="emailAddress" name="emailAddress" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">Senha:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="perfil" class="form-label">Perfil:</label>
+                <select class="form-select" id="perfil" name="perfil" required>
+                  <option value="">Selecione um perfil</option>
+                  <% perfis.forEach(perfil => { %>
+                    <option value="<%= perfil.id %>"><%= perfil.nome %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="isSuperAdmin" class="form-label">Super Admin:</label>
+                <input type="checkbox" class="form-check-input" id="isSuperAdmin" name="isSuperAdmin">
+              </div>
+            </div>
+            <div class="row">
+              <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Criar Usuário</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modais para editar usuário -->
+  <% usuarios.forEach(usuario => { %>
+    <div class="modal fade" id="editUserModal<%= usuario.id %>" tabindex="-1" aria-labelledby="editUserModalLabel<%= usuario.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editUserModalLabel<%= usuario.id %>">Editar Usuário</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editUserForm<%= usuario.id %>" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="fullName<%= usuario.id %>" class="form-label">Nome Completo:</label>
+                  <input type="text" class="form-control" id="fullName<%= usuario.id %>" name="fullName" value="<%= usuario.fullName %>" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="emailAddress<%= usuario.id %>" class="form-label">Email:</label>
+                  <input type="email" class="form-control" id="emailAddress<%= usuario.id %>" name="emailAddress" value="<%= usuario.emailAddress %>" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="password<%= usuario.id %>" class="form-label">Senha:</label>
+                  <input type="password" class="form-control" id="password<%= usuario.id %>" name="password">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="perfil<%= usuario.id %>" class="form-label">Perfil:</label>
+                  <select class="form-select" id="perfil<%= usuario.id %>" name="perfil" required>
+                    <option value="">Selecione um perfil</option>
+                    <% perfis.forEach(perfil => { %>
+                      <option value="<%= perfil.id %>" <%= usuario.perfil && usuario.perfil.id === perfil.id ? 'selected' : '' %>><%= perfil.nome %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="isSuperAdmin<%= usuario.id %>" class="form-label">Super Admin:</label>
+                  <input type="checkbox" class="form-check-input" id="isSuperAdmin<%= usuario.id %>" name="isSuperAdmin" <%= usuario.isSuperAdmin ? 'checked' : '' %>>
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+
+  <!-- Modais para visualizar usuário -->
+  <% usuarios.forEach(usuario => { %>
+    <div class="modal fade" id="viewUserModal<%= usuario.id %>" tabindex="-1" aria-labelledby="viewUserModalLabel<%= usuario.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewUserModalLabel<%= usuario.id %>">Visualizar Usuário</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="fullNameView<%= usuario.id %>" class="form-label">Nome Completo:</label>
+                <input type="text" class="form-control" id="fullNameView<%= usuario.id %>" name="fullNameView" value="<%= usuario.fullName %>" readonly>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="emailAddressView<%= usuario.id %>" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="emailAddressView<%= usuario.id %>" name="emailAddressView" value="<%= usuario.emailAddress %>" readonly>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="perfilView<%= usuario.id %>" class="form-label">Perfil:</label>
+                <input type="text" class="form-control" id="perfilView<%= usuario.id %>" name="perfilView" value="<%= usuario.perfil ? usuario.perfil.nome : 'Sem perfil' %>" readonly>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="isSuperAdminView<%= usuario.id %>" class="form-label">Super Admin:</label>
+                <input type="checkbox" class="form-check-input" id="isSuperAdminView<%= usuario.id %>" name="isSuperAdminView" <%= usuario.isSuperAdmin ? 'checked' : '' %> disabled>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+
+  <script>
+    // Função para exibir modais de mensagens
+    function showMessageModal(message) {
+      const modalBody = document.getElementById('messageModalBody');
+      if (modalBody) {
+        modalBody.textContent = message;
+        const messageModalElement = document.getElementById('messageModal');
+        if (messageModalElement) {
+          const messageModal = new bootstrap.Modal(messageModalElement);
+          messageModal.show();
+        } else {
+          console.error('Modal element not found.');
+        }
+      } else {
+        console.error('Modal body element not found.');
+      }
+    }
+
+    // Função para exibir o modal com uma mensagem de erro
+    function showErrorModal(error) {
+      showMessageModal(`Erro: ${error}`);
+    }
+
+    // Função para exibir o modal com uma mensagem de sucesso
+    function showSuccessModal(message) {
+      showMessageModal(`Sucesso: ${message}`);
+    }
+
+    // Função que será chamada ao fechar o modal
+    function handleCloseModal() {
+      location.reload();
+    }
+
+    // Função para lidar com a resposta da operação
+    function handleResponse(response) {
+      closeAllOpenModals();
+      if (response.ok) {
+        showSuccessModal('Operação realizada com sucesso!');
+      } else {
+        response.json().then(error => {
+          showErrorModal(error.message || 'Erro ao processar a operação');
+        }).catch(() => {
+          showErrorModal('Erro desconhecido');
+        });
+      }
+    }
+
+    // Função para fechar todos os modais abertos
+    function closeAllOpenModals() {
+      const openModals = document.querySelectorAll('.modal.show');
+      openModals.forEach(modal => {
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) {
+          bsModal.hide();
+        }
+      });
+    }
+
+    // Evento de envio do formulário para adicionar um usuário
+    document.getElementById('addUserForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const data = {
+        fullName: document.getElementById('fullName').value,
+        emailAddress: document.getElementById('emailAddress').value,
+        password: document.getElementById('password').value,
+        perfil: document.getElementById('perfil').value,
+        isSuperAdmin: document.getElementById('isSuperAdmin').checked
+      };
+      const response = await fetch('/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= _csrf %>'
+        },
+        body: JSON.stringify(data)
+      });
+      handleResponse(response);
+    });
+
+    // Adicionar eventos para edição de usuários
+    <% usuarios.forEach(usuario => { %>
+      document.getElementById('editUserForm<%= usuario.id %>').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const data = {
+          fullName: document.getElementById(`fullName<%= usuario.id %>`).value,
+          emailAddress: document.getElementById(`emailAddress<%= usuario.id %>`).value,
+          perfil: document.getElementById(`perfil<%= usuario.id %>`).value,
+          isSuperAdmin: document.getElementById(`isSuperAdmin<%= usuario.id %>`).checked
+        };
+        const response = await fetch(`/user/<%= usuario.id %>`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<%= _csrf %>'
+          },
+          body: JSON.stringify(data)
+        });
+        handleResponse(response);
+      });
+    <% }) %>
+
+    // Função para deletar um usuário
+    async function deleteUser(id) {
+      if (confirm('Tem certeza que deseja deletar este usuário?')) {
+        const response = await fetch(`/user/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': '<%= _csrf %>'
+          }
+        });
+        handleResponse(response);
+      }
+    }
+
+    // Função para resetar o formulário de adição de usuário
+    function resetAddUserForm() {
+      document.getElementById('addUserForm').reset();
+    }
+
+    // Função para aplicar as configurações das colunas
+    function applyColumnSettings() {
+      const checkboxes = document.querySelectorAll('#manageColumnsForm input[type="checkbox"]');
+      const columnsToShow = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.toLowerCase().replace(/ /g, '-'));
+      const headers = document.querySelectorAll('th');
+      const rows = document.querySelectorAll('tbody tr');
+      headers.forEach((header, index) => {
+        const headerText = header.textContent.trim().toLowerCase().replace(/ /g, '-');
+        if (columnsToShow.includes(headerText)) {
+          header.style.display = '';
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = '';
+            }
+          });
+        } else {
+          header.style.display = 'none';
+          rows.forEach(row => {
+            const cell = row.querySelector(`td:nth-child(${index + 1})`);
+            if (cell) {
+              cell.style.display = 'none';
+            }
+          });
+        }
+      });
+      const modal = bootstrap.Modal.getInstance(document.getElementById('manageColumnsModal'));
+      if (modal) {
+        modal.hide();
+      }
+    }
+
+    // Função para exibir o modal de edição de um usuário
+    function editUser(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`editUserModal${id}`));
+      modal.show();
+    }
+
+    // Função para exibir o modal de visualização de um usuário
+    function viewUser(id) {
+      const modal = new bootstrap.Modal(document.getElementById(`viewUserModal${id}`));
+      modal.show();
+    }
+  </script>
+</body>
+
+</html>

@@ -37,6 +37,18 @@ module.exports.routes = {
   'GET /account/profile': { action: 'account/view-edit-profile' },
   'GET /nao-autorizado': { view: '403' },
 
+  'GET /usuario/listar': { action: 'Usuario/Usuario/listar'},
+  'GET /user/:id':      { action: 'Usuario/Usuario/buscar'},
+  'POST /user':         { action: 'Usuario/Usuario/criar' },
+  'PUT /user/:id':      { action: 'Usuario/Usuario/atualizar'},
+  'DELETE /user/:id':   { action: 'Usuario/Usuario/deletar'},
+
+  'GET /venda/listar':   { action: 'Venda/Venda/listar' },
+  'GET /venda/:id':      { action: 'Venda/Venda/buscar' },
+  'POST /venda':         { action: 'Venda/Venda/criar' },
+  'PUT /venda/:id':      { action: 'Venda/Venda/atualizar' },
+  'DELETE /venda/:id':   { action: 'Venda/Venda/deletar' },
+
   // CRUD Logs
   'GET /logs/listar': { action: 'Log/Log/listar' },
   'GET /logs/:id': { action: 'Log/Log/buscar' },
@@ -62,6 +74,7 @@ module.exports.routes = {
   'PUT /produto/atualizar/:id': { action: 'Produto/Produto/atualizar' },
   'POST /produto/criar': { action: 'Produto/Produto/criar' },
   'DELETE /produto/deletar/:id': { action: 'Produto/Produto/deletar' },
+
   //Crud Empresas
   'GET /empresa/listar': { action: 'Empresa/Empresas/listar' },
   'POST /empresa/': { action: 'Empresa/Empresas/criar' },
@@ -74,6 +87,15 @@ module.exports.routes = {
   'PUT /grupoempresa/:id': { action: 'GrupoEmpresa/GrupoEmpresa/atualizar' },
   'DELETE /grupoempresa/:id': { action: 'GrupoEmpresa/GrupoEmpresa/deletar' },
   'GET /grupoempresa/todos': { action: 'GrupoEmpresa/GrupoEmpresa/todos' },
+
+
+  // CRUD Lista de preço
+  'GET /listapreco/listar': { action: 'ListaPreco/ListaPreco/listar' },
+  'POST /listapreco/': { action: 'ListaPreco/ListaPreco/criar' },
+  'PUT /listapreco/:id': { action: 'ListaPreco/ListaPreco/atualizar' },
+  'DELETE /listapreco/:id': { action: 'ListaPreco/ListaPreco/deletar' },
+  'GET /listapreco/:id':   { action: 'ListaPreco/ListaPreco/buscar' },
+  'GET /listapreco/todos': { action: 'ListaPreco/ListaPreco/todos' },
 
   // CRUD Politica de cadastro
   'GET /politicacadastro/listar': { action: 'PoliticaCadastro/PoliticaCadastro/listar' },

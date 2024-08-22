@@ -80,110 +80,48 @@ module.exports = {
 
   listar: async function (req, res) {
     try {
-      let { codigo, empresa, organizacaoVendas, cpf, cnpj, page } = req.query;
-      const clientesPorPagina = 8;
+      // Selecionar todas as empresas, organizações de vendas, e canais
+      const empresas = await Empresa.find();
+      const organizacoesVendas = await OrganizacaoVendas.find();
+      const canais = await Canal.find();
+      const gruposEmpresas = await GrupoEmpresa.find();
 
-      page = parseInt(page);
+      // Selecionar todos os clientes
+      let clientes = await Cliente.find();
 
-      if (isNaN(page) || page < 1) {
-        page = 1;
-      }
-
-      const filtro = {};
-
-      if (codigo) filtro.codigo = { contains: codigo };
-      if (cpf) filtro.cpf = { contains: cpf };
-      if (cnpj) filtro.cnpj = { contains: cnpj };
-
-      const totalClientes = await Cliente.count(filtro);
-      const totalPages = Math.ceil(totalClientes / clientesPorPagina);
-      const startIndex = (page - 1) * clientesPorPagina;
-
-      let clientes = await Cliente.find({
-        where: filtro,
-        limit: clientesPorPagina,
-        skip: startIndex
-      });
-
-      // Arrays para armazenar os IDs de clientes associados às empresas e organizações de vendas filtradas
-      let clienteIdsFromEmpresa = [];
-      let clienteIdsFromOrganizacaoVendas = [];
-
-      if (empresa) {
-        // Buscar todas as empresas pelo código
-        const empresas = await Empresa.find({ codigo: { contains: empresa } });
-        const empresaIds = empresas.map(e => e.id);
-
-        // Buscar todos os clienteEmpresas associados às IDs de empresas encontradas
-        const clienteEmpresas = await ClienteEmpresa.find({ empresa: { in: empresaIds } });
-
-        // Extrair os IDs dos clientes
-        clienteIdsFromEmpresa = clienteEmpresas.map(ce => ce.cliente);
-      }
-
-      if (organizacaoVendas) {
-        // Buscar todas as organizações de vendas pelo código
-        const organizacoesVendas = await OrganizacaoVendas.find({ codigo: { contains: organizacaoVendas } });
-        const organizacaoVendasIds = organizacoesVendas.map(ov => ov.id);
-
-        // Buscar todos os clienteOrganizacoesVendas associados às IDs de organizações de vendas encontradas
-        const clienteOrganizacoesVendas = await ClienteOrganizacaoVendas.find({ organizacaoVendas: { in: organizacaoVendasIds } });
-
-        // Extrair os IDs dos clientes
-        clienteIdsFromOrganizacaoVendas = clienteOrganizacoesVendas.map(cov => cov.cliente);
-      }
-
-      // Combinar os IDs de clientes com base nos filtros aplicados
-      if (empresa && organizacaoVendas) {
-        const finalClienteIds = clienteIdsFromEmpresa.filter(id => clienteIdsFromOrganizacaoVendas.includes(id));
-        clientes = clientes.filter(cliente => finalClienteIds.includes(cliente.id));
-      } else if (empresa) {
-        clientes = clientes.filter(cliente => clienteIdsFromEmpresa.includes(cliente.id));
-      } else if (organizacaoVendas) {
-        clientes = clientes.filter(cliente => clienteIdsFromOrganizacaoVendas.includes(cliente.id));
-      }
-
+      // Carregar as associações de ClienteEmpresa e ClienteOrganizacaoVendas para cada cliente
       const clientesCompletos = await Promise.all(clientes.map(async cliente => {
         const clienteEmpresas = await ClienteEmpresa.find({ cliente: cliente.id }).populate('empresa');
         const clienteOrganizacoesVendas = await ClienteOrganizacaoVendas.find({ cliente: cliente.id }).populate('organizacaoVendas');
-
-        const empresasFiltradas = empresa
-          ? clienteEmpresas.filter(ce => ce.empresa.codigo.includes(empresa))
-          : clienteEmpresas;
-
-        const organizacoesVendasFiltradas = organizacaoVendas
-          ? clienteOrganizacoesVendas.filter(co => co.organizacaoVendas.codigo.includes(organizacaoVendas))
-          : clienteOrganizacoesVendas;
 
         return {
           id: cliente.id,
           codigo: cliente.codigo,
           razaoSocial: cliente.razaoSocial,
-          empresas: empresasFiltradas.map(ce => ({
+          empresas: clienteEmpresas.map(ce => ({
             id: ce.empresa.id,
             codigo: ce.empresa.codigo
           })),
-          organizacoesVendas: organizacoesVendasFiltradas.map(co => ({
+          organizacoesVendas: clienteOrganizacoesVendas.map(co => ({
             id: co.organizacaoVendas.id,
             codigo: co.organizacaoVendas.codigo
           }))
         };
       }));
 
+      // Renderizar a view com todos os clientes e suas associações, além de empresas, organizações de vendas e canais
       return res.view('pages/cliente/listar', {
         clientes: clientesCompletos,
-        codigo,
-        empresa,
-        organizacaoVendas,
-        cpf,
-        cnpj,
-        totalPages,
-        currentPage: page
+        empresas,
+        organizacoesVendas,
+        canais,
+        gruposEmpresas
       });
     } catch (err) {
       return res.serverError(err);
     }
   },
+
 
 
   aatualizar: async function (req, res) {

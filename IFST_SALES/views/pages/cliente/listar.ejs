@@ -1,686 +1,810 @@
-<%- include('header', { title: 'Home Page' }) %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Clientes</title>
+</head>
+
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center">Cadastro de Cliente</h1>
-    <form method="GET" action="/clientes/listar" class="mb-4">
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label for="codigo" class="form-label">Código do Cliente:</label>
-          <input type="text" class="form-control" id="codigo" name="codigo" value="<%= typeof codigo !== 'undefined' ? codigo : '' %>">
+  <!-- Incluindo o arquivo mensagem.ejs -->
+  <%- include('../mensagem') %>
+
+    <main class="table" id="tabela_clientes">
+      <section class="table__header">
+        <div class="table-titulo">
+          <h3>Clientes</h3>
         </div>
-        <div class="col-md-4 mb-3">
-          <label for="empresa" class="form-label">Empresa:</label>
-          <input type="text" class="form-control" id="empresa" name="empresa" value="<%= typeof empresa !== 'undefined' ? empresa : '' %>">
+        <div class="header-actions">
+          <div class="table-search-bar">
+            <input type="text" placeholder="Pesquisar por cliente...">
+            <i class="fas fa-search"></i>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClienteModal">
+              Adicionar Cliente
+            </button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary btn-hide-mobile" data-bs-toggle="modal"
+              data-bs-target="#manageColumnsModal">
+              Gerenciar Colunas
+            </button>
+          </div>
         </div>
-        <div class="col-md-4 mb-3">
-          <label for="organizacaoVendas" class="form-label">Organização de Vendas:</label>
-          <input type="text" class="form-control" id="organizacaoVendas" name="organizacaoVendas" value="<%= typeof organizacaoVendas !== 'undefined' ? organizacaoVendas : '' %>">
+      </section>
+
+      <section class="table__body">
+        <table>
+          <thead>
+            <tr>
+              <th draggable="true">Código</th>
+              <th draggable="true">Nome</th>
+              <th draggable="true">Empresa</th>
+              <th draggable="true">Organização de Vendas</th>
+              <th draggable="true">Canal</th>
+              <th draggable="true">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% clientes.forEach(cliente=> { %>
+              <tr>
+                <td>
+                  <%= cliente.codigo %>
+                </td>
+                <td>
+                  <%= cliente.nome %>
+                </td>
+                <td>
+                  <%= cliente.empresa.razaoSocial %>
+                </td>
+                <td>
+                  <%= cliente.organizacaoVendas.nome %>
+                </td>
+                <td>
+                  <%= cliente.canal.descricao %>
+                </td>
+                <td>
+                  <a href="#" onclick="editCliente(<%= cliente.id %>);" title="Editar"><i class="fas fa-edit"></i></a>
+                  <a href="#" onclick="viewCliente(<%= cliente.id %>);" title="Visualizar"><i
+                      class="fas fa-eye"></i></a>
+                  <a href="#" onclick="deleteCliente(<%= cliente.id %>);" title="Deletar"><i
+                      class="fas fa-trash-alt"></i></a>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- Modal para adicionar cliente -->
+    <div class="modal fade" id="addClienteModal" tabindex="-1" aria-labelledby="addClienteModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addClienteModalLabel">Adicionar Cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addClienteForm" enctype="multipart/form-data">
+              <ul class="nav nav-tabs" id="clienteTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link active" id="dados-gerais-tab" data-bs-toggle="tab" href="#dados-gerais" role="tab"
+                    aria-controls="dados-gerais" aria-selected="true">Dados Gerais</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link disabled" id="dados-cliente-tab" data-bs-toggle="tab" href="#dados-cliente"
+                    role="tab" aria-controls="dados-cliente" aria-selected="false">Dados do Cliente</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link disabled" id="dados-controle-tab" data-bs-toggle="tab" href="#dados-controle"
+                    role="tab" aria-controls="dados-controle" aria-selected="false">Dados de Controle</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link disabled" id="dados-empresa-tab" data-bs-toggle="tab" href="#dados-empresa"
+                    role="tab" aria-controls="dados-empresa" aria-selected="false">Dados da Empresa</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link disabled" id="dados-comerciais-tab" data-bs-toggle="tab" href="#dados-comerciais"
+                    role="tab" aria-controls="dados-comerciais" aria-selected="false">Dados Comerciais</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link disabled" id="resumo-tab" data-bs-toggle="tab" href="#resumo" role="tab"
+                    aria-controls="resumo" aria-selected="false">Resumo</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="clienteTabsContent">
+                <!-- Aba Dados Gerais -->
+                <div class="tab-pane fade show active" id="dados-gerais" role="tabpanel"
+                  aria-labelledby="dados-gerais-tab">
+                  <div class="row mt-1">
+                    <div class="mb-3">
+                      <label for="empresa" class="form-label">Empresa <span style="color: red;">*</span></label>
+                      <select id="empresa" name="empresa" class="form-select" required>
+                        <% empresas.forEach(empresa=> { %>
+                          <option value="<%= empresa.id %>">
+                            <%= empresa.razaoSocial %>
+                          </option>
+                          <% }) %>
+                      </select>
+                      <div id="empresaErro" class="invalid-feedback" style="display: none;">Por favor, selecione uma
+                        empresa</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="organizacaoVendas" class="form-label">Organização de Vendas <span
+                          style="color: red;">*</span></label>
+                      <select id="organizacaoVendas" name="organizacaoVendas" class="form-select" required>
+                        <% organizacoesVendas.forEach(organizacao=> { %>
+                          <option value="<%= organizacao.id %>">
+                            <%= organizacao.nome %>
+                          </option>
+                          <% }) %>
+                      </select>
+                      <div id="organizacaoVendasErro" class="invalid-feedback" style="display: none;">Por favor,
+                        selecione uma organização de vendas.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="canal" class="form-label">Canal <span style="color: red;">*</span></label>
+                      <select id="canal" name="canal" class="form-select" required>
+                        <% canais.forEach(canal=> { %>
+                          <option value="<%= canal.id %>">
+                            <%= canal.descricao %>
+                          </option>
+                          <% }) %>
+                      </select>
+                      <div id="canalErro" class="invalid-feedback" style="display: none;">Por favor, selecione um canal.
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="cpf" class="form-label">CPF: <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="cpf" name="cpf" placeholder="Digite o CPF"
+                        onblur="verificarCPF(this)" maxlength="14" required>
+                      <div id="cpfErro" class="invalid-feedback" style="display: none;">CPF inválido.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="cnpj" class="form-label">CNPJ: <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="cnpj" name="cnpj" placeholder="Digite o CNPJ"
+                        onblur="verificarCNPJ(this)" maxlength="18" required>
+                      <div id="cnpjErro" class="invalid-feedback" style="display: none;">CNPJ inválido.</div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" id="confirmDadosGerais">Prosseguir</button>
+                  </div>
+                </div>
+
+                <!-- Aba Dados do Cliente -->
+                <div class="tab-pane fade" id="dados-cliente" role="tabpanel" aria-labelledby="dados-cliente-tab">
+                  <div class="row mt-3">
+                    <div class="col-md-8 mb-3">
+                      <label for="razaoSocial" class="form-label">Razão Social <span
+                          style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+                      <div id="razaoSocialErro" class="invalid-feedback" style="display: none;">Por favor, preencha a
+                        Razão Social.</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label for="termoPesquisa" class="form-label">Termo de Pesquisa</label>
+                      <input type="text" class="form-control" id="termoPesquisa" name="termoPesquisa">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2 mb-3">
+                      <label for="cep" class="form-label">CEP <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="cep" name="cep" oninput="mascararCEP(this)"
+                        onblur="verificarCEP(this)">
+                      <div id="cepErro" class="invalid-feedback">Por favor, preencher cep com 8 digitos</div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                      <label for="domicilio" class="form-label">Domicílio</label>
+                      <input type="text" class="form-control" id="domicilio" name="domicilio">
+                      <div id="domicilioErro" class="invalid-feedback" style="display: none;">Por favor, preencher cep
+                        para busca do domicilio.</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-8 mb-3">
+                      <label for="rua" class="form-label">Rua <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="rua" name="rua">
+                      <div id="ruaErro" class="invalid-feedback" style="display: none;">Por favor, preencha a Rua.</div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                      <label for="numero" class="form-label">Número <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="numero" name="numero">
+                      <div id="numeroErro" class="invalid-feedback" style="display: none;">Por favor, preencha o Número.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-5 mb-3">
+                      <label for="complemento" class="form-label">Complemento</label>
+                      <input type="text" class="form-control" id="complemento" name="complemento">
+                    </div>
+                    <div class="col-md-5 mb-3">
+                      <label for="bairro" class="form-label">Bairro <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="bairro" name="bairro">
+                      <div id="bairroErro" class="invalid-feedback" style="display: none;">Por favor, preencha o Bairro.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label for="cidade" class="form-label">Cidade <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="cidade" name="cidade">
+                      <div id="cidadeErro" class="invalid-feedback" style="display: none;">Por favor, preencha a Cidade.
+                      </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                      <label for="estado" class="form-label">Estado <span style="color: red;">*</span></label>
+                      <input type="text" class="form-control" id="estado" name="estado">
+                      <div id="estadoErro" class="invalid-feedback" style="display: none;">Por favor, preencha o Estado.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" id="confirmDadosCliente">Prosseguir</button>
+                  </div>
+                </div>
+
+                <!-- Aba Dados de Controle -->
+                <div class="tab-pane fade" id="dados-controle" role="tabpanel" aria-labelledby="dados-controle-tab">
+                  <div class="row mt-3">
+                    <div class="col-md-6 mb-3">
+                      <label for="fornecedor" class="form-label">Fornecedor:</label>
+                      <input type="text" class="form-control" id="fornecedor" name="fornecedor">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="grupoEmpresa" class="form-label">Grupo Empresa </label>
+                      <select id="grupoEmpresa" name="grupoEmpresa" class="form-select" required>
+                        <option value="">
+                        </option>
+                        <% gruposEmpresas.forEach(grupo=> { %>
+                          <option value="<%= grupo.id %>">
+                            <%= grupo.nome %>
+                          </option>
+                          <% }) %>
+                      </select>
+                      <div id="grupoEmpresaErro" class="invalid-feedback" style="display: none;">Por favor, selecione um
+                        grupo empresa.</div>
+                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="inscEstadual" class="form-label">Inscrição Estadual:</label>
+                    <input type="text" class="form-control" id="inscEstadual" name="inscEstadual">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="inscMunicipal" class="form-label">Inscrição Municipal:</label>
+                    <input type="text" class="form-control" id="inscMunicipal" name="inscMunicipal">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="suframa" class="form-label">Suframa:</label>
+                    <input type="text" class="form-control" id="suframa" name="suframa">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmDadosControle">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Dados da Empresa -->
+              <div class="tab-pane fade" id="dados-empresa" role="tabpanel" aria-labelledby="dados-empresa-tab">
+                <div class="row mt-3">
+                  <div class="col-md-6 mb-3">
+                    <label for="formasPgto" class="form-label">Formas de Pagamento<span
+                        style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="formasPgto" name="formasPgto">
+                    <div id="formasPgtoErro" class="invalid-feedback" style="display: none;">Por favor, preencha as
+                      Formas de Pagamento.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="condicaoPagamento" class="form-label">Condição de Pagamento<span
+                        style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="condicaoPagamento" name="condicaoPagamento">
+                    <div id="condicaoPagamentoErro" class="invalid-feedback" style="display: none;">Por favor,
+                      preencha a Condição de Pagamento.</div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmDadosEmpresa">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Dados Comerciais -->
+              <div class="tab-pane fade" id="dados-comerciais" role="tabpanel" aria-labelledby="dados-comerciais-tab">
+                <div class="row mt-3">
+                  <div class="col-md-6 mb-3">
+                    <label for="equipeVendas" class="form-label">Equipe de Vendas <span
+                        style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="equipeVendas" name="equipeVendas">
+                    <div id="equipeVendasErro" class="invalid-feedback" style="display: none;">Por favor, preencha a
+                      Equipe de Vendas.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="escritorioVendas" class="form-label">Escritório de Vendas <span
+                        style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="escritorioVendas" name="escritorioVendas">
+                    <div id="escritorioVendasErro" class="invalid-feedback" style="display: none;">Por favor, preencha
+                      o Escritório de Vendas.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="regVendas" class="form-label">Região de Vendas <span
+                        style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="regVendas" name="regVendas">
+                    <div id="regVendasErro" class="invalid-feedback" style="display: none;">Por favor, preencha a
+                      Região de Vendas.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="priceList" class="form-label">Lista de Preços <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="priceList" name="priceList">
+                    <div id="priceListErro" class="invalid-feedback" style="display: none;">Por favor, preencha a
+                      Lista de Preços.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="moeda" class="form-label">Moeda <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="moeda" name="moeda">
+                    <div id="moedaErro" class="invalid-feedback" style="display: none;">Por favor, preencha a Moeda.
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-primary" id="confirmDadosComerciais">Prosseguir</button>
+                </div>
+              </div>
+
+              <!-- Aba Resumo -->
+              <div class="tab-pane fade" id="resumo" role="tabpanel" aria-labelledby="resumo-tab">
+                <div class="row mt-3">
+                  <div class="col-md-12">
+                    <h5>Resumo do Cadastro</h5>
+                    <p><strong>Empresa:</strong> <span id="resumoEmpresa"></span></p>
+                    <p><strong>Organização de Vendas:</strong> <span id="resumoOrganizacaoVendas"></span></p>
+                    <p><strong>Canal:</strong> <span id="resumoCanal"></span></p>
+                    <p><strong>Razão Social:</strong> <span id="resumoRazaoSocial"></span></p>
+                    <p><strong>Termo de Pesquisa:</strong> <span id="resumoTermoPesquisa"></span></p>
+                    <p><strong>CEP:</strong> <span id="resumoCEP"></span></p>
+                    <p><strong>Domicílio:</strong> <span id="resumoDomicilio"></span></p>
+                    <p><strong>Rua:</strong> <span id="resumoRua"></span></p>
+                    <p><strong>Número:</strong> <span id="resumoNumero"></span></p>
+                    <p><strong>Complemento:</strong> <span id="resumoComplemento"></span></p>
+                    <p><strong>Bairro:</strong> <span id="resumoBairro"></span></p>
+                    <p><strong>Cidade:</strong> <span id="resumoCidade"></span></p>
+                    <p><strong>Estado:</strong> <span id="resumoEstado"></span></p>
+                    <p><strong>Fornecedor:</strong> <span id="resumoFornecedor"></span></p>
+                    <p><strong>Grupo Empresa:</strong> <span id="resumoGrupoEmpresa"></span></p>
+                    <p><strong>CPF:</strong> <span id="resumoCPF"></span></p>
+                    <p><strong>CNPJ:</strong> <span id="resumoCNPJ"></span></p>
+                    <p><strong>Inscrição Estadual:</strong> <span id="resumoInscEstadual"></span></p>
+                    <p><strong>Inscrição Municipal:</strong> <span id="resumoInscMunicipal"></span></p>
+                    <p><strong>Formas de Pagamento:</strong> <span id="resumoFormasPgto"></span></p>
+                    <p><strong>Condição de Pagamento:</strong> <span id="resumoCondicaoPagamento"></span></p>
+                    <p><strong>Equipe de Vendas:</strong> <span id="resumoEquipeVendas"></span></p>
+                    <p><strong>Escritório de Vendas:</strong> <span id="resumoEscritorioVendas"></span></p>
+                    <p><strong>Região de Vendas:</strong> <span id="resumoRegVendas"></span></p>
+                    <p><strong>Lista de Preços:</strong> <span id="resumoPriceList"></span></p>
+                    <p><strong>Moeda:</strong> <span id="resumoMoeda"></span></p>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-primary">Criar Cliente</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+          </div>
+          </form>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12 d-flex justify-content-between align-items-end">
-          <button type="submit" class="btn btn-primary">Filtrar</button>
-          <button type="button" class="btn btn-primary" onclick="openAddClienteModal()">
-            Adicionar Cliente
-          </button>
-        </div>
-      </div>
-    </form>
-    <!-- Tabela cliente tela inicial -->
-    <%- include('tabela') %>
-    <!-- Modal inicial cadastro cliente -->
-    <%- include('modalCliente') %>
-    <!-- Modal cLiente -->
-    <%- include('modalCadastroCliente') %>
-    <!-- Modal mensagem -->
-    <%- include('modalMesagem') %>
+    </div>
+    </div>
 
-
-
+    <!-- Adicionando os scripts necessários -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Preencher grupo empresa
-          preencherGrupoConta();
-          preencherGrupoEmpresa();
-
-        // Inicializa os modais aqui para garantir que eles estão disponíveis globalmente
-        window.addClienteModal = new bootstrap.Modal(document.getElementById('addClienteModal'));
-        window.cadastroClienteModal = new bootstrap.Modal(document.getElementById('cadastroClienteModal'));
-
-        // Adiciona event listeners apenas se os elementos existirem
-        const cepInput = document.getElementById('cep');
-        if (cepInput) {
-          cepInput.addEventListener('blur', setupFormListeners);
-        }
-
-        const cpfInput = document.getElementById('ClienteModalcpf');
-        if (cpfInput) {
-          cpfInput.addEventListener('input', function() {
-            const cpfValue = cpfInput.value;
-            const cpfField = document.getElementById('cpf');
-            if (cpfField) {
-              cpfField.value = cpfValue;
-            }
-          });
-        }
-
-        const cnpjInput = document.getElementById('ClienteModalcnpj');
-        if (cnpjInput) {
-          cnpjInput.addEventListener('input', function() {
-            const cnpjValue = cnpjInput.value;
-            const cnpjField = document.getElementById('cnpj');
-            if (cnpjField) {
-              cnpjField.value = cnpjValue;
-            }
-          });
-        }
-
-        const verificarCadastroSubmit = document.getElementById('verificarCadastroSubmit');
-        if (verificarCadastroSubmit) {
-          verificarCadastroSubmit.addEventListener('click', verificarCadastroModal);
-        }
-
-        const cadastrarClienteSubmit = document.getElementById('cadastrarClienteSubmit');
-        if (cadastrarClienteSubmit) {
-          cadastrarClienteSubmit.addEventListener('click', salvarCliente);
-        }
-
-        const openAddClienteButton = document.getElementById('openAddClienteButton');
-        if (openAddClienteButton) {
-          openAddClienteButton.addEventListener('click', openAddClienteModal);
-        }
-          });
-
-      async function buscarSugestoesEscritVendas(termo) {
-            try {
-                const response = await fetch(`/escritoriovendas/buscarEscritoriosPorDescricao?termo=${termo}`);
-                if (!response.ok) {
-                    throw new Error('Erro na rede ao buscar escritórios de vendas');
-                }
-                const escritoriosVendas = await response.json();
-                return escritoriosVendas;
-            } catch (err) {
-                console.error('Erro ao buscar escritórios de vendas:', err);
-                return [];
-            }
-        }
-      async function buscarSugestoesEquipeVendas(termo) {
-            try {
-                const response = await fetch(`/equipevendas/buscarEquipesPorDescricao?termo=${termo}`);
-                if (!response.ok) {
-                    throw new Error('Erro na rede ao buscar equipes de vendas');
-                }
-                const equipesVendas = await response.json();
-                return equipesVendas;
-            } catch (err) {
-                console.error('Erro ao buscar equipes de vendas:', err);
-                return [];
-            }
-        }
-
-      async function mostrarSugestoesEquipeVendas() {
-          const input = document.getElementById('equipeVendas');
-          const filtro = input.value.toLowerCase();
-          const dropdownSugestoes = document.getElementById('dropdownSugestoesEquipeVendas');
-
-          dropdownSugestoes.innerHTML = '';
-
-          if (!filtro) {
-              dropdownSugestoes.style.display = 'none';
-              return;
-          }
-
-          const sugestoes = await buscarSugestoesEquipeVendas(filtro);
-
-          if (sugestoes.length > 0) {
-              sugestoes.forEach(sugestao => {
-                  const item = document.createElement('a');
-                  item.classList.add('dropdown-item');
-                  item.innerHTML = `${sugestao.codigo} - ${sugestao.descricao}`;
-                  item.addEventListener('click', (e) => {
-                      e.preventDefault();
-                      input.value = sugestao.descricao;
-                      dropdownSugestoes.innerHTML = '';
-                      dropdownSugestoes.style.display = 'none';
-                  });
-                  dropdownSugestoes.appendChild(item);
-              });
-              dropdownSugestoes.style.display = 'block';
-          } else {
-              dropdownSugestoes.style.display = 'none';
-          }
-      }
-
-      const debouncedMostrarSugestoesEquipeVendas = debounce(mostrarSugestoesEquipeVendas, 300);
-
-      document.addEventListener('click', function (e) {
-          const dropdownSugestoesEquipeVendas = document.getElementById('dropdownSugestoesEquipeVendas');
-          if (e.target !== document.getElementById('equipeVendas')) {
-              dropdownSugestoesEquipeVendas.innerHTML = '';
-              dropdownSugestoesEquipeVendas.style.display = 'none';
-          }
-      });
-      async function mostrarSugestoesEscritVendas() {
-          const input = document.getElementById('escritVendas');
-          const filtro = input.value.toLowerCase();
-          const dropdownSugestoes = document.getElementById('dropdownSugestoesEscritVendas');
-
-          dropdownSugestoes.innerHTML = '';
-
-          if (!filtro) {
-              dropdownSugestoes.style.display = 'none';
-              return;
-          }
-
-          const sugestoes = await buscarSugestoesEscritVendas(filtro);
-
-          if (sugestoes.length > 0) {
-              sugestoes.forEach(sugestao => {
-                  const item = document.createElement('a');
-                  item.classList.add('dropdown-item');
-                  item.innerHTML = `${sugestao.codigo} - ${sugestao.descricao}`;
-                  item.addEventListener('click', (e) => {
-                      e.preventDefault();
-                      input.value = sugestao.descricao;
-                      dropdownSugestoes.innerHTML = '';
-                      dropdownSugestoes.style.display = 'none';
-                  });
-                  dropdownSugestoes.appendChild(item);
-              });
-              dropdownSugestoes.style.display = 'block';
-          } else {
-              dropdownSugestoes.style.display = 'none';
-          }
-      }
-
-      const debouncedMostrarSugestoesEscritVendas = debounce(mostrarSugestoesEscritVendas, 300);
-
-      document.addEventListener('click', function (e) {
-          const dropdownSugestoesEscritVendas = document.getElementById('dropdownSugestoesEscritVendas');
-          if (e.target !== document.getElementById('escritVendas')) {
-              dropdownSugestoesEscritVendas.innerHTML = '';
-              dropdownSugestoesEscritVendas.style.display = 'none';
-          }
-      });
-
-      async function buscarSugestoesRegVendas(termo) {
-        try {
-            const response = await fetch(`/regiao/buscarPorDescricao?termo=${termo}`);
-            if (!response.ok) {
-                throw new Error('Erro na rede ao buscar regiões de vendas');
-            }
-            const regioesVendas = await response.json();
-            return regioesVendas;
-        } catch (err) {
-            console.error('Erro ao buscar regiões de vendas:', err);
-            return [];
-        }
-    }
-
-      function debounce(func, wait) {
-          let timeout;
-          return function(...args) {
-              const later = () => {
-                  clearTimeout(timeout);
-                  func(...args);
-              };
-              clearTimeout(timeout);
-              timeout = setTimeout(later, wait);
-          };
-      }
-
-      async function mostrarSugestoesRegVendas() {
-          const input = document.getElementById('regVendas');
-          const filtro = input.value.toLowerCase();
-          const dropdownSugestoes = document.getElementById('dropdownSugestoes');
-
-          dropdownSugestoes.innerHTML = '';
-
-          if (!filtro) {
-              dropdownSugestoes.style.display = 'none';
-              return;
-          }
-
-          const sugestoes = await buscarSugestoesRegVendas(filtro);
-
-          if (sugestoes.length > 0) {
-              sugestoes.forEach(sugestao => {
-                  const item = document.createElement('a');
-                  item.classList.add('dropdown-item');
-                  item.innerHTML = `${sugestao.codigo} - ${sugestao.descricao}`;
-                  item.addEventListener('click', (e) => {
-                      e.preventDefault();
-                      input.value = sugestao.descricao;
-                      dropdownSugestoes.innerHTML = '';
-                      dropdownSugestoes.style.display = 'none';
-                  });
-                  dropdownSugestoes.appendChild(item);
-              });
-              dropdownSugestoes.style.display = 'block';
-          } else {
-              dropdownSugestoes.style.display = 'none';
-          }
-      }
-
-      const debouncedMostrarSugestoesRegVendas = debounce(mostrarSugestoesRegVendas, 300);
-
-      document.addEventListener('click', function (e) {
-          const dropdownSugestoes = document.getElementById('dropdownSugestoes');
-          if (e.target !== document.getElementById('regVendas')) {
-              dropdownSugestoes.innerHTML = '';
-              dropdownSugestoes.style.display = 'none';
-          }
-      });
-
-      async function preencherGrupoConta() {
-        try {
-          const response = await fetch('/grupoconta/todos');
-          const gruposConta = await response.json();
-
-          const grupoContaSelect = document.getElementById('modal.grupoConta');
-          gruposConta.forEach(grupo => {
-            const option = document.createElement('option');
-            option.value = grupo.id;
-            option.text = `${grupo.codigo} - ${grupo.descricao}`;
-            grupoContaSelect.appendChild(option);
-          });
-        } catch (err) {
-          console.error('Erro ao buscar grupos de conta:', err);
-        }
-    }
-
-      async function preencherGrupoEmpresa() {
-        try {
-            const response = await fetch('/grupoempresa/todos');
-            const gruposEmpresas = await response.json();
-
-            const grupoEmpresaSelect = document.getElementById('grupoEmpresa');
-            gruposEmpresas.forEach(grupo => {
-                const option = document.createElement('option');
-                option.value = grupo.id;
-                option.text = `${grupo.codigo} - ${grupo.nome}`;
-                grupoEmpresaSelect.appendChild(option);
-            });
-        } catch (err) {
-            console.error('Erro ao buscar grupos de empresas:', err);
-        }
-    }
-
-      async function setupFormListeners(event) {
-        const cepInput = event.target;
-        if (cepInput.value.trim() !== '') {
-          const cepFormatted = cepInput.value.replace(/\D/g, '').replace(/^(\d{5})(\d{3})/, '$1-$2');
-          cepInput.value = cepFormatted;
-          await buscarCEP(cepFormatted);
-        }
-      }
-
-      async function fetchCadastroData() {
-        try {
-          const response = await fetch('/clientes/renderizarcadastro', {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': '<%= _csrf %>'
-            }
-          });
-          if (!response.ok) {
-            throw new Error('Erro na resposta da rede');
-          }
-          return await response.json();
-        } catch (error) {
-          console.error('Houve um problema com a operação fetch:', error);
-        }
-      }
-
-      async function openAddClienteModal() {
-      try {
-          const data = await fetchCadastroData();
-          console.log('Dados de cadastro:', data); // Verifique os dados aqui
-          if (data) {
-              populateSelect('modal.empresa', data.empresas.map(empresa => ({ id: empresa.id, code: empresa.codigo, name: empresa.razaoSocial })));
-              populateSelect('modal.organizacaoVendas', data.organizacoesVendas.map(org => ({ id: org.id, code: org.codigo, name: org.nome })));
-              window.addClienteModal.show(); // Uso da instância correta
-          } else {
-              console.error('Erro ao buscar os dados de cadastro.');
-          }
-      } catch (error) {
-          console.error('Falha ao abrir e preencher o modal de adicionar cliente:', error);
-      }
-}
-
-      function populateSelect(elementId, options) {
-        const select = document.getElementById(elementId);
-        if (select) {
-            select.innerHTML = ''; // Limpa as opções existentes
-            options.forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.value = option.id;
-                optionElement.textContent = `${option.code} - ${option.name}`; // Concatena código e nome
-                select.appendChild(optionElement);
-            });
-        }
-    }
-
-      async function salvarCliente() {
-        let clienteData = {}, empresaData = {}, organizacaoVendasData = {};
-        const formMapping = {
-          'formCadastroCliente': clienteData,
-          'formDadosControle': clienteData,
-          'formPagamento': clienteData,
-          'formMarketing': clienteData,
-          'formDadosExportacao': clienteData,
-          'formAdmConta': empresaData,
-          'formPagamentoEmpresa': empresaData,
-          'formCorrespondencia': empresaData,
-          'formSeguros': empresaData,
-          'formImpostoRetido': empresaData,
-          'formVenda': organizacaoVendasData,
-          'formExpedicao': organizacaoVendasData,
-          'formDocFaturamento': organizacaoVendasData,
-          'formFuncaoParceiro': organizacaoVendasData
-        };
-        // Trata campos específicos do modal
-        clienteData['grupoConta'] = document.getElementById('modal.grupoConta').value;
-        empresaData['empresa'] = document.getElementById('modal.empresa').value;
-        organizacaoVendasData['organizacaoVendas'] = document.getElementById('modal.organizacaoVendas').value;
-
-        Object.entries(formMapping).forEach(([formId, targetData]) => {
-          const form = document.getElementById(formId);
-          if (form) {
-            const formData = new FormData(form);
-            formData.forEach((value, key) => {
-              if (key === 'id' && value === '') return;
-              targetData[key] = form[key].type === 'checkbox' ? form[key].checked : value;
-            });
-          } else {
-            console.warn(`Formulário não encontrado: ${formId}`);
-          }
-        });
-
-        Object.values(formMapping).forEach(data => {
-          Object.keys(data).forEach(key => {
-            if (key === 'id' && data[key] === '') {
-              delete data[key];
-            }
-          });
-        });
-
-        const combinedData = { cliente: clienteData, empresa: empresaData, organizacaoVendas: organizacaoVendasData };
-        try {
-          const response = await fetch('/clientes', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': '<%= _csrf %>'
-            },
-            body: JSON.stringify(combinedData)
-          });
-          const data = await response.json();
-          document.getElementById("mensagemTexto").innerText = data.message;
-          new bootstrap.Modal(document.getElementById('mensagemModal')).show();
-        } catch (error) {
-          console.error('Erro na requisição:', error);
-          document.getElementById("mensagemTexto").innerText = 'Erro na requisição';
-          new bootstrap.Modal(document.getElementById('mensagemModal')).show();
-        }
-      }
-
-      async function verificarCadastroModal() {
-      const cpfInput = document.getElementById('ClienteModalcpf').value.trim();
-      const cnpjInput = document.getElementById('ClienteModalcnpj').value.trim();
-      const empresaId = document.getElementById('modal.empresa').value.trim();
-      const organizacaoVendasId = document.getElementById('modal.organizacaoVendas').value.trim();
-
-      // Validação inicial
-      if (!cpfInput && !cnpjInput) {
-          alert('Preencha pelo menos um dos campos: CPF ou CNPJ.');
-          return;
-      } else if (cpfInput && cnpjInput) {
-          alert('Preencha apenas um dos campos: CPF ou CNPJ.');
-          return;
-      }
-
-      // Limpar os valores de CPF e CNPJ
-      const cpf = cpfInput ? cpfInput.replace(/\D/g, '') : null;
-      const cnpj = cnpjInput ? cnpjInput.replace(/\D/g, '') : null;
-
-      // Montar a URL de verificação
-    let url = '/clientes/validar/';
-    if (cpf !== null) {
-        url += `${cpf}/null/${empresaId}/${organizacaoVendasId}`;
+document.getElementById('cep').addEventListener('blur', function () {
+    const cep = this.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+    if (cep.length === 8) {
+        buscarCEP(cep);
     } else {
-        url += `null/${cnpj}/${empresaId}/${organizacaoVendasId}`;
+        // Exibe mensagem de erro se o CEP não tiver 8 dígitos
+        document.getElementById('cep').classList.add('is-invalid');
+        document.getElementById('cepErro').style.display = 'block';
+    }
+});
+
+document.getElementById('cpf').addEventListener('blur', function () {
+    const cpf = this.value;
+    if (!validateCPF(cpf)) {
+        this.classList.add('is-invalid');
+        document.getElementById('cpfErro').style.display = 'block';
+    } else {
+        this.classList.remove('is-invalid');
+        document.getElementById('cpfErro').style.display = 'none';
+    }
+});
+
+document.getElementById('cnpj').addEventListener('blur', function () {
+    const cnpj = this.value;
+    if (!validateCNPJ(cnpj)) {
+        this.classList.add('is-invalid');
+        document.getElementById('cnpjErro').style.display = 'block';
+    } else {
+        this.classList.remove('is-invalid');
+        document.getElementById('cnpjErro').style.display = 'none';
+    }
+});
+
+document.getElementById('cpf').addEventListener('input', function (e) {
+    e.target.value = mascararCPF(e.target.value);
+    if (e.target.value.length > 14) {
+        e.target.value = e.target.value.slice(0, 14);
+    }
+    // Se CPF for preenchido, desabilite o campo CNPJ e outros
+    if (e.target.value.replace(/\D/g, '').length === 11) {
+        document.getElementById('cnpj').disabled = true;
+        document.getElementById('inscEstadual').disabled = true;
+        document.getElementById('inscMunicipal').disabled = true;
+        document.getElementById('suframa').disabled = true;
+
+        // Limpar os valores dos campos desabilitados
+        document.getElementById('inscEstadual').value = '';
+        document.getElementById('inscMunicipal').value = '';
+        document.getElementById('suframa').value = '';
+    } else {
+        document.getElementById('cnpj').disabled = false;
+        document.getElementById('inscEstadual').disabled = false;
+        document.getElementById('inscMunicipal').disabled = false;
+        document.getElementById('suframa').disabled = false;
+    }
+});
+
+document.getElementById('cnpj').addEventListener('input', function (e) {
+    e.target.value = mascararCNPJ(e.target.value);
+    if (e.target.value.length > 18) {
+        e.target.value = e.target.value.slice(0, 18);
+    }
+    // Se CNPJ for preenchido, desabilite o campo CPF
+    if (e.target.value.replace(/\D/g, '').length === 14) {
+        document.getElementById('cpf').disabled = true;
+    } else {
+        document.getElementById('cpf').disabled = false;
+    }
+});
+
+document.getElementById('confirmDadosGerais').addEventListener('click', function () {
+    const empresa = document.getElementById('empresa').value.trim();
+    const organizacaoVendas = document.getElementById('organizacaoVendas').value.trim();
+    const canal = document.getElementById('canal').value.trim();
+
+    let hasError = false;
+
+    if (!empresa) {
+        document.getElementById('empresaErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('empresaErro').style.display = 'none';
     }
 
-      console.log('URL:', url); // Log da URL para depuração
-
-      try {
-          const response = await fetch(url);
-          if (response.ok) {
-              const clienteExistente = await response.json();
-              console.log('Cliente existente:', clienteExistente); // Log da resposta
-
-              if (clienteExistente) {
-                  if (clienteExistente.empresa && clienteExistente.organizacaoVendas) {
-                      alert('Cliente já cadastrado para esta empresa e organização de vendas.');
-                      // Oculta as abas "Geral" e "Empresa"
-                      document.getElementById('main-geral-tab').style.display = 'none';
-                      document.getElementById('main-empresa-tab').style.display = 'none';
-                      // Exibe a aba "Organização de Vendas"
-                      document.getElementById('main-organizacao-vendas-tab').click();
-
-                      // Preenche os campos do cliente e da empresa existente no formulário
-                      preencherCamposCliente(clienteExistente.cliente);
-                      preencherCamposEmpresa(clienteExistente.empresa);
-                  } else {
-                      document.getElementById('main-geral-tab').style.display = 'true';
-                      document.getElementById('main-empresa-tab').style.display = 'true';
-
-                      // Preenche os campos do cliente existente no modal de cadastro
-                      const cpfCliente = document.getElementById('cpfCliente');
-                      const cnpjCliente = document.getElementById('cnpjCliente');
-                      const empresaCliente = document.getElementById('empresaCliente');
-                      const organizacaoVendasCliente = document.getElementById('organizacaoVendasCliente');
-
-                      if (cpfCliente) cpfCliente.value = clienteExistente.cliente.cpf || '';
-                      if (cnpjCliente) cnpjCliente.value = clienteExistente.cliente.cnpj || '';
-                      if (empresaCliente) empresaCliente.value = empresaId;
-                      if (organizacaoVendasCliente) organizacaoVendasCliente.value = organizacaoVendasId;
-
-                      window.addClienteModal.hide();
-                      window.cadastroClienteModal.show();
-                  }
-              } else {
-                  // Cliente não encontrado, permitir adicionar novo cliente
-                  window.addClienteModal.hide();
-                  window.cadastroClienteModal.show();
-              }
-          } else {
-              alert('Erro na verificação do cliente.');
-          }
-      } catch (err) {
-          console.error('Erro ao verificar cliente:', err);
-          alert('Erro ao verificar cliente.');
-      }
-  }
-
-      function preencherCamposCliente(cliente) {
-        // Preenche os campos do formulário com os dados do cliente
-        document.getElementById('razaoSocial').value = cliente.razaoSocial || '';
-        document.getElementById('termoPesquisa').value = cliente.termoPesquisa || '';
-        document.getElementById('cep').value = cliente.cep || '';
-        document.getElementById('domicilio').value = cliente.domicilio || '';
-        document.getElementById('rua').value = cliente.rua || '';
-        document.getElementById('numero').value = cliente.numero || '';
-        document.getElementById('complemento').value = cliente.complemento || '';
-        document.getElementById('bairro').value = cliente.bairro || '';
-        document.getElementById('cidade').value = cliente.cidade || '';
-        document.getElementById('regiao').value = cliente.regiao || '';
-        document.getElementById('fornecedor').value = cliente.fornecedor || '';
-        document.getElementById('grupoEmpresa').value = cliente.grupoEmpresa || '';
-        document.getElementById('cnpj').value = cliente.cnpj || '';
-        document.getElementById('cpf').value = cliente.cpf || '';
-        document.getElementById('inscEstadual').value = cliente.inscEstadual || '';
-        document.getElementById('inscMunicipal').value = cliente.inscMunicipal || '';
-        document.getElementById('ctgCFOP').value = cliente.ctgCFOP || '';
-        // Preenche os outros campos conforme necessário...
-      }
-
-      function preencherCamposEmpresa(empresa) {
-        // Preenche os campos do formulário com os dados da empresa
-        document.getElementById('ctaConcil').value = empresa.ctaConcil || '';
-        document.getElementById('chaveOrdenacao').value = empresa.chaveOrdenacao || '';
-        document.getElementById('fisYearDocNo').value = empresa.fisYearDocNo || '';
-        document.getElementById('sede').value = empresa.sede || '';
-        document.getElementById('autorizacao').value = empresa.autorizacao || '';
-        document.getElementById('grpAdminTesour').value = empresa.grpAdminTesour || '';
-        document.getElementById('codigoJuros').value = empresa.codigoJuros || '';
-        document.getElementById('ultimaDataFixada').value = empresa.ultimaDataFixada || '';
-        document.getElementById('periodJuros').value = empresa.periodJuros || '';
-        document.getElementById('ultCalcJuros').value = empresa.ultCalcJuros || '';
-        document.getElementById('numAntigoConta').value = empresa.numAntigoConta || '';
-        document.getElementById('assocCompras').value = empresa.assocCompras || '';
-        // Preenche os outros campos conforme necessário...
-      }
-
-      function fecharModalMensagem() {
-        const mensagemModalInstance = new bootstrap.Modal(document.getElementById('mensagemModal'));
-        mensagemModalInstance.hide();
-      }
-
-      function fecharModalCadastro() {
-        const cadastroClienteModalInstance = new bootstrap.Modal(document.getElementById('cadastroClienteModal'));
-        cadastroClienteModalInstance.hide();
-      }
-
-      function adicionarLinhaImposto() {
-        var tableBody = document.getElementById('irfTableBody');
-        var newRow = document.createElement('tr');
-
-        newRow.innerHTML = `
-            <td><input type="text" class="form-control" name="ctgIRF"></td>
-            <td><input type="text" class="form-control" name="codigo"></td>
-            <td><input type="checkbox" class="form-check-input" name="retIRF"></td>
-            <td><input type="date" class="form-control" name="autDedDe"></td>
-            <td><input type="date" class="form-control" name="autDedAte"></td>
-            <td><input type="text" class="form-control" name="numIRF"></td>
-            <td><input type="text" class="form-control" name="numCertIsencao"></td>
-            <td><input type="text" class="form-control" name="taxa"></td>
-            <td><input type="text" class="form-control" name="moeda"></td>
-            <td><input type="date" class="form-control" name="isentoDe"></td>
-            <td><input type="date" class="form-control" name="isentoAte"></td>
-        `;
-
-        tableBody.appendChild(newRow);
-      }
-
-      async function buscarCEP(cep) {
-        const endpoint = `https://viacep.com.br/ws/${cep}/json/`;
-        try {
-          const response = await fetch(endpoint);
-          if (!response.ok) {
-            throw new Error('Erro ao buscar o CEP');
-          }
-          const data = await response.json();
-          const domicilioValue = `${data.uf || ''} ${data.ibge}`;
-          document.getElementById('rua').value = data.logradouro;
-          document.getElementById('bairro').value = data.bairro;
-          document.getElementById('cidade').value = data.localidade;
-          document.getElementById('regiao').value = data.uf;
-          document.getElementById('domicilio').value = domicilioValue;
-        } catch (error) {
-          console.error('Erro ao buscar o CEP:', error);
-        }
-      }
-      function mascararCPF(cpf) {
-    let valor = cpf.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-
-    // Limita o valor a 11 dígitos
-    if (valor.length > 11) {
-        valor = valor.substring(0, 11);
+    if (!organizacaoVendas) {
+        document.getElementById('organizacaoVendasErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('organizacaoVendasErro').style.display = 'none';
     }
 
-    valor = valor
-        .replace(/(\d{3})(\d)/, '$1.$2') // Coloca um ponto entre o terceiro e o quarto dígitos
-        .replace(/(\d{3})(\d)/, '$1.$2') // Coloca um ponto entre o sexto e o sétimo dígitos
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Coloca um hífen entre o nono e o décimo dígitos
+    if (!canal) {
+        document.getElementById('canalErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('canalErro').style.display = 'none';
+    }
 
-    cpf.value = valor;
+    if (!hasError) {
+        document.getElementById('dados-cliente-tab').classList.remove('disabled');
+        const nextTab = new bootstrap.Tab(document.getElementById('dados-cliente-tab'));
+        nextTab.show();
+    } else {
+        // Define a mensagem no corpo do modal
+        document.getElementById('messageModalBody').textContent = 'Por favor, preencha todos os campos obrigatórios na aba Dados Gerais.';
+        // Exibe o modal
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        messageModal.show();
+    }
+});
+
+document.getElementById('confirmDadosCliente').addEventListener('click', function () {
+    const razaoSocial = document.getElementById('razaoSocial').value.trim();
+    const cep = document.getElementById('cep').value.trim();
+    const rua = document.getElementById('rua').value.trim();
+    const numero = document.getElementById('numero').value.trim();
+    const bairro = document.getElementById('bairro').value.trim();
+    const cidade = document.getElementById('cidade').value.trim();
+    const estado = document.getElementById('estado').value.trim();
+
+    let hasError = false;
+
+    if (!razaoSocial) {
+        document.getElementById('razaoSocialErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('razaoSocialErro').style.display = 'none';
+    }
+
+    if (!cep) {
+        document.getElementById('cepErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('cepErro').style.display = 'none';
+    }
+
+    if (!rua) {
+        document.getElementById('ruaErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('ruaErro').style.display = 'none';
+    }
+
+    if (!numero) {
+        document.getElementById('numeroErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('numeroErro').style.display = 'none';
+    }
+
+    if (!bairro) {
+        document.getElementById('bairroErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('bairroErro').style.display = 'none';
+    }
+
+    if (!cidade) {
+        document.getElementById('cidadeErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('cidadeErro').style.display = 'none';
+    }
+
+    if (!estado) {
+        document.getElementById('estadoErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('estadoErro').style.display = 'none';
+    }
+
+    if (!hasError) {
+        document.getElementById('dados-controle-tab').classList.remove('disabled');
+        const nextTab = new bootstrap.Tab(document.getElementById('dados-controle-tab'));
+        nextTab.show();
+    } else {
+        alert('Por favor, preencha todos os campos obrigatórios na aba Dados do Cliente.');
+    }
+});
+
+document.getElementById('confirmDadosControle').addEventListener('click', function () {
+    document.getElementById('dados-empresa-tab').classList.remove('disabled');
+    const nextTab = new bootstrap.Tab(document.getElementById('dados-empresa-tab'));
+    nextTab.show();
+});
+
+document.getElementById('confirmDadosEmpresa').addEventListener('click', function () {
+    const formasPgto = document.getElementById('formasPgto').value.trim();
+    const condicaoPagamento = document.getElementById('condicaoPagamento').value.trim();
+
+    let hasError = false;
+
+    if (!formasPgto) {
+        document.getElementById('formasPgtoErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('formasPgtoErro').style.display = 'none';
+    }
+
+    if (!condicaoPagamento) {
+        document.getElementById('condicaoPagamentoErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('condicaoPagamentoErro').style.display = 'none';
+    }
+
+    if (!hasError) {
+        document.getElementById('dados-comerciais-tab').classList.remove('disabled');
+        const nextTab = new bootstrap.Tab(document.getElementById('dados-comerciais-tab'));
+        nextTab.show();
+    }
+});
+
+document.getElementById('confirmDadosComerciais').addEventListener('click', function () {
+    const equipeVendas = document.getElementById('equipeVendas').value.trim();
+    const escritorioVendas = document.getElementById('escritorioVendas').value.trim();
+    const regVendas = document.getElementById('regVendas').value.trim();
+    const priceList = document.getElementById('priceList').value.trim();
+    const moeda = document.getElementById('moeda').value.trim();
+
+    let hasError = false;
+
+    if (!equipeVendas) {
+        document.getElementById('equipeVendasErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('equipeVendasErro').style.display = 'none';
+    }
+
+    if (!escritorioVendas) {
+        document.getElementById('escritorioVendasErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('escritorioVendasErro').style.display = 'none';
+    }
+
+    if (!regVendas) {
+        document.getElementById('regVendasErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('regVendasErro').style.display = 'none';
+    }
+
+    if (!priceList) {
+        document.getElementById('priceListErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('priceListErro').style.display = 'none';
+    }
+
+    if (!moeda) {
+        document.getElementById('moedaErro').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('moedaErro').style.display = 'none';
+    }
+
+    if (!hasError) {
+        document.getElementById('resumo-tab').classList.remove('disabled');
+        const nextTab = new bootstrap.Tab(document.getElementById('resumo-tab'));
+        nextTab.show();
+
+        // Preencher a aba Resumo
+        document.getElementById('resumoEmpresa').textContent = document.getElementById('empresa').selectedOptions[0].text;
+        document.getElementById('resumoOrganizacaoVendas').textContent = document.getElementById('organizacaoVendas').selectedOptions[0].text;
+        document.getElementById('resumoCanal').textContent = document.getElementById('canal').selectedOptions[0].text;
+        document.getElementById('resumoRazaoSocial').textContent = document.getElementById('razaoSocial').value;
+        document.getElementById('resumoTermoPesquisa').textContent = document.getElementById('termoPesquisa').value;
+        document.getElementById('resumoCEP').textContent = document.getElementById('cep').value;
+        document.getElementById('resumoDomicilio').textContent = document.getElementById('domicilio').value;
+        document.getElementById('resumoRua').textContent = document.getElementById('rua').value;
+        document.getElementById('resumoNumero').textContent = document.getElementById('numero').value;
+        document.getElementById('resumoComplemento').textContent = document.getElementById('complemento').value;
+        document.getElementById('resumoBairro').textContent = document.getElementById('bairro').value;
+        document.getElementById('resumoCidade').textContent = document.getElementById('cidade').value;
+        document.getElementById('resumoEstado').textContent = document.getElementById('estado').value;
+        document.getElementById('resumoFornecedor').textContent = document.getElementById('fornecedor').value;
+        document.getElementById('resumoGrupoEmpresa').textContent = document.getElementById('grupoEmpresa').value;
+        document.getElementById('resumoCPF').textContent = document.getElementById('cpf').value;
+        document.getElementById('resumoCNPJ').textContent = document.getElementById('cnpj').value;
+        document.getElementById('resumoInscEstadual').textContent = document.getElementById('inscEstadual').value;
+        document.getElementById('resumoInscMunicipal').textContent = document.getElementById('inscMunicipal').value;
+        document.getElementById('resumoFormasPgto').textContent = document.getElementById('formasPgto').value;
+        document.getElementById('resumoCondicaoPagamento').textContent = document.getElementById('condicaoPagamento').value;
+        document.getElementById('resumoEquipeVendas').textContent = document.getElementById('equipeVendas').value;
+        document.getElementById('resumoEscritorioVendas').textContent = document.getElementById('escritorioVendas').value;
+        document.getElementById('resumoRegVendas').textContent = document.getElementById('regVendas').value;
+        document.getElementById('resumoPriceList').textContent = document.getElementById('priceList').value;
+        document.getElementById('resumoMoeda').textContent = document.getElementById('moeda').value;
+    }
+});
+
+function verificarCampoObrigatorio(campo, mensagemErroId, mensagem) {
+    const campoErro = document.getElementById(mensagemErroId);
+    if (campo.value.trim() === '') {
+        campo.classList.add('is-invalid');
+        campoErro.style.display = 'block';
+        campoErro.textContent = mensagem;
+    } else {
+        campo.classList.remove('is-invalid');
+        campoErro.style.display = 'none';
+    }
 }
 
-      function verificarCPF(cpf) {
-          const cpfErro = document.getElementById('cpfErro');
-          if (cpf.value === '') {
-              cpf.classList.remove('is-invalid');
-              cpfErro.style.display = 'none';
-          } else if (cpf.value.replace(/\D/g, '').length !== 11) {
-              cpf.classList.add('is-invalid');
-              cpfErro.style.display = 'block';
-          } else {
-              cpf.classList.remove('is-invalid');
-              cpfErro.style.display = 'none';
-          }
-      }
+async function buscarCEP(cep) {
+    const endpoint = `https://viacep.com.br/ws/${cep}/json/`;
+    try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+            throw new Error('Erro ao buscar o CEP');
+        }
+        const data = await response.json();
 
-      function mascararCNPJ(cnpj) {
-          let valor = cnpj.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+        if (data.erro) {
+            throw new Error('CEP não encontrado');
+        }
 
-          // Limita o valor a 14 dígitos
-          if (valor.length > 14) {
-              valor = valor.substring(0, 14);
-          }
+        const domicilioValue = `${data.uf || ''} ${data.ibge || ''}`;
+        document.getElementById('rua').value = data.logradouro || '';
+        document.getElementById('bairro').value = data.bairro || '';
+        document.getElementById('cidade').value = data.localidade || '';
+        document.getElementById('estado').value = data.uf || '';
+        document.getElementById('domicilio').value = domicilioValue.trim();
 
-          valor = valor
-              .replace(/(\d{2})(\d)/, '$1.$2') // Coloca um ponto entre o segundo e o terceiro dígitos
-              .replace(/(\d{3})(\d)/, '$1.$2') // Coloca um ponto entre o quinto e o sexto dígitos
-              .replace(/(\d{3})(\d)/, '$1/$2') // Coloca uma barra entre o oitavo e o nono dígitos
-              .replace(/(\d{4})(\d)/, '$1-$2'); // Coloca um hífen entre o décimo terceiro e o décimo quarto dígitos
+        // Remove mensagem de erro, caso exista
+        document.getElementById('cep').classList.remove('is-invalid');
+        document.getElementById('cepErro').style.display = 'none';
+    } catch (error) {
+        console.error('Erro ao buscar o CEP:', error);
 
-          cnpj.value = valor;
-      }
+        // Exibe mensagem de erro
+        document.getElementById('cep').classList.add('is-invalid');
+        document.getElementById('cepErro').style.display = 'block';
+    }
+}
 
-      function verificarCNPJ(cnpj) {
-          const cnpjErro = document.getElementById('cnpjErro');
-          if (cnpj.value === '') {
-              cnpj.classList.remove('is-invalid');
-              cnpjErro.style.display = 'none';
-          } else if (cnpj.value.replace(/\D/g, '').length !== 14) {
-              cnpj.classList.add('is-invalid');
-              cnpjErro.style.display = 'block';
-          } else {
-              cnpj.classList.remove('is-invalid');
-              cnpjErro.style.display = 'none';
-          }
-      }
+function mascararCEP(cep) {
+    let valor = cep.value.replace(/\D/g, ''); // Remove tudo que não é dígito
 
-      function mascararCEP(cep) {
-          let valor = cep.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+    // Limita o valor a 8 dígitos
+    if (valor.length > 8) {
+        valor = valor.substring(0, 8);
+    }
 
-          // Limita o valor a 8 dígitos
-          if (valor.length > 8) {
-              valor = valor.substring(0, 8);
-          }
+    // Coloca um hífen entre o quinto e o sexto dígitos
+    valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
 
-          valor = valor.replace(/(\d{5})(\d)/, '$1-$2'); // Coloca um hífen entre o quinto e o sexto dígitos
+    cep.value = valor;
+}
 
-          cep.value = valor;
-      }
+function validateCPF(cpf) {
+    // Adicione aqui a lógica para validar o CPF
+    return true;
+}
 
-      function verificarCEP(cep) {
-          const cepErro = document.getElementById('cepErro');
-          if (cep.value === '') {
-              cep.classList.remove('is-invalid');
-              cepErro.style.display = 'none';
-          } else if (cep.value.replace(/\D/g, '').length !== 8) {
-              cep.classList.add('is-invalid');
-              cepErro.style.display = 'block';
-          } else {
-              cep.classList.remove('is-invalid');
-              cepErro.style.display = 'none';
-          }
-      }
+function validateCNPJ(cnpj) {
+    // Adicione aqui a lógica para validar o CNPJ
+    return true;
+}
 
+function mascararCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ''); // Remove tudo que não é dígito
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Coloca um ponto entre o terceiro e o quarto dígitos
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Coloca um ponto entre o sexto e o sétimo dígitos
+    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Coloca um hífen entre o nono e o décimo dígitos
+    return cpf;
+}
+
+function mascararCNPJ(cnpj) {
+    cnpj = cnpj.replace(/\D/g, ''); // Remove tudo que não é dígito
+    cnpj = cnpj.replace(/(\d{2})(\d)/, '$1.$2'); // Coloca um ponto entre o segundo e o terceiro dígitos
+    cnpj = cnpj.replace(/(\d{3})(\d)/, '$1.$2'); // Coloca um ponto entre o quinto e o sexto dígitos
+    cnpj = cnpj.replace(/(\d{3})(\d)/, '$1/$2'); // Coloca uma barra entre o oitavo e o nono dígitos
+    cnpj = cnpj.replace(/(\d{4})(\d{1,2})$/, '$1-$2'); // Coloca um hífen entre o décimo segundo e o décimo terceiro dígitos
+    return cnpj;
+}
+
+function verificarCPF(cpf) {
+    const cpfErro = document.getElementById('cpfErro');
+    if (cpf.value === '') {
+        cpf.classList.remove('is-invalid');
+        cpfErro.style.display = 'none';
+    } else if (cpf.value.replace(/\D/g, '').length !== 11) {
+        cpf.classList.add('is-invalid');
+        cpfErro.style.display = 'block';
+    } else {
+        cpf.classList.remove('is-invalid');
+        cpfErro.style.display = 'none';
+    }
+}
+
+function verificarCNPJ(cnpj) {
+    const cnpjErro = document.getElementById('cnpjErro');
+    if (cnpj.value === '') {
+        cnpj.classList.remove('is-invalid');
+        cnpjErro.style.display = 'none';
+    } else if (cnpj.value.replace(/\D/g, '').length !== 14) {
+        cnpj.classList.add('is-invalid');
+        cnpjErro.style.display = 'block';
+    } else {
+        cnpj.classList.remove('is-invalid');
+        cnpjErro.style.display = 'none';
+    }
+}
     </script>
-
 </body>
+
 </html>
